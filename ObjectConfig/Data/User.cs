@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ObjectConfig.Data
@@ -6,7 +7,7 @@ namespace ObjectConfig.Data
     public class User
     {
         [Key]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         [Required]
         public string ExternalId { get; set; }
         [Required]

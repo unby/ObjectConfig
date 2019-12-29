@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using ObjectConfig;
 using ObjectConfig.Data;
 using System;
-using System.Linq;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace UnitTests
@@ -22,44 +23,30 @@ namespace UnitTests
             return personDataContext;
         }
 
-        private readonly ITestOutputHelper Log;
+        protected IServiceProvider GetDi(Func<IServiceCollection, IServiceCollection> func = null)
+        {
+            var sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).ObjectConfigServices((a) => { a.UseInMemoryDatabase("xunit"); });
+            if (func != null)
+                sc = func(sc);
+            return sc.BuildServiceProvider().CreateScope().ServiceProvider;
+        }
+
+        protected IServiceScope GetScope(Func<IServiceCollection, IServiceCollection> func = null)
+        {
+            return GetDi(func).CreateScope();
+        }
+
+        protected readonly ITestOutputHelper Log;
 
         public BaseTest(ITestOutputHelper output)
         {
             this.Log = output;
         }
-
-        [Fact]
-        public void ChekUser()
-        {
-            using (var context = GetObjectConfigContext())
-            {
-
-                var admin = context.Admin();
-                Assert.Equal(1, admin.UserId);
-                Assert.Equal("GlobalAdmin", admin.DisplayName);
-            }
-        }
-
-
-
-        [Fact]
-        public void Test1()
-        {
-            using (var context = GetObjectConfigContext())
-            {
-                var admin = context.Admin();
-
-                context.UsersApplications.Add(new UsersApplications() { User = admin, AccessRole = UsersApplications.Role.Administrtor, Application = new Application() { Code = "test", Name = "test title" } });
-
-                //  context.UsersApplications.Append
-                context.SaveChanges();
-                Assert.True(context.UsersApplications.Any());
-                Assert.True(context.Applications.Any());
-                var app = context.Applications.First();
-                Log.WriteLine(app.ApplicationId);
-                Assert.NotNull(app);
-            }
-        }
     }
 }
+/*,
+""Array"": [
+""123"",
+""sto""
+]
+*/

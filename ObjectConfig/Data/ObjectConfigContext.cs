@@ -17,18 +17,25 @@ namespace ObjectConfig.Data
 
             var usersEnvironmentsModel = modelBuilder.Entity<UsersEnvironments>();
             usersEnvironmentsModel.HasKey(c => new { c.UserId, c.EnvironmentId });
-         //  usersEnvironmentsModel.HasOne(o => o.User).WithMany(m => m.Environments);
-         //  usersEnvironmentsModel.HasOne(o => o.Environment).WithMany(m => m.Users);
+            //  usersEnvironmentsModel.HasOne(o => o.User).WithMany(m => m.Environments);
+            //  usersEnvironmentsModel.HasOne(o => o.Environment).WithMany(m => m.Users);
+
+            modelBuilder.Entity<Application>().HasIndex(u => u.Code).IsUnique();
+
+            modelBuilder.Entity<Config>().HasIndex(p => new { p.Code, p.VersionFrom, p.EnvironmentId }).IsUnique();
+
+            modelBuilder.Entity<Environment>().HasIndex(p => new { p.Code, p.ApplicationId }).IsUnique();
 
             modelBuilder.Entity<UsersTypes>()
                 .HasKey(c => new { c.UserId, c.ValueTypeId });
 
+           
 
             modelBuilder.Entity<User>()
                 .HasData(
                     new User
                     {
-                        UserId = 1,
+                        UserId = Constants.AdminId,
                         DisplayName = "GlobalAdmin",
                         Email = "admin@global.net",
                         ExternalId = Guid.NewGuid().ToString(),
@@ -50,10 +57,10 @@ namespace ObjectConfig.Data
 
         public DbSet<Config> Configs { get; set; }
 
-        public DbSet<ValueConfig> ValueConfigs { get; set; }
+        public DbSet<ConfigElement> ConfigElements { get; set; }
 
-        public DbSet<ValueType> ValueTypes { get; set; }
+        public DbSet<TypeElement> TypeElements { get; set; }
 
-        public DbSet<ValueObject> ValueObjects { get; set; }
+        public DbSet<ValueElement> ValueElements { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace ObjectConfig.Data
     public class Config
     {
         [Key]
-        public int ConfigId { get; set; }
+        public Guid ConfigId { get; set; }
 
         [Required]
         [MaxLength(128)]
@@ -29,6 +29,8 @@ namespace ObjectConfig.Data
 
         public virtual Environment Environment { get; set; }
 
-        public virtual IList<ValueConfig> Configs { get; set; }
+        public Guid EnvironmentId { get; set; }
+
+        public virtual IList<ConfigElement> Configs { get; set; }
     }
 }

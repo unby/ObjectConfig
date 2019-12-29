@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ObjectConfig.Data
@@ -6,7 +7,7 @@ namespace ObjectConfig.Data
     public class Application
     {
         [Key]
-        public int ApplicationId { get; set; }
+        public Guid ApplicationId { get; set; }
         [Required]
         [MaxLength(128)]
         public string Name { get; set; }

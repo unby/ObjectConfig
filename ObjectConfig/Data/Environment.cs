@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ObjectConfig.Data
@@ -6,7 +7,7 @@ namespace ObjectConfig.Data
     public class Environment
     {
         [Key]
-        public int EnvironmentId { get; set; }
+        public Guid EnvironmentId { get; set; }
         [Required]
         [MaxLength(128)]
         public string Name { get; set; }
@@ -22,5 +23,7 @@ namespace ObjectConfig.Data
         public virtual IList<UsersEnvironments> Users { get; set; } = new List<UsersEnvironments>();
 
         public virtual Application Application { get; set; }
+
+        public Guid ApplicationId { get; set; }
     }
 }

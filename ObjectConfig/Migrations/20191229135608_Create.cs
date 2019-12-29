@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ObjectConfig.Data.Migrations
+namespace ObjectConfig.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Create : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,8 +11,7 @@ namespace ObjectConfig.Data.Migrations
                 name: "Applications",
                 columns: table => new
                 {
-                    ApplicationId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ApplicationId = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Code = table.Column<string>(maxLength: 64, nullable: false),
                     Description = table.Column<string>(maxLength: 512, nullable: true)
@@ -23,11 +22,24 @@ namespace ObjectConfig.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TypeElements",
+                columns: table => new
+                {
+                    TypeElementId = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(maxLength: 256, nullable: false),
+                    Description = table.Column<string>(maxLength: 512, nullable: true),
+                    Type = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypeElements", x => x.TypeElementId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(nullable: false),
                     ExternalId = table.Column<string>(nullable: false),
                     DisplayName = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: false),
@@ -39,30 +51,14 @@ namespace ObjectConfig.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ValueTypes",
-                columns: table => new
-                {
-                    ValueTypeId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 256, nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: true),
-                    Type = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ValueTypes", x => x.ValueTypeId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Environments",
                 columns: table => new
                 {
-                    EnvironmentId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnvironmentId = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Code = table.Column<string>(maxLength: 64, nullable: false),
                     Description = table.Column<string>(maxLength: 512, nullable: true),
-                    ApplicationId = table.Column<int>(nullable: true)
+                    ApplicationId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -79,8 +75,8 @@ namespace ObjectConfig.Data.Migrations
                 name: "UsersApplications",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false),
-                    ApplicationId = table.Column<int>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    ApplicationId = table.Column<Guid>(nullable: false),
                     AccessRole = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -104,8 +100,8 @@ namespace ObjectConfig.Data.Migrations
                 name: "UsersTypes",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false),
-                    ValueTypeId = table.Column<int>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    ValueTypeId = table.Column<Guid>(nullable: false),
                     AccessRole = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -118,55 +114,25 @@ namespace ObjectConfig.Data.Migrations
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UsersTypes_ValueTypes_ValueTypeId",
+                        name: "FK_UsersTypes_TypeElements_ValueTypeId",
                         column: x => x.ValueTypeId,
-                        principalTable: "ValueTypes",
-                        principalColumn: "ValueTypeId",
+                        principalTable: "TypeElements",
+                        principalColumn: "TypeElementId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ValueObjects",
-                columns: table => new
-                {
-                    ValueTypeId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Value = table.Column<string>(maxLength: 2147483647, nullable: false),
-                    DateFrom = table.Column<DateTimeOffset>(nullable: false),
-                    DateTo = table.Column<DateTimeOffset>(nullable: true),
-                    TypeValueTypeId = table.Column<int>(nullable: true),
-                    ChangeOwnerUserId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ValueObjects", x => x.ValueTypeId);
-                    table.ForeignKey(
-                        name: "FK_ValueObjects_Users_ChangeOwnerUserId",
-                        column: x => x.ChangeOwnerUserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ValueObjects_ValueTypes_TypeValueTypeId",
-                        column: x => x.TypeValueTypeId,
-                        principalTable: "ValueTypes",
-                        principalColumn: "ValueTypeId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Configs",
                 columns: table => new
                 {
-                    ConfigId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ConfigId = table.Column<Guid>(nullable: false),
                     Code = table.Column<string>(maxLength: 128, nullable: false),
                     DateFrom = table.Column<DateTimeOffset>(nullable: false),
                     DateTo = table.Column<DateTimeOffset>(nullable: true),
                     VersionFrom = table.Column<string>(maxLength: 23, nullable: false),
                     VersionTo = table.Column<string>(maxLength: 23, nullable: true),
                     Description = table.Column<string>(maxLength: 512, nullable: true),
-                    EnvironmentId = table.Column<int>(nullable: true)
+                    EnvironmentId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -183,8 +149,8 @@ namespace ObjectConfig.Data.Migrations
                 name: "UsersEnvironments",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false),
-                    EnvironmentId = table.Column<int>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    EnvironmentId = table.Column<Guid>(nullable: false),
                     AccessRole = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -205,38 +171,91 @@ namespace ObjectConfig.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ValueConfigs",
+                name: "ConfigElements",
                 columns: table => new
                 {
-                    ValueConfigId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ParrentValueConfigId = table.Column<int>(nullable: false),
-                    ConfigId = table.Column<int>(nullable: true),
-                    TypeValueTypeId = table.Column<int>(nullable: true),
-                    ParrentPropertyValueConfigId = table.Column<int>(nullable: true)
+                    ConfigElementId = table.Column<Guid>(nullable: false),
+                    ConfigId = table.Column<Guid>(nullable: true),
+                    TypeElementId = table.Column<Guid>(nullable: true),
+                    ParrentConfigElementId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ValueConfigs", x => x.ValueConfigId);
+                    table.PrimaryKey("PK_ConfigElements", x => x.ConfigElementId);
                     table.ForeignKey(
-                        name: "FK_ValueConfigs_Configs_ConfigId",
+                        name: "FK_ConfigElements_Configs_ConfigId",
                         column: x => x.ConfigId,
                         principalTable: "Configs",
                         principalColumn: "ConfigId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ValueConfigs_ValueConfigs_ParrentPropertyValueConfigId",
-                        column: x => x.ParrentPropertyValueConfigId,
-                        principalTable: "ValueConfigs",
-                        principalColumn: "ValueConfigId",
+                        name: "FK_ConfigElements_ConfigElements_ParrentConfigElementId",
+                        column: x => x.ParrentConfigElementId,
+                        principalTable: "ConfigElements",
+                        principalColumn: "ConfigElementId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ValueConfigs_ValueTypes_TypeValueTypeId",
-                        column: x => x.TypeValueTypeId,
-                        principalTable: "ValueTypes",
-                        principalColumn: "ValueTypeId",
+                        name: "FK_ConfigElements_TypeElements_TypeElementId",
+                        column: x => x.TypeElementId,
+                        principalTable: "TypeElements",
+                        principalColumn: "TypeElementId",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "ValueElements",
+                columns: table => new
+                {
+                    ValueElementId = table.Column<Guid>(nullable: false),
+                    Value = table.Column<string>(maxLength: 2147483647, nullable: false),
+                    DateFrom = table.Column<DateTimeOffset>(nullable: false),
+                    DateTo = table.Column<DateTimeOffset>(nullable: true),
+                    TypeElementId = table.Column<Guid>(nullable: true),
+                    ChangeOwnerUserId = table.Column<Guid>(nullable: true),
+                    ConfigElementId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ValueElements", x => x.ValueElementId);
+                    table.ForeignKey(
+                        name: "FK_ValueElements_Users_ChangeOwnerUserId",
+                        column: x => x.ChangeOwnerUserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ValueElements_ConfigElements_ConfigElementId",
+                        column: x => x.ConfigElementId,
+                        principalTable: "ConfigElements",
+                        principalColumn: "ConfigElementId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ValueElements_TypeElements_TypeElementId",
+                        column: x => x.TypeElementId,
+                        principalTable: "TypeElements",
+                        principalColumn: "TypeElementId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "DisplayName", "Email", "ExternalId", "IsGlobalAdmin" },
+                values: new object[] { new Guid("0c167938-24b6-45a2-9558-12a512facdb9"), "GlobalAdmin", "admin@global.net", "b7c0bf50-9c73-4fb1-bdf2-ff680102bcb5", true });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfigElements_ConfigId",
+                table: "ConfigElements",
+                column: "ConfigId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfigElements_ParrentConfigElementId",
+                table: "ConfigElements",
+                column: "ParrentConfigElementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfigElements_TypeElementId",
+                table: "ConfigElements",
+                column: "TypeElementId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Configs_EnvironmentId",
@@ -264,29 +283,19 @@ namespace ObjectConfig.Data.Migrations
                 column: "ValueTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ValueConfigs_ConfigId",
-                table: "ValueConfigs",
-                column: "ConfigId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ValueConfigs_ParrentPropertyValueConfigId",
-                table: "ValueConfigs",
-                column: "ParrentPropertyValueConfigId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ValueConfigs_TypeValueTypeId",
-                table: "ValueConfigs",
-                column: "TypeValueTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ValueObjects_ChangeOwnerUserId",
-                table: "ValueObjects",
+                name: "IX_ValueElements_ChangeOwnerUserId",
+                table: "ValueElements",
                 column: "ChangeOwnerUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ValueObjects_TypeValueTypeId",
-                table: "ValueObjects",
-                column: "TypeValueTypeId");
+                name: "IX_ValueElements_ConfigElementId",
+                table: "ValueElements",
+                column: "ConfigElementId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ValueElements_TypeElementId",
+                table: "ValueElements",
+                column: "TypeElementId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -301,19 +310,19 @@ namespace ObjectConfig.Data.Migrations
                 name: "UsersTypes");
 
             migrationBuilder.DropTable(
-                name: "ValueConfigs");
-
-            migrationBuilder.DropTable(
-                name: "ValueObjects");
-
-            migrationBuilder.DropTable(
-                name: "Configs");
+                name: "ValueElements");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "ValueTypes");
+                name: "ConfigElements");
+
+            migrationBuilder.DropTable(
+                name: "Configs");
+
+            migrationBuilder.DropTable(
+                name: "TypeElements");
 
             migrationBuilder.DropTable(
                 name: "Environments");
