@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
 namespace ObjectConfig.Data
@@ -19,12 +18,12 @@ namespace ObjectConfig.Data
             Type = type;
         }
 
-        [Key]
-        public Guid ValueElementId { get; set; }
+        public int ValueElementId { get; set; }
 
-        [Required]
-        [MaxLength(int.MaxValue)]
         public string Value { get; set; }
+
+        public string Comment { get; set; }
+
         public DateTimeOffset DateFrom { get; set; }
 
         public DateTimeOffset? DateTo { get; set; }

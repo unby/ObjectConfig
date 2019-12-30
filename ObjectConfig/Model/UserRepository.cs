@@ -17,7 +17,7 @@ namespace ObjectConfig.Model
 
         readonly ObjectConfigContext ConfigContext;
 
-        public User GetUser(Guid internalId)
+        public User GetUser(int internalId)
         {
             return ConfigContext.Users.Include(i=>i.Environments).Include(i => i.Environments).FirstOrDefault(x => x.UserId == internalId);
         }
@@ -30,19 +30,30 @@ namespace ObjectConfig.Model
         }
     }
 
-    public class ApplicationRepository
+    public class ConfigRepository
     {
-        public ApplicationRepository(ObjectConfigContext configContext)
+        public ConfigRepository(ObjectConfigContext configContext)
         {
             ConfigContext = configContext;
         }
 
         readonly ObjectConfigContext ConfigContext;
 
-        public async Task Create(Application app)
+        public Config CreateConfig(Config config)
         {
-            ConfigContext.Applications.Add(app);
-            await ConfigContext.SaveChangesAsync();
+            var trackConfig = ConfigContext.Configs.Add(config);
+            ConfigContext.SaveChanges();
+            return trackConfig.Entity;
+        }
+
+        public Task<Config> Find(int id)
+        {
+            return ConfigContext.Configs.AsNoTracking().Include(i=>i.Environment).Include(i => i.ConfigElement).FirstOrDefaultAsync(f=>f.ConfigId==id);
+        }
+
+        public Task<Config> Find(string code)
+        {
+            return ConfigContext.Configs.AsNoTracking().Include(i => i.Environment).Include(i => i.ConfigElement).FirstOrDefaultAsync(f => f.Code == code);
         }
     }
 }

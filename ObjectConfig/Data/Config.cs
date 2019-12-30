@@ -1,36 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace ObjectConfig.Data
 {
     public class Config
     {
-        [Key]
-        public Guid ConfigId { get; set; }
+        public int ConfigId { get; set; }
 
-        [Required]
-        [MaxLength(128)]
         public string Code { get; set; }
 
-        public DateTimeOffset DateFrom { get; set; }
+        public DateTimeOffset DateFrom { get; set; } = DateTimeOffset.UtcNow;
 
         public DateTimeOffset? DateTo { get; set; }
 
-        [Required]
-        [MaxLength(23)]
-        public string VersionFrom { get; set; }
+        public string VersionFrom { get; set; } = "1.0";
 
-        [MaxLength(23)]
         public string VersionTo { get; set; }
 
-        [MaxLength(512)]
         public string Description { get; set; }
 
-        public virtual Environment Environment { get; set; }
+        public int EnvironmentId { get; set; }
 
-        public Guid EnvironmentId { get; set; }
+        public Environment Environment { get; set; }
 
-        public virtual IList<ConfigElement> Configs { get; set; }
+        public int ConfigElementId { get; set; }
+
+        public ConfigElement ConfigElement { get; set; }
     }
 }

@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace ObjectConfig
 {
-
-    public class Obj { 
-        public string Name { get; set; }
-        public string Value { get; set; }
-
-    }
     public class ObjectConfigReader
     {
+        private readonly Config config;
+
+        public ObjectConfigReader(Config config)
+        {
+            this.config = config;
+        }
+
         private Task<JObject> ParseJson(string jsonString) 
         {
             return Task.FromResult(JObject.Parse(jsonString));
@@ -23,15 +24,13 @@ namespace ObjectConfig
         public async Task<ConfigElement> Parse(string jsonString, int deep = 3)
         {
             var jObj = await ParseJson(jsonString);
-            var res = new ConfigElement() { Type = new TypeElement() };
-
+            var res = new ConfigElement(new TypeElement(), null, config);
 
             foreach (var node in jObj)
             {
-               
-                res.Childs.Add(await ReadChild(node.Value, node.Key, res, 3));
+                res.Childs.Add(await ReadChild(node.Value, node.Key, res, deep));
             }
-
+            config.ConfigElement = res;
             return res;
         }
 
@@ -39,7 +38,6 @@ namespace ObjectConfig
         {
             switch (token.Type)
             {
-               // case JTokenType.Property:
                 case JTokenType.Object:
                     return TypeNode.Complex;
                 case JTokenType.Array:
@@ -77,7 +75,7 @@ namespace ObjectConfig
                 case TypeNode.Complex:
                     if (deep == 0)
                     {
-                        res = new ConfigElement() { Type = new TypeElement(TypeNode.Complex, key), Parrent = parrent };
+                        res = new ConfigElement(new TypeElement(TypeNode.Complex, key), parrent, config);
                         res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     }
                     else
@@ -85,18 +83,11 @@ namespace ObjectConfig
                         if (node.Type == JTokenType.Property)
                         {
                             throw new Exception("JTokenType.Property " + node.ToString());
-                            string y = node.GetType().ToString();
-                            Console.WriteLine(y);
-                            foreach (var item in node.Children())
-                            {
-                              //  parrent.Childs.Add(await ReadChild(item, res, deep));
-                            }
-
                         }
                         else
                         {
                             JObject jobject = node as JObject;
-                            res = new ConfigElement() { Type = new TypeElement(TypeNode.Complex, key), Parrent = parrent };
+                            res = new ConfigElement(new TypeElement(TypeNode.Complex, key), parrent, config);
                             foreach (var item in jobject)
                             {
                                 res.Childs.Add(await ReadChild(item.Value,item.Key, res, --deep));
@@ -106,48 +97,46 @@ namespace ObjectConfig
                     }
                     return res;
                 case TypeNode.Array:
-
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Array, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Array, key), parrent, config);
                     foreach (var item in node)
                     {
                         res.Childs.Add(await ReadChild(item, key, res, deep));
                     }
-
                     return res;
                 case TypeNode.Integer:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Integer, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Integer, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;
                 case TypeNode.Float:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Float, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Float, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;
                 case TypeNode.String:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.String, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.String, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;
                 case TypeNode.Boolean:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Boolean, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Boolean, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;
                 case TypeNode.Null:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Null, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Null, key), parrent, config);
                     res.Value.Add(new ValueElement(null, res.Type));
                     return res;
                 case TypeNode.Date:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Date, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Date, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;
                 case TypeNode.Guid:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Guid, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Guid, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;
                 case TypeNode.Uri:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.Uri, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.Uri, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;
                 case TypeNode.TimeSpan:
-                    res = new ConfigElement() { Type = new TypeElement(TypeNode.TimeSpan, key), Parrent = parrent };
+                    res = new ConfigElement(new TypeElement(TypeNode.TimeSpan, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     return res;          
                 default:

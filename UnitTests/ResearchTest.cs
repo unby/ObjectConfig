@@ -42,7 +42,7 @@ namespace UnitTests
             {
                 var admin = context.Admin();
 
-                context.UsersApplications.Add(new UsersApplications() { User = admin, AccessRole = UsersApplications.Role.Administrtor, Application = new Application() { Code = "test", Name = "test title" } });
+                context.UsersApplications.Add(new UsersApplications() { User = admin, AccessRole = UsersApplications.Role.Administrator, Application = new Application() { Code = "test", Name = "test title" } });
 
                 context.SaveChanges();
                 Assert.True(context.UsersApplications.Any());
@@ -57,7 +57,7 @@ namespace UnitTests
         [Fact]
         public void Parse()
         {
-            var d = new ObjectConfigReader().Parse(Data).Result;
+            var d = new ObjectConfigReader(new Config()).Parse(Data).Result;
             Log.WriteLine(d.Type.Name);
             Assert.Equal("root", d.Type.Name);
         }
@@ -75,8 +75,11 @@ namespace UnitTests
       ""Microsoft"": ""Warning"",
       ""Microsoft.Hosting.Lifetime"": ""Information""
     },
-    ""GlobalLevel"": true
-
+    ""GlobalLevel"": true,
+    ""Array"": [
+    ""123"",
+    ""sto""
+]
   },
  ""GlobalLevel"": true,
 ""ComplexArray"":[

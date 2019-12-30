@@ -1,29 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
 
 namespace ObjectConfig.Data
 {
     public class Environment
     {
-        [Key]
-        public Guid EnvironmentId { get; set; }
-        [Required]
-        [MaxLength(128)]
+        public int EnvironmentId { get; set; }
         public string Name { get; set; }
-
-        [Required]
-        [MaxLength(64)]
         public string Code { get; set; }
-        [MaxLength(512)]
         public string Description { get; set; }
-
-        public virtual IList<Config> Configs { get; set; } = new List<Config>();
-
-        public virtual IList<UsersEnvironments> Users { get; set; } = new List<UsersEnvironments>();
-
-        public virtual Application Application { get; set; }
-
-        public Guid ApplicationId { get; set; }
+        public int ApplicationId { get; set; }
+        public Application Application { get; set; }
+        public IList<Config> Configs { get; set; } = new List<Config>();
+        public IList<UsersEnvironments> Users { get; set; } = new List<UsersEnvironments>();
     }
 }

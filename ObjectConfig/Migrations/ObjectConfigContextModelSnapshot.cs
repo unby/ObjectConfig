@@ -17,13 +17,16 @@ namespace ObjectConfig.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("Relational:Sequence:.EntityFrameworkHiLoSequence", "'EntityFrameworkHiLoSequence', '', '1', '10', '', '', 'Int64', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ObjectConfig.Data.Application", b =>
                 {
-                    b.Property<Guid>("ApplicationId")
+                    b.Property<int>("ApplicationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -41,19 +44,27 @@ namespace ObjectConfig.Migrations
 
                     b.HasKey("ApplicationId");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.ToTable("Applications");
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.Config", b =>
                 {
-                    b.Property<Guid>("ConfigId")
+                    b.Property<int>("ConfigId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
+
+                    b.Property<int>("ConfigElementId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("DateFrom")
                         .HasColumnType("datetimeoffset");
@@ -65,8 +76,8 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
-                    b.Property<Guid?>("EnvironmentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("EnvironmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("VersionFrom")
                         .IsRequired()
@@ -79,29 +90,32 @@ namespace ObjectConfig.Migrations
 
                     b.HasKey("ConfigId");
 
+                    b.HasIndex("ConfigElementId")
+                        .IsUnique();
+
                     b.HasIndex("EnvironmentId");
+
+                    b.HasIndex("Code", "VersionFrom", "EnvironmentId")
+                        .IsUnique();
 
                     b.ToTable("Configs");
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.ConfigElement", b =>
                 {
-                    b.Property<Guid>("ConfigElementId")
+                    b.Property<int>("ConfigElementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
-                    b.Property<Guid?>("ConfigId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ParrentConfigElementId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("ParrentConfigElementId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("TypeElementId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("TypeElementId")
+                        .HasColumnType("int");
 
                     b.HasKey("ConfigElementId");
-
-                    b.HasIndex("ConfigId");
 
                     b.HasIndex("ParrentConfigElementId");
 
@@ -112,12 +126,14 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.Environment", b =>
                 {
-                    b.Property<Guid>("EnvironmentId")
+                    b.Property<int>("EnvironmentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
-                    b.Property<Guid?>("ApplicationId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Code")
                         .IsRequired()
@@ -137,14 +153,19 @@ namespace ObjectConfig.Migrations
 
                     b.HasIndex("ApplicationId");
 
+                    b.HasIndex("Code", "ApplicationId")
+                        .IsUnique();
+
                     b.ToTable("Environments");
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.TypeElement", b =>
                 {
-                    b.Property<Guid>("TypeElementId")
+                    b.Property<int>("TypeElementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(512)")
@@ -165,47 +186,58 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.User", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(128)")
+                        .HasMaxLength(128);
 
                     b.Property<string>("ExternalId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
                     b.Property<bool>("IsGlobalAdmin")
                         .HasColumnType("bit");
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasFilter("[ExternalId] IS NOT NULL");
+
                     b.ToTable("Users");
 
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("0c167938-24b6-45a2-9558-12a512facdb9"),
+                            UserId = 1,
                             DisplayName = "GlobalAdmin",
                             Email = "admin@global.net",
-                            ExternalId = "b7c0bf50-9c73-4fb1-bdf2-ff680102bcb5",
+                            ExternalId = "0701ea11-3386-4bcb-9726-49d7619ea1a5",
                             IsGlobalAdmin = true
                         });
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.UsersApplications", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("ApplicationId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("int");
 
                     b.Property<int>("AccessRole")
                         .HasColumnType("int");
@@ -219,11 +251,11 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.UsersEnvironments", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("EnvironmentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("EnvironmentId")
+                        .HasColumnType("int");
 
                     b.Property<int>("AccessRole")
                         .HasColumnType("int");
@@ -237,11 +269,11 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.UsersTypes", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("ValueTypeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ValueTypeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("AccessRole")
                         .HasColumnType("int");
@@ -255,15 +287,21 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.ValueElement", b =>
                 {
-                    b.Property<Guid>("ValueElementId")
+                    b.Property<int>("ValueElementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
-                    b.Property<Guid?>("ChangeOwnerUserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ChangeOwnerUserId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("ConfigElementId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(2147483647);
+
+                    b.Property<int?>("ConfigElementId")
+                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("DateFrom")
                         .HasColumnType("datetimeoffset");
@@ -271,11 +309,10 @@ namespace ObjectConfig.Migrations
                     b.Property<DateTimeOffset?>("DateTo")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("TypeElementId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("TypeElementId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Value")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasMaxLength(2147483647);
 
@@ -292,17 +329,21 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.Config", b =>
                 {
+                    b.HasOne("ObjectConfig.Data.ConfigElement", "ConfigElement")
+                        .WithOne("Config")
+                        .HasForeignKey("ObjectConfig.Data.Config", "ConfigElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ObjectConfig.Data.Environment", "Environment")
                         .WithMany("Configs")
-                        .HasForeignKey("EnvironmentId");
+                        .HasForeignKey("EnvironmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.ConfigElement", b =>
                 {
-                    b.HasOne("ObjectConfig.Data.Config", "Config")
-                        .WithMany("Configs")
-                        .HasForeignKey("ConfigId");
-
                     b.HasOne("ObjectConfig.Data.ConfigElement", "Parrent")
                         .WithMany("Childs")
                         .HasForeignKey("ParrentConfigElementId");
@@ -316,7 +357,9 @@ namespace ObjectConfig.Migrations
                 {
                     b.HasOne("ObjectConfig.Data.Application", "Application")
                         .WithMany("Environments")
-                        .HasForeignKey("ApplicationId");
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.UsersApplications", b =>
