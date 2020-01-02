@@ -21,11 +21,16 @@ namespace ObjectConfig.Data
             Config = config;
         }
 
-        public int ConfigElementId { get; set; }
+        public long ConfigElementId { get; set; }
+
+        public int ConfigId { get; set; }
 
         public Config Config { get; set; }
 
         public TypeElement Type { get; set; }
+       // public string Path { get; set; }
+
+        public long? ParrentConfigElementId { get; set; }
 
         public ConfigElement Parrent { get; set; }
 

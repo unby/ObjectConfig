@@ -6,13 +6,13 @@ namespace ObjectConfig.Data
     [DebuggerDisplay("Name = {Name} Type = {Type}")]
     public class TypeElement
     {
-        public TypeElement() 
+        public TypeElement()
         {
             Type = TypeNode.Root;
             Name = "root";
         }
 
-        public TypeElement(TypeNode typeNode, string name) 
+        public TypeElement(TypeNode typeNode, string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -22,12 +22,12 @@ namespace ObjectConfig.Data
             Type = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
         }
 
-        public int TypeElementId { get; set; }
+        public long TypeElementId { get; protected set; }
+      
+        public string Name { get; protected set; }
 
-        public string Name { get; set; }
+        public string Description { get; protected set; }
 
-        public string Description { get; set; }
-
-        public TypeNode Type { get; set; }
+        public TypeNode Type { get; protected set; }
     }
 }

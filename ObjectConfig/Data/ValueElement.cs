@@ -6,7 +6,7 @@ namespace ObjectConfig.Data
     [DebuggerDisplay("Value = {Value} Type = {Type}")]
     public class ValueElement
     {
-        public ValueElement() 
+        private ValueElement() 
         {
             DateFrom = DateTimeOffset.UtcNow;
         }
@@ -18,18 +18,18 @@ namespace ObjectConfig.Data
             Type = type;
         }
 
-        public int ValueElementId { get; set; }
+        public long ValueElementId { get; protected set; }
 
-        public string Value { get; set; }
+        public string Value { get; protected set; }
 
-        public string Comment { get; set; }
+        public string Comment { get; protected set; }
 
-        public DateTimeOffset DateFrom { get; set; }
+        public DateTimeOffset DateFrom { get; protected set; }
 
-        public DateTimeOffset? DateTo { get; set; }
+        public DateTimeOffset? DateTo { get; protected set; }
 
-        public virtual TypeElement Type { get; set; }
+        public virtual TypeElement Type { get; protected set; }
 
-        public virtual User ChangeOwner { get; set; }
+        public virtual User ChangeOwner { get; protected set; }
     }
 }

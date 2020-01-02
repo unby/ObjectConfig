@@ -16,7 +16,7 @@ namespace ObjectConfig
             services.AddDbContext<ObjectConfigContext>(configureDb);
             services.AddScoped<ApplicationRepository>();
             services.AddScoped<ConfigRepository>();
-
+            services.AddScoped<ConfigElementRepository>();
 
             return services;
         }

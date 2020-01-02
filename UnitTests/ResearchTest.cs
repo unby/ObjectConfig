@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using ObjectConfig;
 using ObjectConfig.Data;
+using System;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,31 +36,28 @@ namespace UnitTests
             Assert.Equal(LogLevel,ll);
         }
 
+     
         [Fact]
-        public void Test1()
+        public void ParseVer()
         {
-            using (var context = GetObjectConfigContext())
-            {
-                var admin = context.Admin();
+            Version ver1 = new Version("65636.65536.65536.65536");
+            Log.WriteLine(ver1);
+            var decimalVersion= Config.ConvertVersionToLong(ver1);
+            Log.WriteLine(decimalVersion);
+            Config.ConvertLongToVersion(decimalVersion);
 
-                context.UsersApplications.Add(new UsersApplications() { User = admin, AccessRole = UsersApplications.Role.Administrator, Application = new Application() { Code = "test", Name = "test title" } });
-
-                context.SaveChanges();
-                Assert.True(context.UsersApplications.Any());
-                Assert.True(context.Applications.Any());
-                var app = context.Applications.First();
-                Log.WriteLine(app.ApplicationId);
-                Assert.NotNull(app);
-            }
+            Assert.Equal(ver1, Config.ConvertLongToVersion(decimalVersion));
         }
-      
-
         [Fact]
-        public void Parse()
+        public void ParseVer2()
         {
-            var d = new ObjectConfigReader(new Config()).Parse(Data).Result;
-            Log.WriteLine(d.Type.Name);
-            Assert.Equal("root", d.Type.Name);
+            Version ver1 = new Version("922299.99999.9999.9999");
+            Log.WriteLine(ver1);
+            var decimalVersion = Config.ConvertVersionToLong(ver1);
+            Log.WriteLine(decimalVersion);
+            Config.ConvertLongToVersion(decimalVersion);
+
+            Assert.Equal(ver1, Config.ConvertLongToVersion(decimalVersion));
         }
 
         static string LogLevel = 

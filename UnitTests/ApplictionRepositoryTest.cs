@@ -29,38 +29,59 @@ namespace UnitTests
 
                 Assert.NotNull(rep);
 
-                rep.Create(ObjectMaker.CreateApplication(s =>
-                {
-                    s.Code = appCode;
-                    s.Name = Utils.GetStr;
-                    s.Environments.Add(ObjectMaker.CreateEnvironment(e => { e.Code = envCode; e.Name = Utils.GetStr; }));
-                })).Wait();
+             //   rep.Create(ObjectMaker.CreateApplication(s =>
+             //   {
+             //       s.Code = appCode;
+             //       s.Name = Utils.GetStr;
+             //       s.Environments.Add(ObjectMaker.CreateEnvironment(e => { e.Code = envCode; e.Name = Utils.GetStr; }));
+             //   })).Wait();
 
-                var app = await rep.Find(appCode);
-                Assert.NotNull(app);
-                Assert.Equal(app.Environments[0].Code, envCode);
+            //   var app = await rep.Find(appCode);
+            //   Assert.NotNull(app);
+            //   Assert.Equal(app.Environments[0].Code, envCode);
 
 
                 var configRepository = scope.GetInstance<ConfigRepository>();
-                var config = ObjectMaker.CreateConfig(f =>
-                {
-                      f.EnvironmentId = app.Environments[0].EnvironmentId;
-                    f.Code = configCode;
-                });
-
-                await new ObjectConfigReader(config).Parse(Data);
                 
-                config = configRepository.CreateConfig(config);
+             //   var config = ObjectMaker.CreateConfig(f =>
+             //   {
+             //         f.EnvironmentId = app.Environments[0].EnvironmentId;
+             //       f.Code = configCode;
+             //   });
 
-                var configFromStore = await configRepository.Find(configCode);
+            ;
 
-
-                Assert.NotNull(configFromStore);
-                
-                Assert.NotEqual(configFromStore, config);
+               var config = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(await configRepository.Find(3)).Parse(Data));
+                Assert.NotEqual(0, config.ConfigElementId);
+                //     
+                //     config = configRepository.CreateConfig(config);
+                //
+                //     var configFromStore = await configRepository.Find(configCode);
+                //
+                //
+                //     Assert.NotNull(configFromStore);
+                //     
+                //     Assert.NotEqual(configFromStore, config);
             }
         }
 
+        [Fact]
+        public async void DeleteConfig()
+        {
+            appCode = Utils.GetStr;
+            envCode = Utils.GetStr;
+            configCode = Utils.GetStr;
+            using (var scope = GetScope())
+            {
+                var rep = scope.GetInstance<ConfigElementRepository>();
+
+               var conf=rep.GetConfigElement(3);
+                Log.WriteLine(conf);
+              //  context.ConfigElement.Remove(configElement);
+            //    context.SaveChanges();
+            }
+        }
+       
         static string Json =
 @"{
   ""Default"": ""Information"",

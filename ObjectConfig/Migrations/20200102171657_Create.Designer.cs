@@ -10,7 +10,7 @@ using ObjectConfig.Data;
 namespace ObjectConfig.Migrations
 {
     [DbContext(typeof(ObjectConfigContext))]
-    [Migration("20191230172847_Create")]
+    [Migration("20200102171657_Create")]
     partial class Create
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,7 +19,13 @@ namespace ObjectConfig.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("Relational:Sequence:.EntityFrameworkHiLoSequence", "'EntityFrameworkHiLoSequence', '', '1', '10', '', '', 'Int64', 'False'")
+                .HasAnnotation("Relational:Sequence:.Application_HiloSeq", "'Application_HiloSeq', '', '10', '5', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:.Config_HiloSeq", "'Config_HiloSeq', '', '10', '5', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:.ConfigElement_HiloSeq", "'ConfigElement_HiloSeq', '', '10', '150', '', '', 'Int64', 'False'")
+                .HasAnnotation("Relational:Sequence:.Environment_HiloSeq", "'Environment_HiloSeq', '', '10', '5', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:.TypeElement_HiloSeq", "'TypeElement_HiloSeq', '', '10', '150', '', '', 'Int64', 'False'")
+                .HasAnnotation("Relational:Sequence:.User_HiloSeq", "'User_HiloSeq', '', '10', '5', '', '', 'Int32', 'False'")
+                .HasAnnotation("Relational:Sequence:.ValueElement_HiloSeq", "'ValueElement_HiloSeq', '', '10', '150', '', '', 'Int64', 'False'")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ObjectConfig.Data.Application", b =>
@@ -27,7 +33,7 @@ namespace ObjectConfig.Migrations
                     b.Property<int>("ApplicationId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "Application_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Code")
@@ -57,16 +63,13 @@ namespace ObjectConfig.Migrations
                     b.Property<int>("ConfigId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "Config_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(128)")
                         .HasMaxLength(128);
-
-                    b.Property<int>("ConfigElementId")
-                        .HasColumnType("int");
 
                     b.Property<DateTimeOffset>("DateFrom")
                         .HasColumnType("datetimeoffset");
@@ -81,19 +84,13 @@ namespace ObjectConfig.Migrations
                     b.Property<int>("EnvironmentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("VersionFrom")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(23)")
-                        .HasMaxLength(23);
+                    b.Property<long>("VersionFrom")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("VersionTo")
-                        .HasColumnType("nvarchar(23)")
-                        .HasMaxLength(23);
+                    b.Property<long?>("VersionTo")
+                        .HasColumnType("bigint");
 
                     b.HasKey("ConfigId");
-
-                    b.HasIndex("ConfigElementId")
-                        .IsUnique();
 
                     b.HasIndex("EnvironmentId");
 
@@ -105,19 +102,24 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.ConfigElement", b =>
                 {
-                    b.Property<int>("ConfigElementId")
+                    b.Property<long>("ConfigElementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "ConfigElement_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
-                    b.Property<int?>("ParrentConfigElementId")
+                    b.Property<int>("ConfigId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TypeElementId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ParrentConfigElementId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("TypeElementId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("ConfigElementId");
+
+                    b.HasIndex("ConfigId");
 
                     b.HasIndex("ParrentConfigElementId");
 
@@ -131,7 +133,7 @@ namespace ObjectConfig.Migrations
                     b.Property<int>("EnvironmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "Environment_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<int>("ApplicationId")
@@ -163,10 +165,10 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.TypeElement", b =>
                 {
-                    b.Property<int>("TypeElementId")
+                    b.Property<long>("TypeElementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "TypeElement_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Description")
@@ -191,7 +193,7 @@ namespace ObjectConfig.Migrations
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "User_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("DisplayName")
@@ -228,7 +230,7 @@ namespace ObjectConfig.Migrations
                             UserId = 1,
                             DisplayName = "GlobalAdmin",
                             Email = "admin@global.net",
-                            ExternalId = "0701ea11-3386-4bcb-9726-49d7619ea1a5",
+                            ExternalId = "58d36c62-8921-42c2-8b47-80c1d9ee6088",
                             IsGlobalAdmin = true
                         });
                 });
@@ -280,19 +282,22 @@ namespace ObjectConfig.Migrations
                     b.Property<int>("AccessRole")
                         .HasColumnType("int");
 
+                    b.Property<long?>("ValueTypeTypeElementId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("UserId", "ValueTypeId");
 
-                    b.HasIndex("ValueTypeId");
+                    b.HasIndex("ValueTypeTypeElementId");
 
                     b.ToTable("UsersTypes");
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.ValueElement", b =>
                 {
-                    b.Property<int>("ValueElementId")
+                    b.Property<long>("ValueElementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:HiLoSequenceName", "EntityFrameworkHiLoSequence")
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:HiLoSequenceName", "ValueElement_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<int?>("ChangeOwnerUserId")
@@ -302,8 +307,8 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasMaxLength(2147483647);
 
-                    b.Property<int?>("ConfigElementId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ConfigElementId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("DateFrom")
                         .HasColumnType("datetimeoffset");
@@ -311,8 +316,8 @@ namespace ObjectConfig.Migrations
                     b.Property<DateTimeOffset?>("DateTo")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int?>("TypeElementId")
-                        .HasColumnType("int");
+                    b.Property<long?>("TypeElementId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)")
@@ -331,12 +336,6 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.Config", b =>
                 {
-                    b.HasOne("ObjectConfig.Data.ConfigElement", "ConfigElement")
-                        .WithOne("Config")
-                        .HasForeignKey("ObjectConfig.Data.Config", "ConfigElementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ObjectConfig.Data.Environment", "Environment")
                         .WithMany("Configs")
                         .HasForeignKey("EnvironmentId")
@@ -346,6 +345,12 @@ namespace ObjectConfig.Migrations
 
             modelBuilder.Entity("ObjectConfig.Data.ConfigElement", b =>
                 {
+                    b.HasOne("ObjectConfig.Data.Config", "Config")
+                        .WithMany("ConfigElement")
+                        .HasForeignKey("ConfigId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ObjectConfig.Data.ConfigElement", "Parrent")
                         .WithMany("Childs")
                         .HasForeignKey("ParrentConfigElementId");
@@ -404,9 +409,7 @@ namespace ObjectConfig.Migrations
 
                     b.HasOne("ObjectConfig.Data.TypeElement", "ValueType")
                         .WithMany()
-                        .HasForeignKey("ValueTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ValueTypeTypeElementId");
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.ValueElement", b =>

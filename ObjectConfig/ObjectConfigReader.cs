@@ -20,21 +20,24 @@ namespace ObjectConfig
             return Task.FromResult(JObject.Parse(jsonString));
         }
 
+        public List<ConfigElement> AllNodes = new List<ConfigElement>();
 
         public async Task<ConfigElement> Parse(string jsonString, int deep = 3)
         {
             var jObj = await ParseJson(jsonString);
             var res = new ConfigElement(new TypeElement(), null, config);
-
+            AllNodes.Add(res);
             foreach (var node in jObj)
             {
-                res.Childs.Add(await ReadChild(node.Value, node.Key, res, deep));
+                var confElem = await ReadChild(node.Value, node.Key, res, deep);
+                res.Childs.Add(confElem);
+                AllNodes.Add(confElem);
             }
-            config.ConfigElement = res;
+            config.ConfigElement.Add(res);
             return res;
         }
 
-        public TypeNode GetType(JToken token, int deep)
+        private TypeNode GetType(JToken token, int deep)
         {
             switch (token.Type)
             {
@@ -65,13 +68,13 @@ namespace ObjectConfig
             }
         }
 
-        public async Task<ConfigElement> ReadChild(JToken node, string key, ConfigElement parrent, int deep) 
+        private async Task<ConfigElement> ReadChild(JToken node, string key, ConfigElement parrent, int deep) 
         {
             ConfigElement res = null;
             switch (GetType(node, deep))
             {
                 case TypeNode.None:
-                    return res;
+                    break;
                 case TypeNode.Complex:
                     if (deep == 0)
                     {
@@ -95,53 +98,56 @@ namespace ObjectConfig
                             }
                         }
                     }
-                    return res;
+                    break;
                 case TypeNode.Array:
                     res = new ConfigElement(new TypeElement(TypeNode.Array, key), parrent, config);
                     foreach (var item in node)
                     {
                         res.Childs.Add(await ReadChild(item, key, res, deep));
                     }
-                    return res;
+                    break;
                 case TypeNode.Integer:
                     res = new ConfigElement(new TypeElement(TypeNode.Integer, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;
+                    break;
                 case TypeNode.Float:
                     res = new ConfigElement(new TypeElement(TypeNode.Float, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;
+                    break;
                 case TypeNode.String:
                     res = new ConfigElement(new TypeElement(TypeNode.String, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;
+                    break;
                 case TypeNode.Boolean:
                     res = new ConfigElement(new TypeElement(TypeNode.Boolean, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;
+                    break;
                 case TypeNode.Null:
                     res = new ConfigElement(new TypeElement(TypeNode.Null, key), parrent, config);
                     res.Value.Add(new ValueElement(null, res.Type));
-                    return res;
+                    break;
                 case TypeNode.Date:
                     res = new ConfigElement(new TypeElement(TypeNode.Date, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;
+                    break;
                 case TypeNode.Guid:
                     res = new ConfigElement(new TypeElement(TypeNode.Guid, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;
+                    break;
                 case TypeNode.Uri:
                     res = new ConfigElement(new TypeElement(TypeNode.Uri, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;
+                    break;
                 case TypeNode.TimeSpan:
                     res = new ConfigElement(new TypeElement(TypeNode.TimeSpan, key), parrent, config);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    return res;          
+                    break;          
                 default:
-                    return res;
+                    break;
             }
+
+            AllNodes.Add(res);
+            return res;
         }
         
     }

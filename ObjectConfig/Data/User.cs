@@ -4,15 +4,28 @@ namespace ObjectConfig.Data
 {
     public class User
     {
-        public int UserId { get; set; }
+        private User()
+        {
+        }
 
-        public string ExternalId { get; set; }
+        public User(int userId, string externalId, string displayName, string email, bool isGlobalAdmin)
+        {
+            UserId = userId;
+            ExternalId = externalId;
+            DisplayName = displayName;
+            Email = email;
+            IsGlobalAdmin = isGlobalAdmin;
+        }
 
-        public string DisplayName { get; set; }
+        public int UserId { get; protected set; }
 
-        public string Email { get; set; }
+        public string ExternalId { get; protected set; }
 
-        public bool IsGlobalAdmin { get; set; }
+        public string DisplayName { get; protected set; }
+
+        public string Email { get; protected set; }
+
+        public bool IsGlobalAdmin { get; protected set; }
 
         public List<UsersApplications> Applications { get; set; } = new List<UsersApplications>();
 

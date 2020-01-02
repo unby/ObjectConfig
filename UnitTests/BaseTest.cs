@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 
 namespace UnitTests
 {
+
     public class BaseTest
     {
         protected ObjectConfigContext GetObjectConfigContext()
@@ -32,7 +33,7 @@ namespace UnitTests
                     a.UseInMemoryDatabase("xunit"); });
             if (func != null)
                 sc = func(sc);
-            return sc.BuildServiceProvider().CreateScope().ServiceProvider;
+            return sc.BuildServiceProvider();
         }
 
         protected IServiceScope GetScope(Func<IServiceCollection, IServiceCollection> func = null)

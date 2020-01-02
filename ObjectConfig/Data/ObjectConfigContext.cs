@@ -11,28 +11,18 @@ namespace ObjectConfig.Data
         { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new ApplicationConfiguration());
-            modelBuilder.ApplyConfiguration(new ConfigConfiguration());
-            modelBuilder.ApplyConfiguration(new ConfigElementConfiguration());
-            modelBuilder.ApplyConfiguration(new EnvironmentConfiguration());
-            modelBuilder.ApplyConfiguration(new TypeElementConfiguration());
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
+            new ApplicationConfiguration(modelBuilder);
+            new ConfigConfiguration(modelBuilder);
+            new ConfigElementConfiguration(modelBuilder, 150);
+            new EnvironmentConfiguration(modelBuilder);
+            new TypeElementConfiguration(modelBuilder, 150);
+            new UserConfiguration(modelBuilder);
             modelBuilder.ApplyConfiguration(new UsersApplicationsConfiguration());
             modelBuilder.ApplyConfiguration(new UsersEnvironmentsConfiguration());
             modelBuilder.ApplyConfiguration(new UsersTypesConfiguration());
-            modelBuilder.ApplyConfiguration(new ValueElementConfiguration());
+            new ValueElementConfiguration(modelBuilder, 150);
 
-            modelBuilder.Entity<User>()
-                .HasData(
-                    new User
-                    {
-                        UserId = Constants.AdminId,
-                        DisplayName = "GlobalAdmin",
-                        Email = "admin@global.net",
-                        ExternalId = Guid.NewGuid().ToString(),
-                        IsGlobalAdmin = true
-                    }
-                ); ;
+            modelBuilder.Entity<User>().HasData(new User(Constants.AdminId, Guid.NewGuid().ToString(), "GlobalAdmin", "admin@global.net", true));
         }
         public DbSet<User> Users { get; set; }
 
