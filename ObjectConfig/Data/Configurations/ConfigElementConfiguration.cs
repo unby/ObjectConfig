@@ -16,6 +16,8 @@ namespace ObjectConfig.Data.Configurations
         {
             builder.HasKey(p => p.ConfigElementId);
             builder.Property(p => p.ConfigElementId).UseHiLo(SequenceName);
+
+            builder.Property(p => p.Path).HasMaxLength(1024);
         }
     }
 }

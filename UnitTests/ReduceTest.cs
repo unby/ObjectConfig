@@ -8,10 +8,14 @@ using Xunit.Abstractions;
 
 namespace UnitTests
 {
-  
+  public class SubArrayEntity
+    {
+        public string EntityName { get; set; } = nameof(SubArrayEntity);
+    } 
    
     public class ArrayEntity
     {
+        public SubArrayEntity SubArrayEntity { get; set; } = new SubArrayEntity();
         public Uri UriField { get; set; }
         public TimeSpan TimeSpanField { get; set; }
     }
@@ -79,8 +83,8 @@ namespace UnitTests
     public class ReduceTest : BaseTest
     {
 
-        protected ObjectConfig.Data.Config TestConfig = new ObjectConfig.Data.Config("test", new Version(1, 1), 1, "test");
-        protected ObjectConfig.Data.ConfigElement GetConfigElement(object data)
+        protected Config TestConfig = new Config("test", new Version(1, 1), 1, "test");
+        protected ConfigElement GetConfigElement(object data)
         {
             return new ObjectConfigReader(TestConfig).Parse(data).Result;
         }
@@ -104,7 +108,7 @@ namespace UnitTests
             var reader = new ObjectConfigReader(TestConfig);
             var origin = JObject.FromObject(new TestEntity());
             ConfigElement configElemnt = await reader.Parse(origin);
-            Assert.Equal(ObjectConfig.Data.TypeNode.Root, configElemnt.Type.Type);
+            Assert.Equal(TypeNode.Root, configElemnt.Type.Type);
             Assert.NotNull(reader.AllNodes.FirstOrDefault(f => 
                         f.Type.Name == "GuidField" &&
                         f.Value.Any(a => a.Value.Equals(SubSubEntity.GuidValue,StringComparison.OrdinalIgnoreCase))));
@@ -112,7 +116,7 @@ namespace UnitTests
             var reducerJobject = new JsonReducer().Parse(configElemnt).Result;
 
             Log.WriteLine(reducerJobject);
-            Assert.Equal(origin, reducerJobject);
+            Assert.Equal(origin.ToString(), reducerJobject.ToString());
 
         }
 
@@ -131,10 +135,10 @@ namespace UnitTests
             JObject ThirdEntityJObject = new JObject(new JProperty("EntityName", ThirdEntity.EntityName), new JProperty("SimpleArray", ThirdEntity.SimpleArray[0], ThirdEntity.SimpleArray[1]));
 
             var SecondEntity = new SecondEntity();
-
+            var SubArrayEntity = new JProperty("SubArrayEntity", new JProperty("SubArrayEntity", "SubArrayEntity"));
             var list = new JProperty("List", 
-                    new JObject(new JProperty("TimeSpanField", SecondEntity.List[0].TimeSpanField), new JProperty("UriField", SecondEntity.List[0].UriField)),
-                    new JObject(new JProperty("TimeSpanField", SecondEntity.List[1].TimeSpanField), new JProperty("UriField", SecondEntity.List[1].UriField)));
+                    new JObject(SubArrayEntity, new JProperty("TimeSpanField", SecondEntity.List[0].TimeSpanField), new JProperty("UriField", SecondEntity.List[0].UriField)),
+                    new JObject(SubArrayEntity, new JProperty("TimeSpanField", SecondEntity.List[1].TimeSpanField), new JProperty("UriField", SecondEntity.List[1].UriField)));
             JObject SecondEntityJObject = new JObject(new JProperty("EntityName", SecondEntity.EntityName), new JProperty("BoolField", SecondEntity.BoolField), list);
             var origin = JObject.FromObject(SecondEntity);
             Log.WriteLine(origin);

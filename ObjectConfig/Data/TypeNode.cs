@@ -18,8 +18,10 @@
 
         Null = 10,
       
-        Date = 12,    
-     
+        Date = 12,
+
+        DateTimeOffset = 13,
+
         Guid = 15,
 
         Uri = 16,

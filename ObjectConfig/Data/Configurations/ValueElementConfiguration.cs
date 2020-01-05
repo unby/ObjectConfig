@@ -19,9 +19,7 @@ namespace ObjectConfig.Data.Configurations
 
             builder.Property(p => p.Value).HasMaxLength(int.MaxValue);
 
-            builder.Property(p => p.Comment).HasMaxLength(int.MaxValue);
-
-            builder.Property(p => p.Comment).HasMaxLength(int.MaxValue);
+            builder.Property(p => p.Comment).HasMaxLength(256);
         }
     }
 }

@@ -29,31 +29,26 @@ namespace UnitTests
                 var rep = scope.GetInstance<ApplicationRepository>();
 
                 Assert.NotNull(rep);
+                var app = new Application()
+                {
+                    Code = appCode,
+                    Name = Utils.GetStr
+                };
+                app.Environments.Add(new Environment() { Code = envCode, Name = Utils.GetStr });
+              await rep.Create(app);
 
-             //   rep.Create(ObjectMaker.CreateApplication(s =>
-             //   {
-             //       s.Code = appCode;
-             //       s.Name = Utils.GetStr;
-             //       s.Environments.Add(ObjectMaker.CreateEnvironment(e => { e.Code = envCode; e.Name = Utils.GetStr; }));
-             //   })).Wait();
-
-            //   var app = await rep.Find(appCode);
-            //   Assert.NotNull(app);
-            //   Assert.Equal(app.Environments[0].Code, envCode);
+              app = await rep.Find(appCode);
+              Assert.NotNull(app);
+              Assert.Equal(app.Environments[0].Code, envCode);
 
 
                 var configRepository = scope.GetInstance<ConfigRepository>();
-                
-             //   var config = ObjectMaker.CreateConfig(f =>
-             //   {
-             //         f.EnvironmentId = app.Environments[0].EnvironmentId;
-             //       f.Code = configCode;
-             //   });
 
-            ;
+                var config = new Config("test", new System.Version(1, 0), app.Environments[0].ApplicationId, null);
+                configRepository.CreateConfig(config);
 
-               var config = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(await configRepository.Find(3)).Parse(Data));
-                Assert.NotEqual(0, config.ConfigElementId);
+                var  configc = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(config).Parse(Data));
+                Assert.NotEqual(0, configc.ConfigElementId);
                 //     
                 //     config = configRepository.CreateConfig(config);
                 //

@@ -212,6 +212,7 @@ namespace ObjectConfig.Migrations
                 {
                     ConfigElementId = table.Column<long>(nullable: false),
                     ConfigId = table.Column<int>(nullable: false),
+                    Path = table.Column<string>(maxLength: 1024, nullable: true),
                     TypeElementId = table.Column<long>(nullable: true),
                     ParrentConfigElementId = table.Column<long>(nullable: true)
                 },
@@ -244,7 +245,7 @@ namespace ObjectConfig.Migrations
                 {
                     ValueElementId = table.Column<long>(nullable: false),
                     Value = table.Column<string>(maxLength: 2147483647, nullable: true),
-                    Comment = table.Column<string>(maxLength: 2147483647, nullable: true),
+                    Comment = table.Column<string>(maxLength: 256, nullable: true),
                     DateFrom = table.Column<DateTimeOffset>(nullable: false),
                     DateTo = table.Column<DateTimeOffset>(nullable: true),
                     TypeElementId = table.Column<long>(nullable: true),
@@ -277,7 +278,7 @@ namespace ObjectConfig.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "DisplayName", "Email", "ExternalId", "IsGlobalAdmin" },
-                values: new object[] { 1, "GlobalAdmin", "admin@global.net", "58d36c62-8921-42c2-8b47-80c1d9ee6088", true });
+                values: new object[] { 1, "GlobalAdmin", "admin@global.net", "1b9ad0d9-cda2-4ee2-989f-a256c3dd2104", true });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_Code",

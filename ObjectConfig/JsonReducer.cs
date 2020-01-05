@@ -69,11 +69,13 @@ namespace ObjectConfig
                 case TypeNode.Integer:
                     return long.Parse(value);
                 case TypeNode.Float:
-                    return float.Parse(value);
+                    return double.Parse(value);
                 case TypeNode.String:
                     return value;
                 case TypeNode.Boolean:
                     return bool.Parse(value);
+                case TypeNode.DateTimeOffset:
+                    return DateTimeOffset.Parse(value);
                 case TypeNode.Date:
                     return DateTime.Parse(value);
                 case TypeNode.Guid:

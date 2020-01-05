@@ -10,7 +10,7 @@ using ObjectConfig.Data;
 namespace ObjectConfig.Migrations
 {
     [DbContext(typeof(ObjectConfigContext))]
-    [Migration("20200102171657_Create")]
+    [Migration("20200105184509_Create")]
     partial class Create
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -113,6 +113,10 @@ namespace ObjectConfig.Migrations
 
                     b.Property<long?>("ParrentConfigElementId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(1024)")
+                        .HasMaxLength(1024);
 
                     b.Property<long?>("TypeElementId")
                         .HasColumnType("bigint");
@@ -230,7 +234,7 @@ namespace ObjectConfig.Migrations
                             UserId = 1,
                             DisplayName = "GlobalAdmin",
                             Email = "admin@global.net",
-                            ExternalId = "58d36c62-8921-42c2-8b47-80c1d9ee6088",
+                            ExternalId = "1b9ad0d9-cda2-4ee2-989f-a256c3dd2104",
                             IsGlobalAdmin = true
                         });
                 });
@@ -304,8 +308,8 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(2147483647);
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
 
                     b.Property<long?>("ConfigElementId")
                         .HasColumnType("bigint");
