@@ -36,29 +36,7 @@ namespace UnitTests
             Assert.Equal(LogLevel,ll);
         }
 
-     
-        [Fact]
-        public void ParseVer()
-        {
-            Version ver1 = new Version("65636.65536.65536.65536");
-            Log.WriteLine(ver1);
-            var decimalVersion= Config.ConvertVersionToLong(ver1);
-            Log.WriteLine(decimalVersion);
-            Config.ConvertLongToVersion(decimalVersion);
-
-            Assert.Equal(ver1, Config.ConvertLongToVersion(decimalVersion));
-        }
-        [Fact]
-        public void ParseVer2()
-        {
-            Version ver1 = new Version("922299.99999.9999.9999");
-            Log.WriteLine(ver1);
-            var decimalVersion = Config.ConvertVersionToLong(ver1);
-            Log.WriteLine(decimalVersion);
-            Config.ConvertLongToVersion(decimalVersion);
-
-            Assert.Equal(ver1, Config.ConvertLongToVersion(decimalVersion));
-        }
+    
 
         static string LogLevel = 
 @"{

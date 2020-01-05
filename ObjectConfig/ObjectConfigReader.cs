@@ -15,16 +15,25 @@ namespace ObjectConfig
             this.config = config;
         }
 
-        private Task<JObject> ParseJson(string jsonString) 
-        {
-            return Task.FromResult(JObject.Parse(jsonString));
-        }
-
         public List<ConfigElement> AllNodes = new List<ConfigElement>();
 
-        public async Task<ConfigElement> Parse(string jsonString, int deep = 3)
+        public async Task<ConfigElement> Parse(string jsonString, int deep = 20)
         {
-            var jObj = await ParseJson(jsonString);
+            return await ParseJObject(JObject.Parse(jsonString), deep);
+        }
+
+        public async Task<ConfigElement> Parse(JObject jObject, int deep = 20)
+        {
+            return await ParseJObject(jObject, deep);
+        }
+
+        public async Task<ConfigElement> Parse(object @object, int deep = 20)
+        {
+            return await ParseJObject(JObject.FromObject(@object), deep);
+        }
+
+        private async Task<ConfigElement> ParseJObject(JObject jObj, int deep)
+        {
             var res = new ConfigElement(new TypeElement(), null, config);
             AllNodes.Add(res);
             foreach (var node in jObj)
@@ -36,6 +45,8 @@ namespace ObjectConfig
             config.ConfigElement.Add(res);
             return res;
         }
+
+        
 
         private TypeNode GetType(JToken token, int deep)
         {
@@ -71,7 +82,13 @@ namespace ObjectConfig
         private async Task<ConfigElement> ReadChild(JToken node, string key, ConfigElement parrent, int deep) 
         {
             ConfigElement res = null;
-            switch (GetType(node, deep))
+            var childType = GetType(node, deep);
+            if (parrent.Type.Type == TypeNode.Array && childType != TypeNode.Complex)
+            {
+                parrent.Value.Add(new ValueElement(node.ToString(), parrent.Type));
+                return null;
+            }
+            switch (childType)
             {
                 case TypeNode.None:
                     break;
@@ -101,10 +118,12 @@ namespace ObjectConfig
                     break;
                 case TypeNode.Array:
                     res = new ConfigElement(new TypeElement(TypeNode.Array, key), parrent, config);
-                    foreach (var item in node)
-                    {
-                        res.Childs.Add(await ReadChild(item, key, res, deep));
-                    }
+                        foreach (var item in node)
+                        {
+                            var result = await ReadChild(item, key, res, deep);
+                            if (result != null)
+                                res.Childs.Add(result);
+                        }
                     break;
                 case TypeNode.Integer:
                     res = new ConfigElement(new TypeElement(TypeNode.Integer, key), parrent, config);
@@ -128,6 +147,7 @@ namespace ObjectConfig
                     break;
                 case TypeNode.Date:
                     res = new ConfigElement(new TypeElement(TypeNode.Date, key), parrent, config);
+                    //todo продумать формат даты
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     break;
                 case TypeNode.Guid:

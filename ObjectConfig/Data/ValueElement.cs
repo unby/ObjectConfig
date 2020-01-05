@@ -31,5 +31,35 @@ namespace ObjectConfig.Data
         public virtual TypeElement Type { get; protected set; }
 
         public virtual User ChangeOwner { get; protected set; }
+
+        public object GetObjectValue() 
+        {
+            switch (Type.Type)
+            {
+                case TypeNode.Root:
+                case TypeNode.Complex:
+                case TypeNode.Array:
+                    throw new Exception();
+                case TypeNode.Integer:
+                    return int.Parse(Value);
+                case TypeNode.Float:
+                    return float.Parse(Value);
+                case TypeNode.String:
+                    return Value;
+                case TypeNode.Boolean:
+                    return bool.Parse(Value);
+                case TypeNode.Date:
+                    return DateTimeOffset.Parse(Value);
+                case TypeNode.Guid:
+                    return Guid.Parse(Value); 
+                case TypeNode.Uri:
+                    return new Uri(Value);
+                case TypeNode.TimeSpan:
+                    return TimeSpan.Parse(Value);
+                
+                default:
+                    return null;
+            }
+        }
     }
 }

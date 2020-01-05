@@ -7,6 +7,7 @@ using ObjectConfig;
 
 namespace UnitTests
 {
+
     public class ApplictionRepositoryTest : BaseTest
     {
         private string appCode;
