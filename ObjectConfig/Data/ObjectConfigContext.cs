@@ -22,7 +22,7 @@ namespace ObjectConfig.Data
             modelBuilder.ApplyConfiguration(new UsersTypesConfiguration());
             new ValueElementConfiguration(modelBuilder, 150);
 
-            modelBuilder.Entity<User>().HasData(new User(Constants.AdminId, Guid.NewGuid().ToString(), "GlobalAdmin", "admin@global.net", true));
+            modelBuilder.Entity<User>().HasData(new User(Constants.AdminId, Guid.NewGuid().ToString(), "GlobalAdmin", "admin@global.net", User.Role.GlobalAdministrator));
         }
         public DbSet<User> Users { get; set; }
 

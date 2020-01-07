@@ -20,6 +20,11 @@ namespace ObjectConfig.Model
             return ConfigContext.Users.Include(i=>i.Environments).Include(i => i.Environments).FirstOrDefault(x => x.UserId == internalId);
         }
 
+        public User GetUserByExternalId(string externalId)
+        {
+            return ConfigContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefault(x => x.ExternalId == externalId);
+        }
+
         public User CreateUser(User user)
         {
             var trackUser= ConfigContext.Users.Add(user);

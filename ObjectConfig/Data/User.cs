@@ -8,13 +8,21 @@ namespace ObjectConfig.Data
         {
         }
 
-        public User(int userId, string externalId, string displayName, string email, bool isGlobalAdmin)
+        public User(string externalId, string displayName, string email, User.Role role)
+        {
+            ExternalId = externalId;
+            DisplayName = displayName;
+            Email = email;
+            AccessRole = role;
+        }
+
+        public User(int userId, string externalId, string displayName, string email, User.Role role)
         {
             UserId = userId;
             ExternalId = externalId;
             DisplayName = displayName;
             Email = email;
-            IsGlobalAdmin = isGlobalAdmin;
+            AccessRole = role;
         }
 
         public int UserId { get; protected set; }
@@ -25,8 +33,10 @@ namespace ObjectConfig.Data
 
         public string Email { get; protected set; }
 
-        public bool IsGlobalAdmin { get; protected set; }
+        public Role AccessRole { get; protected set; }
 
+        public enum Role { Anonym, Viewer, Administrator, GlobalAdministrator }
+        
         public List<UsersApplications> Applications { get; set; } = new List<UsersApplications>();
 
         public List<UsersEnvironments> Environments { get; set; } = new List<UsersEnvironments>();

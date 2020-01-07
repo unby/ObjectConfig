@@ -20,8 +20,7 @@ namespace ObjectConfig.Data.Configurations
             builder.Property(s => s.ExternalId).HasMaxLength(256);
             builder.HasIndex(s => s.ExternalId).IsUnique();
 
-            builder.Property(s => s.DisplayName).IsRequired().HasMaxLength(128);
-            builder.Property(s => s.IsGlobalAdmin).IsRequired();
+            builder.Property(s => s.DisplayName).IsRequired().HasMaxLength(128);   
 
             builder.Property(s => s.Email).IsRequired().HasMaxLength(128);
             builder.HasIndex(s => s.Email).IsUnique();
