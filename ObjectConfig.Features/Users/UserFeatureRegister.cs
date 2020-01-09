@@ -6,6 +6,7 @@ namespace ObjectConfig.Features.Users
     {
         public static IServiceCollection UserFeatureRegister(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddScoped<SecurityService>();
             services.AddScoped<IUserProvider, UserProvider>();
 

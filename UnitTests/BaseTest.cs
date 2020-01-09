@@ -27,7 +27,7 @@ namespace UnitTests
         protected IServiceProvider GetDi(Func<IServiceCollection, IServiceCollection> func = null)
         {
             var sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).ObjectConfigServices((a) => {
-                if (intgration)
+                if (integration)
                     a.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds));
                 else
                     a.UseInMemoryDatabase("xunit"); });
@@ -42,7 +42,7 @@ namespace UnitTests
         }
 
         protected readonly ITestOutputHelper Log;
-        private bool intgration = true;
+        private bool integration = true;
 
         public BaseTest(ITestOutputHelper output)
         {

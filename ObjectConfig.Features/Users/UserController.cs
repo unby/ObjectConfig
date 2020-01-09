@@ -18,6 +18,7 @@ namespace ObjectConfig.Features.Users
             this.securityService = securityService;
         }
 
+        [HttpGet]
         public UserDto CurrentUser()
         {
             return securityService.GetCurrentUser();
