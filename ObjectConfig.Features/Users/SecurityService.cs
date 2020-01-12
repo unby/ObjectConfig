@@ -8,20 +8,23 @@ namespace ObjectConfig.Features.Users
     {
         private readonly UserRepository userRepository;
         private readonly IUserProvider userProvider;
+        private User domainUser;
 
         public SecurityService(UserRepository userRepository, IUserProvider userProvider) {
             this.userRepository = userRepository;
             this.userProvider = userProvider;
         }
 
-        public UserDto GetCurrentUser() 
+        public User GetCurrentUser() 
         {
             var tempUser = userProvider.GetCurrentUser();
-            var domainUser = userRepository.GetUserByExternalId(tempUser.ExternalId);
+            if (domainUser != null)
+                return domainUser;
+            domainUser = userRepository.GetUserByExternalId(tempUser.ExternalId);
             if (domainUser == null)
                 domainUser = userRepository.CreateUser(MapUser(tempUser));
 
-            return tempUser;
+            return domainUser;
         }
 
         private User MapUser(UserDto tempUser)

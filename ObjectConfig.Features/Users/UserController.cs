@@ -2,26 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ObjectConfig.Data;
+using ObjectConfig.Features.Users;
 
-namespace ObjectConfig.Features.Users
+namespace ObjectConfig.Features.Applictaions
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly SecurityService securityService;
+        private readonly SecurityService _securityService;
+        private readonly IMapper _mapper;
 
-        public UserController(SecurityService securityService) 
+        public UserController(SecurityService securityService, IMapper mapper) 
         {
-            this.securityService = securityService;
+            _securityService = securityService;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public UserDto CurrentUser()
+        public IActionResult CurrentUser()
         {
-            return securityService.GetCurrentUser();
+            return Ok(_mapper.Map<User, UserDto>(_securityService.GetCurrentUser()));
         }
     }
 }

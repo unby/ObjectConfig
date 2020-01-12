@@ -8,17 +8,17 @@ namespace ObjectConfig.Data
         {
         }
 
-        public User(string externalId, string displayName, string email, User.Role role)
+        public User(int userId, string externalId, string displayName, string email, User.Role role)
         {
+            UserId = userId;
             ExternalId = externalId;
             DisplayName = displayName;
             Email = email;
             AccessRole = role;
         }
 
-        public User(int userId, string externalId, string displayName, string email, User.Role role)
+        public User(string externalId, string displayName, string email, User.Role role)
         {
-            UserId = userId;
             ExternalId = externalId;
             DisplayName = displayName;
             Email = email;

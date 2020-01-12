@@ -29,11 +29,7 @@ namespace UnitTests
                 var rep = scope.GetInstance<ApplicationRepository>();
 
                 Assert.NotNull(rep);
-                var app = new Application()
-                {
-                    Code = appCode,
-                    Name = Utils.GetStr
-                };
+                var app = new Application(Utils.GetStr, appCode, null);
                 app.Environments.Add(new Environment() { Code = envCode, Name = Utils.GetStr });
               await rep.Create(app);
 
@@ -44,7 +40,7 @@ namespace UnitTests
 
                 var configRepository = scope.GetInstance<ConfigRepository>();
 
-                var config = new Config("test", new System.Version(1, 0), app.Environments[0].ApplicationId, null);
+                var config = new Config("test", new System.Version(1, 0), app.Environments[0].EnvironmentId, null);
                 configRepository.CreateConfig(config);
 
                 var  configc = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(config).Parse(Data));

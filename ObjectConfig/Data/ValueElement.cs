@@ -11,11 +11,16 @@ namespace ObjectConfig.Data
             DateFrom = DateTimeOffset.UtcNow;
         }
 
-        public ValueElement(string value, TypeElement type)
+        public ValueElement(string value, TypeElement? type) : this()
         {
-            DateFrom = DateTimeOffset.UtcNow;
             Value = value;
-            Type = type;
+            Type = type ?? throw new ArgumentNullException(nameof(type));
+        }
+
+        public ValueElement(string value, TypeElement? type) : this()
+        {
+            Value = value;
+            Type = type ?? throw new ArgumentNullException(nameof(type));
         }
 
         public long ValueElementId { get; protected set; }
@@ -29,6 +34,8 @@ namespace ObjectConfig.Data
         public DateTimeOffset? DateTo { get; protected set; }
 
         public virtual TypeElement Type { get; protected set; }
+
+        public int? ChangeOwnerUserId { get; protected set; }
 
         public virtual User ChangeOwner { get; protected set; }
 

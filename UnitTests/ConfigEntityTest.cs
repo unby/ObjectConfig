@@ -25,7 +25,6 @@ namespace UnitTests
         [InlineData("65535.65535", "65535.65535.0")]
         [InlineData("333.0.0.0", "333.0.0")]
         [InlineData("333.0.2222.0", "333.0.2222")]
-        // [InlineData("10.10.10", "10.10.10")]
         public void TestVersionConverter(string original, string expectedResult) 
         {
             Version originalVersion = new Version(original);
@@ -49,15 +48,5 @@ namespace UnitTests
             Version originalVersion = new Version(original);
             Assert.Throws<ArgumentException>(()=> Config.ConvertVersionToLong(originalVersion));
         }
-
-     
-
-
-        // [Fact]
-        // public void TestConfigConstructor(string original, string expectedResult)
-        // {
-        //     Config conf = new Config();
-        // }
-
     }
 }

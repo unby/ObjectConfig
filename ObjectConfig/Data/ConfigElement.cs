@@ -8,7 +8,7 @@ namespace ObjectConfig.Data
     {
         private ConfigElement() { }
 
-        public ConfigElement(TypeElement typeElement, ConfigElement parrent, Config config, string path ) 
+        public ConfigElement(TypeElement typeElement, ConfigElement parrent, Config config, string path) 
         {
             Type = typeElement;
             Parrent = parrent;
