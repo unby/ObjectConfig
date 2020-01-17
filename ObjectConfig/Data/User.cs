@@ -36,7 +36,7 @@ namespace ObjectConfig.Data
         public Role AccessRole { get; protected set; }
 
         public enum Role { Anonym, Viewer, Administrator, GlobalAdministrator }
-        
+
         public List<UsersApplications> Applications { get; set; } = new List<UsersApplications>();
 
         public List<UsersEnvironments> Environments { get; set; } = new List<UsersEnvironments>();

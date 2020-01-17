@@ -38,9 +38,9 @@ namespace UnitTests
             var origin = JObject.FromObject(new TestEntity());
             ConfigElement configElemnt = await reader.Parse(origin);
             Assert.Equal(TypeNode.Root, configElemnt.Type.Type);
-            Assert.NotNull(reader.AllNodes.FirstOrDefault(f => 
+            Assert.NotNull(reader.AllNodes.FirstOrDefault(f =>
                         f.Type.Name == "GuidField" &&
-                        f.Value.Any(a => a.Value.Equals(SubSubEntity.GuidValue,StringComparison.OrdinalIgnoreCase))));
+                        f.Value.Any(a => a.Value.Equals(SubSubEntity.GuidValue, StringComparison.OrdinalIgnoreCase))));
             Log.WriteLine(origin);
             var reducerJobject = new JsonReducer().Parse(configElemnt).Result;
 
@@ -63,8 +63,8 @@ namespace UnitTests
             JObject ThirdEntityJObject = new JObject(new JProperty("EntityName", ThirdEntity.EntityName), new JProperty("SimpleArray", ThirdEntity.SimpleArray[0], ThirdEntity.SimpleArray[1]));
 
             var SecondEntity = new SecondEntity();
-            var SubArrayEntity = new JObject( new JProperty("SubArrayEntity", "SubArrayEntity"));
-            var list = new JProperty("List", 
+            var SubArrayEntity = new JObject(new JProperty("SubArrayEntity", "SubArrayEntity"));
+            var list = new JProperty("List",
                     new JObject(new JProperty("SubArrayEntity", SubArrayEntity), new JProperty("TimeSpanField", SecondEntity.List[0].TimeSpanField), new JProperty("UriField", SecondEntity.List[0].UriField)),
                     new JObject(new JProperty("SubArrayEntity", SubArrayEntity), new JProperty("TimeSpanField", SecondEntity.List[1].TimeSpanField), new JProperty("UriField", SecondEntity.List[1].UriField)));
             JObject SecondEntityJObject = new JObject(new JProperty("EntityName", SecondEntity.EntityName), new JProperty("BoolField", SecondEntity.BoolField), list);
@@ -85,10 +85,10 @@ namespace UnitTests
 
             var staticObj = JObject.Parse(SpecificPropertySequence);
 
-            Log.WriteLine("staticObj: "+staticObj);
+            Log.WriteLine("staticObj: " + staticObj);
             Log.WriteLine("fjo: " + fjo);
 
-            
+
             Assert.NotEqual(fjo, staticObj);
 
         }

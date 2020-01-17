@@ -26,11 +26,13 @@ namespace UnitTests
 
         protected IServiceProvider GetDi(Func<IServiceCollection, IServiceCollection> func = null)
         {
-            var sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).ObjectConfigServices((a) => {
+            var sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).ObjectConfigServices((a) =>
+            {
                 if (integration)
                     a.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds));
                 else
-                    a.UseInMemoryDatabase("xunit"); });
+                    a.UseInMemoryDatabase("xunit");
+            });
             if (func != null)
                 sc = func(sc);
             return sc.BuildServiceProvider();

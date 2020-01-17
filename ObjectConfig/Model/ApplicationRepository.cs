@@ -33,14 +33,14 @@ namespace ObjectConfig.Model
 
         public Task<List<UsersApplications>> FindByUser(int id)
         {
-            return _configContext.UsersApplications.Include(k => k.Application).Where(f => f.UserId==id).ToListAsync();
+            return _configContext.UsersApplications.Include(k => k.Application).Where(f => f.UserId == id).ToListAsync();
         }
 
         public Task<int> Update(Application app)
         {
             _configContext.Attach(app);
             _configContext.Entry(app);
-            return _configContext.SaveChangesAsync(); 
+            return _configContext.SaveChangesAsync();
         }
 
         public async Task<bool> Delete(int id)

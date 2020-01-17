@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace ObjectConfig.Data
+﻿namespace ObjectConfig.Data
 {
     public class UsersTypes
     {
@@ -10,7 +7,7 @@ namespace ObjectConfig.Data
         public User User { get; protected set; }
 
         public int ValueTypeId { get; protected set; }
-        
+
         public TypeElement ValueType { get; protected set; }
 
         public Role AccessRole { get; protected set; }

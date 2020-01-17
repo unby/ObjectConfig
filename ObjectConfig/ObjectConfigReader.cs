@@ -46,7 +46,7 @@ namespace ObjectConfig
             config.ConfigElement.Add(root);
             var c = types.Count();
             var ca = AllNodes.Count();
-            Console.WriteLine(c> ca);
+            Console.WriteLine(c > ca);
             return root;
         }
 
@@ -81,7 +81,7 @@ namespace ObjectConfig
             }
         }
 
-        private async Task<ConfigElement> ReadChild(JToken node, string key, ConfigElement parrent, int deep) 
+        private async Task<ConfigElement> ReadChild(JToken node, string key, ConfigElement parrent, int deep)
         {
             ConfigElement res = null;
             var childType = GetType(node, deep);
@@ -112,7 +112,7 @@ namespace ObjectConfig
                             res = CreateConfigElement(TypeNode.Complex, key, parrent); // new ConfigElement(new TypeElement(TypeNode.Complex, key), parrent, config);
                             foreach (var item in jobject)
                             {
-                                res.Childs.Add(await ReadChild(item.Value,item.Key, res, --deep));
+                                res.Childs.Add(await ReadChild(item.Value, item.Key, res, --deep));
 
                             }
                         }
@@ -120,23 +120,23 @@ namespace ObjectConfig
                     break;
                 case TypeNode.Array:
                     res = CreateConfigElement(TypeNode.Array, key, parrent); //new ConfigElement(new TypeElement(TypeNode.Array, key), parrent, config);
-                        foreach (var item in node)
-                        {
-                            var result = await ReadChild(item, key, res, deep);
-                            if (result != null)
-                                res.Childs.Add(result);
-                        }
+                    foreach (var item in node)
+                    {
+                        var result = await ReadChild(item, key, res, deep);
+                        if (result != null)
+                            res.Childs.Add(result);
+                    }
                     break;
                 case TypeNode.Integer:
-                    res = CreateConfigElement(TypeNode.Integer, key, parrent); 
+                    res = CreateConfigElement(TypeNode.Integer, key, parrent);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     break;
                 case TypeNode.Float:
-                    res = CreateConfigElement(TypeNode.Float, key, parrent); 
+                    res = CreateConfigElement(TypeNode.Float, key, parrent);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     break;
                 case TypeNode.String:
-                    res = CreateConfigElement(TypeNode.String, key, parrent); 
+                    res = CreateConfigElement(TypeNode.String, key, parrent);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     break;
                 case TypeNode.Boolean:
@@ -166,13 +166,13 @@ namespace ObjectConfig
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     break;
                 case TypeNode.Uri:
-                    res = CreateConfigElement(TypeNode.Uri, key, parrent); 
+                    res = CreateConfigElement(TypeNode.Uri, key, parrent);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     break;
                 case TypeNode.TimeSpan:
                     res = CreateConfigElement(TypeNode.TimeSpan, key, parrent);
                     res.Value.Add(new ValueElement(node.ToString(), res.Type));
-                    break;          
+                    break;
                 default:
                     break;
             }
@@ -181,7 +181,7 @@ namespace ObjectConfig
             return res;
         }
         Dictionary<string, TypeElement> types = new Dictionary<string, TypeElement>();
-        private ConfigElement CreateConfigElement(TypeNode nodeType, string nodeKey, ConfigElement parrent) 
+        private ConfigElement CreateConfigElement(TypeNode nodeType, string nodeKey, ConfigElement parrent)
         {
             var path = parrent.Path + "." + nodeKey;
             return new ConfigElement(CreateType(nodeType, nodeKey, path), parrent, config, path);

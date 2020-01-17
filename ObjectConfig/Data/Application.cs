@@ -4,7 +4,7 @@ namespace ObjectConfig.Data
 {
     public class Application
     {
-        private Application() 
+        private Application()
         {
         }
 

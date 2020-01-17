@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
 namespace ObjectConfig.Data
 {
@@ -9,7 +7,7 @@ namespace ObjectConfig.Data
     {
         private Config() { }
 
-        public Config(string code, Version versionFrom, int environmentId, string description) 
+        public Config(string code, Version versionFrom, int environmentId, string description)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -64,7 +62,7 @@ namespace ObjectConfig.Data
         }
 
         static Version Default = new Version(1, 0, 0);
-        const long MinorSection = 100000 ;
+        const long MinorSection = 100000;
         const long MajorSection = 100000 * MinorSection;
 
         public static Version ConvertLongToVersion(long? version)
@@ -76,7 +74,7 @@ namespace ObjectConfig.Data
                 major = (int)(version / MajorSection);
                 minor = (int)((version - major * MajorSection) / MinorSection);
                 build = (int)((version - major * MajorSection - minor * MinorSection));
-             
+
                 return new Version(major, minor, build);
             }
 

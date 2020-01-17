@@ -23,7 +23,7 @@ namespace ObjectConfig.Data
         }
 
         public long TypeElementId { get; protected set; }
-      
+
         public string Name { get; protected set; }
 
         public string Description { get; protected set; }

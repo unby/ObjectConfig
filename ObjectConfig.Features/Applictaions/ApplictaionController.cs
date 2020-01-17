@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ObjectConfig.Features.Users;
+using ObjectConfig.Data;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Applictaions
 {
@@ -12,17 +10,19 @@ namespace ObjectConfig.Features.Applictaions
     [ApiController]
     public class ApplictaionController : ControllerBase
     {
-        private readonly SecurityService securityService;
+        private readonly ApplicationService _applicationService;
+        private readonly IMapper _mapper;
 
-        public ApplictaionController(SecurityService securityService) 
+        public ApplictaionController(IMapper mapper, ApplicationService applicationService)
         {
-            this.securityService = securityService;
+            this._applicationService = applicationService;
+            this._mapper = mapper;
         }
 
         [HttpGet]
-        public ApplicationDTO GetApplications()
+        public async Task<IActionResult> GetApplications()
         {
-            return null;
+            return Ok(_mapper.Map<List<UsersApplications>, List<ApplicationDTO>>(await _applicationService.GetApplications()));
         }
     }
 }

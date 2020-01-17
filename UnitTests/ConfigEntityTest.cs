@@ -16,7 +16,7 @@ namespace UnitTests
         [InlineData("0.1", "0.1.0")]
         [InlineData("0.00.10", "0.00.10")]
         [InlineData("0.00.10.654", "0.0.10")]
-        [InlineData("10.10.10","10.10.10")]
+        [InlineData("10.10.10", "10.10.10")]
         [InlineData("10.10.10.456", "10.10.10")]
         [InlineData("10.10.10.2147483647", "10.10.10")]
         [InlineData("65535.65535.65535.2147483647", "65535.65535.65535")]
@@ -25,7 +25,7 @@ namespace UnitTests
         [InlineData("65535.65535", "65535.65535.0")]
         [InlineData("333.0.0.0", "333.0.0")]
         [InlineData("333.0.2222.0", "333.0.2222")]
-        public void TestVersionConverter(string original, string expectedResult) 
+        public void TestVersionConverter(string original, string expectedResult)
         {
             Version originalVersion = new Version(original);
             Version expectedRresultVersion = new Version(expectedResult);
@@ -46,7 +46,7 @@ namespace UnitTests
         public void TestInvalidVersionConverter(string original)
         {
             Version originalVersion = new Version(original);
-            Assert.Throws<ArgumentException>(()=> Config.ConvertVersionToLong(originalVersion));
+            Assert.Throws<ArgumentException>(() => Config.ConvertVersionToLong(originalVersion));
         }
     }
 }

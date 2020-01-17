@@ -6,18 +6,12 @@ namespace ObjectConfig.Data
     [DebuggerDisplay("Value = {Value} Type = {Type}")]
     public class ValueElement
     {
-        private ValueElement() 
+        private ValueElement()
         {
             DateFrom = DateTimeOffset.UtcNow;
         }
 
-        public ValueElement(string value, TypeElement? type) : this()
-        {
-            Value = value;
-            Type = type ?? throw new ArgumentNullException(nameof(type));
-        }
-
-        public ValueElement(string value, TypeElement? type) : this()
+        public ValueElement(string value, TypeElement type) : this()
         {
             Value = value;
             Type = type ?? throw new ArgumentNullException(nameof(type));
@@ -39,7 +33,7 @@ namespace ObjectConfig.Data
 
         public virtual User ChangeOwner { get; protected set; }
 
-        public object GetObjectValue() 
+        public object GetObjectValue()
         {
             switch (Type.Type)
             {
@@ -58,12 +52,12 @@ namespace ObjectConfig.Data
                 case TypeNode.Date:
                     return DateTimeOffset.Parse(Value);
                 case TypeNode.Guid:
-                    return Guid.Parse(Value); 
+                    return Guid.Parse(Value);
                 case TypeNode.Uri:
                     return new Uri(Value);
                 case TypeNode.TimeSpan:
                     return TimeSpan.Parse(Value);
-                
+
                 default:
                     return null;
             }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Users;
+using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Applictaions
 {
@@ -17,16 +13,16 @@ namespace ObjectConfig.Features.Applictaions
         private readonly SecurityService _securityService;
         private readonly IMapper _mapper;
 
-        public UserController(SecurityService securityService, IMapper mapper) 
+        public UserController(SecurityService securityService, IMapper mapper)
         {
             _securityService = securityService;
             _mapper = mapper;
         }
 
         [HttpGet]
-        public IActionResult CurrentUser()
+        public async Task<IActionResult> CurrentUser()
         {
-            return Ok(_mapper.Map<User, UserDto>(_securityService.GetCurrentUser()));
+            return Ok(_mapper.Map<User, UserDto>(await _securityService.GetCurrentUser()));
         }
     }
 }

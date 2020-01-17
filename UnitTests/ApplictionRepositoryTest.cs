@@ -1,9 +1,8 @@
-﻿using Xunit;
-using Xunit.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
-using ObjectConfig.Model;
+﻿using ObjectConfig;
 using ObjectConfig.Data;
-using ObjectConfig;
+using ObjectConfig.Model;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace UnitTests
 {
@@ -31,11 +30,11 @@ namespace UnitTests
                 Assert.NotNull(rep);
                 var app = new Application(Utils.GetStr, appCode, null);
                 app.Environments.Add(new Environment() { Code = envCode, Name = Utils.GetStr });
-              await rep.Create(app);
+                await rep.Create(app);
 
-              app = await rep.Find(appCode);
-              Assert.NotNull(app);
-              Assert.Equal(app.Environments[0].Code, envCode);
+                app = await rep.Find(appCode);
+                Assert.NotNull(app);
+                Assert.Equal(app.Environments[0].Code, envCode);
 
 
                 var configRepository = scope.GetInstance<ConfigRepository>();
@@ -43,7 +42,7 @@ namespace UnitTests
                 var config = new Config("test", new System.Version(1, 0), app.Environments[0].EnvironmentId, null);
                 configRepository.CreateConfig(config);
 
-                var  configc = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(config).Parse(Data));
+                var configc = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(config).Parse(Data));
                 Assert.NotEqual(0, configc.ConfigElementId);
                 //     
                 //     config = configRepository.CreateConfig(config);
@@ -67,13 +66,13 @@ namespace UnitTests
             {
                 var rep = scope.GetInstance<ConfigElementRepository>();
 
-               var conf=rep.GetConfigElement(3);
+                var conf = await rep.GetConfigElement(3);
                 Log.WriteLine(conf);
-              //  context.ConfigElement.Remove(configElement);
-            //    context.SaveChanges();
+                //  context.ConfigElement.Remove(configElement);
+                //    context.SaveChanges();
             }
         }
-       
+
         static string Json =
 @"{
   ""Default"": ""Information"",

@@ -1,14 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
 using ObjectConfig;
-using ObjectConfig.Data;
-using System;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace UnitTests
 {
-    public class ResearchTest: BaseTest
+    public class ResearchTest : BaseTest
     {
         public ResearchTest(ITestOutputHelper output) : base(output)
         {
@@ -27,18 +24,19 @@ namespace UnitTests
         }
 
         [Fact]
-        public void Decode() {
+        public void Decode()
+        {
             JObject stuff = JObject.Parse(Data);
             Assert.Equal(true, stuff["Logging"]["GlobalLevel"]);
             var ll = stuff["Logging"]["LogLevel"];
             Log.WriteLine(ll);
             Log.WriteLine(LogLevel);
-            Assert.Equal(LogLevel,ll);
+            Assert.Equal(LogLevel, ll);
         }
 
-    
 
-        static string LogLevel = 
+
+        static string LogLevel =
 @"{
   ""Default"": ""Information"",
   ""Microsoft"": ""Warning"",
@@ -67,7 +65,7 @@ namespace UnitTests
 }
 ";
 
-       
+
     }
 }
 /*,

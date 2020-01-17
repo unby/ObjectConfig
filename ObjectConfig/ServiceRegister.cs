@@ -1,16 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ObjectConfig.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig.Data;
+using ObjectConfig.Model;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
 
 namespace ObjectConfig
 {
     public static class ServiceRegister
     {
-        public static IServiceCollection ObjectConfigServices(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDb) 
+        public static IServiceCollection ObjectConfigServices(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDb)
         {
             services.AddScoped<UserRepository>();
             services.AddDbContext<ObjectConfigContext>(configureDb);

@@ -10,7 +10,7 @@ namespace ObjectConfig.Data.Configurations
         {
         }
 
-        protected override Type PrimeryKeyType => GetPKType(k=>k.ConfigElementId);
+        protected override Type PrimeryKeyType => GetPKType(k => k.ConfigElementId);
 
         protected override void ConfigureProperty(EntityTypeBuilder<ConfigElement> builder)
         {

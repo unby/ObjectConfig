@@ -1,4 +1,6 @@
-﻿namespace ObjectConfig.Features.Applictaions
+﻿using ObjectConfig.Data;
+
+namespace ObjectConfig.Features.Applictaions
 {
     public class ApplicationDTO
     {
@@ -9,5 +11,7 @@
         public string Code { get; set; }
 
         public string Description { get; set; }
+
+        public UsersApplications.Role Role { get; set; }
     }
 }

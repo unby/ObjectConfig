@@ -10,7 +10,7 @@ namespace ObjectConfig.Data.Configurations
         {
         }
 
-        protected override Type PrimeryKeyType => GetPKType(k=>k.EnvironmentId);
+        protected override Type PrimeryKeyType => GetPKType(k => k.EnvironmentId);
 
         protected override void ConfigureProperty(EntityTypeBuilder<Environment> builder)
         {

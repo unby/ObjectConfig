@@ -1,7 +1,7 @@
-﻿using ObjectConfig.Data;
-using Xunit.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig;
-using Microsoft.Extensions.DependencyInjection;
+using ObjectConfig.Data;
+using Xunit.Abstractions;
 
 namespace UnitTests
 {
@@ -16,10 +16,10 @@ namespace UnitTests
         {
             return scope.ServiceProvider.GetRequiredService<T>();
         }
-        
-        public static void WriteLine(this ITestOutputHelper output, object obj) 
-        { 
-            output.WriteLine(obj != null ? obj.ToString() : "null"); 
+
+        public static void WriteLine(this ITestOutputHelper output, object obj)
+        {
+            output.WriteLine(obj != null ? obj.ToString() : "null");
         }
     }
 }

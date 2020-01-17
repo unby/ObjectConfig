@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace ObjectConfig.Model
 {
@@ -15,20 +13,20 @@ namespace ObjectConfig.Model
 
         readonly ObjectConfigContext ConfigContext;
 
-        public User GetUser(int internalId)
+        public Task<User> GetUser(int internalId)
         {
-            return ConfigContext.Users.Include(i=>i.Environments).Include(i => i.Environments).FirstOrDefault(x => x.UserId == internalId);
+            return ConfigContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefaultAsync(x => x.UserId == internalId);
         }
 
-        public User GetUserByExternalId(string externalId)
+        public Task<User> GetUserByExternalId(string externalId)
         {
-            return ConfigContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefault(x => x.ExternalId == externalId);
+            return ConfigContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefaultAsync(x => x.ExternalId == externalId);
         }
 
-        public User CreateUser(User user)
+        public async Task<User> CreateUser(User user)
         {
-            var trackUser= ConfigContext.Users.Add(user);
-            ConfigContext.SaveChanges();
+            var trackUser = ConfigContext.Users.Add(user);
+            await ConfigContext.SaveChangesAsync();
             return trackUser.Entity;
         }
     }

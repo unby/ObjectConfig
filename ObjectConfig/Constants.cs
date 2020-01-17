@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ObjectConfig
+﻿namespace ObjectConfig
 {
     public static class Constants
     {

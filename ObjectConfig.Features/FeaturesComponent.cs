@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig.Features.Users;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ObjectConfig.Features
 {
@@ -20,7 +18,7 @@ namespace ObjectConfig.Features
             services.ObjectConfigServices(configureDb);
 
             services.UserFeatureRegister();
-          
+
             return services;
         }
     }
