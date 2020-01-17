@@ -11,7 +11,7 @@ namespace ObjectConfig.Data
             DateFrom = DateTimeOffset.UtcNow;
         }
 
-        public ValueElement(string value, TypeElement type) : this()
+        public ValueElement(string? value, TypeElement type) : this()
         {
             Value = value;
             Type = type ?? throw new ArgumentNullException(nameof(type));
@@ -19,7 +19,7 @@ namespace ObjectConfig.Data
 
         public long ValueElementId { get; protected set; }
 
-        public string Value { get; protected set; }
+        public string? Value { get; protected set; }
 
         public string Comment { get; protected set; }
 
@@ -33,7 +33,7 @@ namespace ObjectConfig.Data
 
         public virtual User ChangeOwner { get; protected set; }
 
-        public object GetObjectValue()
+        public object? GetObjectValue()
         {
             switch (Type.Type)
             {
@@ -57,7 +57,6 @@ namespace ObjectConfig.Data
                     return new Uri(Value);
                 case TypeNode.TimeSpan:
                     return TimeSpan.Parse(Value);
-
                 default:
                     return null;
             }

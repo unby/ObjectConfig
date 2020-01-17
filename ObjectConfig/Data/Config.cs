@@ -33,7 +33,7 @@ namespace ObjectConfig.Data
 
         public DateTimeOffset? DateTo { get; protected set; }
 
-        public long VersionFrom { get; protected set; } = MajorSection;
+        public long VersionFrom { get; protected set; } = _majorSection;
 
         public long? VersionTo { get; protected set; }
 
@@ -47,33 +47,35 @@ namespace ObjectConfig.Data
 
         public ConfigElement RootConfigElement { get; set; }
 
-        public Version GetVersionFrom { get { return ConvertLongToVersion(VersionFrom); } }
-        public Version GetVersionTo { get { return ConvertLongToVersion(VersionTo); } }
+        public Version? GetVersionFrom => ConvertLongToVersion(VersionFrom);
+        public Version? GetVersionTo => ConvertLongToVersion(VersionTo);
 
         public void SetVersionFrom(Version version)
         {
-            VersionFrom = ConvertVersionToLong(version ?? Default);
+            VersionFrom = ConvertVersionToLong(version ?? _default);
         }
 
         public void SetVersionTo(Version version)
         {
             if (version != null)
+            {
                 VersionFrom = ConvertVersionToLong(version);
+            }
         }
 
-        static Version Default = new Version(1, 0, 0);
-        const long MinorSection = 100000;
-        const long MajorSection = 100000 * MinorSection;
+        private static readonly Version _default = new Version(1, 0, 0);
+        private const long _minorSection = 100000;
+        private const long _majorSection = 100000 * _minorSection;
 
-        public static Version ConvertLongToVersion(long? version)
+        public static Version? ConvertLongToVersion(long? version)
         {
             if (version.HasValue)
             {
                 int major, minor, build;
 
-                major = (int)(version / MajorSection);
-                minor = (int)((version - major * MajorSection) / MinorSection);
-                build = (int)((version - major * MajorSection - minor * MinorSection));
+                major = (int)(version / _majorSection);
+                minor = (int)((version - major * _majorSection) / _minorSection);
+                build = (int)((version - major * _majorSection - minor * _minorSection));
 
                 return new Version(major, minor, build);
             }
@@ -89,22 +91,33 @@ namespace ObjectConfig.Data
         public static long ConvertVersionToLong(Version version)
         {
             const int sectionSize = ushort.MaxValue;
-            long res = MajorSection;
-
+            long res;
             if (version.Major <= sectionSize)
-                res = version.Major * MajorSection;
+            {
+                res = version.Major * _majorSection;
+            }
             else
+            {
                 throw new ArgumentException($"Major values ({version.Major}) must not be greater than {sectionSize}");
+            }
 
             if (version.Minor <= sectionSize)
-                res = res + MinorSection * version.Minor;
+            {
+                res += _minorSection * version.Minor;
+            }
             else
+            {
                 throw new ArgumentException($"Minor values ({version.Minor}) must not be greater than {sectionSize}");
+            }
 
             if (version.Build <= sectionSize)
-                res = res + (version.Build > -1 ? version.Build : 0);
+            {
+                res += (version.Build > -1 ? version.Build : 0);
+            }
             else
+            {
                 throw new ArgumentException($"Build values ({version.Build}) must not be greater than {sectionSize}");
+            }
 
             return res;
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#nullable disable
+using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data.Configurations;
 using System;
 
@@ -9,6 +10,7 @@ namespace ObjectConfig.Data
         public ObjectConfigContext(DbContextOptions<ObjectConfigContext> options)
             : base(options)
         { }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             new ApplicationConfiguration(modelBuilder);
@@ -24,6 +26,7 @@ namespace ObjectConfig.Data
 
             modelBuilder.Entity<User>().HasData(new User(Constants.AdminId, Guid.NewGuid().ToString(), "GlobalAdmin", "admin@global.net", User.Role.GlobalAdministrator));
         }
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<UsersApplications> UsersApplications { get; set; }

@@ -8,25 +8,25 @@ namespace ObjectConfig.Model
     {
         public UserRepository(ObjectConfigContext configContext)
         {
-            ConfigContext = configContext;
+            _configContext = configContext;
         }
 
-        readonly ObjectConfigContext ConfigContext;
+        private readonly ObjectConfigContext _configContext;
 
         public Task<User> GetUser(int internalId)
         {
-            return ConfigContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefaultAsync(x => x.UserId == internalId);
+            return _configContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefaultAsync(x => x.UserId == internalId);
         }
 
         public Task<User> GetUserByExternalId(string externalId)
         {
-            return ConfigContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefaultAsync(x => x.ExternalId == externalId);
+            return _configContext.Users.Include(i => i.Environments).Include(i => i.Environments).FirstOrDefaultAsync(x => x.ExternalId == externalId);
         }
 
         public async Task<User> CreateUser(User user)
         {
-            var trackUser = ConfigContext.Users.Add(user);
-            await ConfigContext.SaveChangesAsync();
+            var trackUser = _configContext.Users.Add(user);
+            await _configContext.SaveChangesAsync();
             return trackUser.Entity;
         }
     }

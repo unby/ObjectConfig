@@ -15,16 +15,18 @@ namespace ObjectConfig
             List<JContainer> props = new List<JContainer>(configElement.Childs.Count);
             foreach (var item in configElement.Childs)
             {
-                var child = await ParseCobfigElement(item);
+                var child = await ParseConfigElement(item);
                 if (child != null)
+                {
                     props.Add(child);
+                }
             }
 
             var root = new JObject(props.ToArray());
             return root;
         }
 
-        private async Task<JContainer> ParseCobfigElement(ConfigElement configElement)
+        private async Task<JContainer> ParseConfigElement(ConfigElement configElement)
         {
             switch (configElement.Type.Type)
             {
@@ -32,13 +34,19 @@ namespace ObjectConfig
                     List<JContainer> props = new List<JContainer>(configElement.Childs.Count);
                     foreach (var item in configElement.Childs)
                     {
-                        props.Add(await ParseCobfigElement(item));
+                        props.Add(await ParseConfigElement(item));
                     }
 
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if (configElement.Parrent.Type.Type == TypeNode.Array)
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+                    {
                         return new JObject(props.ToArray());
+                    }
                     else
+                    {
                         return new JProperty(configElement.Type.Name, new JObject(props.ToArray()));
+                    }
 
                 case TypeNode.Array:
                     if (configElement.Childs.Any())
@@ -47,10 +55,9 @@ namespace ObjectConfig
 
                         foreach (var item in configElement.Childs)
                         {
-                            array.Add(await ParseCobfigElement(item));
+                            array.Add(await ParseConfigElement(item));
                         }
                         return new JProperty(configElement.Type.Name, array.ToArray());
-
                     }
                     else
                     {
@@ -62,31 +69,21 @@ namespace ObjectConfig
             }
         }
 
-        object ParseByType(string value, TypeNode type)
+        private object? ParseByType(string? value, TypeNode type)
         {
-            switch (type)
+            return type switch
             {
-                case TypeNode.Integer:
-                    return long.Parse(value);
-                case TypeNode.Float:
-                    return double.Parse(value);
-                case TypeNode.String:
-                    return value;
-                case TypeNode.Boolean:
-                    return bool.Parse(value);
-                case TypeNode.DateTimeOffset:
-                    return DateTimeOffset.Parse(value);
-                case TypeNode.Date:
-                    return DateTime.Parse(value);
-                case TypeNode.Guid:
-                    return Guid.Parse(value);
-                case TypeNode.Uri:
-                    return new Uri(value);
-                case TypeNode.TimeSpan:
-                    return TimeSpan.Parse(value);
-                default:
-                    return null;
-            }
+                TypeNode.Integer => long.Parse(value),
+                TypeNode.Float => double.Parse(value),
+                TypeNode.String => value,
+                TypeNode.Boolean => bool.Parse(value),
+                TypeNode.DateTimeOffset => DateTimeOffset.Parse(value),
+                TypeNode.Date => DateTime.Parse(value),
+                TypeNode.Guid => Guid.Parse(value),
+                TypeNode.Uri => new Uri(value),
+                TypeNode.TimeSpan => TimeSpan.Parse(value),
+                _ => null,
+            };
         }
     }
 }

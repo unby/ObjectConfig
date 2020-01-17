@@ -11,7 +11,8 @@ namespace ObjectConfig.Data
             AccessRole = accessRole;
         }
 
-        public UsersApplications(User? user, Application? application, Role accessRole) : this(user.UserId, application.ApplicationId, accessRole)
+        public UsersApplications(User user, Application application, Role accessRole)
+            : this(user.UserId, application.ApplicationId, accessRole)
         {
             User = user ?? throw new ArgumentNullException(nameof(user));
             Application = application ?? throw new ArgumentNullException(nameof(application));

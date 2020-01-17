@@ -34,15 +34,13 @@ namespace UnitTests
             Assert.Equal(LogLevel, ll);
         }
 
-
-
-        static string LogLevel =
+        private static readonly string LogLevel =
 @"{
   ""Default"": ""Information"",
   ""Microsoft"": ""Warning"",
   ""Microsoft.Hosting.Lifetime"": ""Information""
 }";
-        static string Data = @"{
+        private static readonly string Data = @"{
   ""Logging"": {
     ""LogLevel"": {
       ""Default"": ""Information"",

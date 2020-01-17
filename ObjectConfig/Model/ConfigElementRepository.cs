@@ -12,7 +12,7 @@ namespace ObjectConfig.Model
             ConfigContext = configContext;
         }
 
-        readonly ObjectConfigContext ConfigContext;
+        private readonly ObjectConfigContext ConfigContext;
 
         public async Task<ConfigElement> Create(ConfigElement configElement)
         {

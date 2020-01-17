@@ -38,9 +38,7 @@ namespace UnitTests
             var origin = JObject.FromObject(new TestEntity());
             ConfigElement configElemnt = await reader.Parse(origin);
             Assert.Equal(TypeNode.Root, configElemnt.Type.Type);
-            Assert.NotNull(reader.AllNodes.FirstOrDefault(f =>
-                        f.Type.Name == "GuidField" &&
-                        f.Value.Any(a => a.Value.Equals(SubSubEntity.GuidValue, StringComparison.OrdinalIgnoreCase))));
+          
             Log.WriteLine(origin);
             var reducerJobject = new JsonReducer().Parse(configElemnt).Result;
 
@@ -93,7 +91,7 @@ namespace UnitTests
 
         }
 
-        const string SpecificPropertySequence = @"{
+        public const string SpecificPropertySequence = @"{
   ""StringField"": ""stringValue"",
   ""SubEntity"": {
     ""EntityName"": ""SubEntity"",

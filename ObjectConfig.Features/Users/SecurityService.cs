@@ -6,27 +6,32 @@ namespace ObjectConfig.Features.Users
 {
     public class SecurityService
     {
-        private readonly UserRepository userRepository;
-        private readonly IUserProvider userProvider;
+        private readonly UserRepository _userRepository;
+        private readonly IUserProvider _userProvider;
 
-        private User domainUser;
+        private User _domainUser;
 
         public SecurityService(UserRepository userRepository, IUserProvider userProvider)
         {
-            this.userRepository = userRepository;
-            this.userProvider = userProvider;
+            _userRepository = userRepository;
+            _userProvider = userProvider;
         }
 
         public async Task<User> GetCurrentUser()
         {
-            var tempUser = userProvider.GetCurrentUser();
-            if (domainUser != null)
-                return domainUser;
-            domainUser = await userRepository.GetUserByExternalId(tempUser.ExternalId);
-            if (domainUser == null)
-                domainUser = await userRepository.CreateUser(MapUser(tempUser));
+            var tempUser = _userProvider.GetCurrentUser();
+            if (_domainUser != null)
+            {
+                return _domainUser;
+            }
 
-            return domainUser;
+            _domainUser = await _userRepository.GetUserByExternalId(tempUser.ExternalId);
+            if (_domainUser == null)
+            {
+                _domainUser = await _userRepository.CreateUser(MapUser(tempUser));
+            }
+
+            return _domainUser;
         }
 
         private User MapUser(UserDto tempUser)

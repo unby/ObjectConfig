@@ -2,18 +2,17 @@
 using ObjectConfig.Data;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ObjectConfig
 {
     public class ObjectConfigReader
     {
-        private readonly Config config;
+        private readonly Config _config;
 
         public ObjectConfigReader(Config config)
         {
-            this.config = config;
+            this._config = config;
         }
 
         public List<ConfigElement> AllNodes = new List<ConfigElement>();
@@ -35,22 +34,20 @@ namespace ObjectConfig
 
         private async Task<ConfigElement> ParseJObject(JObject jObj, int deep)
         {
-            var root = new ConfigElement(new TypeElement(), null, config, null);
+            var root = new ConfigElement(new TypeElement(), null, _config, null);
             AllNodes.Add(root);
             foreach (var node in jObj)
             {
+#pragma warning disable CS8604 // Possible null reference argument.
                 var confElem = await ReadChild(node.Value, node.Key, root, deep);
                 root.Childs.Add(confElem);
-                AllNodes.Add(confElem);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
-            config.ConfigElement.Add(root);
-            var c = types.Count();
-            var ca = AllNodes.Count();
-            Console.WriteLine(c > ca);
+            _config.ConfigElement.Add(root);
             return root;
         }
 
-        private TypeNode GetType(JToken token, int deep)
+        private TypeNode GetType(JToken token)
         {
             switch (token.Type)
             {
@@ -81,15 +78,16 @@ namespace ObjectConfig
             }
         }
 
-        private async Task<ConfigElement> ReadChild(JToken node, string key, ConfigElement parrent, int deep)
+        private async Task<ConfigElement?> ReadChild(JToken node, string key, ConfigElement parrent, int deep)
         {
-            ConfigElement res = null;
-            var childType = GetType(node, deep);
+            ConfigElement? res = null;
+            var childType = GetType(node);
             if (parrent.Type.Type == TypeNode.Array && childType != TypeNode.Complex)
             {
                 parrent.Value.Add(new ValueElement(node.ToString(), parrent.Type));
                 return null;
             }
+
             switch (childType)
             {
                 case TypeNode.None:
@@ -97,7 +95,7 @@ namespace ObjectConfig
                 case TypeNode.Complex:
                     if (deep == 0)
                     {
-                        res = CreateConfigElement(TypeNode.Complex, key, parrent);// new ConfigElement(new TypeElement(TypeNode.Complex, key), parrent, config);
+                        res = CreateConfigElement(TypeNode.Complex, key, parrent);
                         res.Value.Add(new ValueElement(node.ToString(), res.Type));
                     }
                     else
@@ -108,23 +106,32 @@ namespace ObjectConfig
                         }
                         else
                         {
-                            JObject jobject = node as JObject;
-                            res = CreateConfigElement(TypeNode.Complex, key, parrent); // new ConfigElement(new TypeElement(TypeNode.Complex, key), parrent, config);
-                            foreach (var item in jobject)
+                            if (node is JObject jobject)
                             {
-                                res.Childs.Add(await ReadChild(item.Value, item.Key, res, --deep));
-
+                                res = CreateConfigElement(TypeNode.Complex, key, parrent);
+                                foreach (var item in jobject)
+                                {
+#pragma warning disable CS8604 // Possible null reference argument.
+                                    var child = await ReadChild(item.Value, item.Key, res, --deep);
+#pragma warning restore CS8604 // Possible null reference argument.
+                                    if (child != null)
+                                    {
+                                        res.Childs.Add(child);
+                                    }
+                                }
                             }
                         }
                     }
                     break;
                 case TypeNode.Array:
-                    res = CreateConfigElement(TypeNode.Array, key, parrent); //new ConfigElement(new TypeElement(TypeNode.Array, key), parrent, config);
+                    res = CreateConfigElement(TypeNode.Array, key, parrent); 
                     foreach (var item in node)
                     {
                         var result = await ReadChild(item, key, res, deep);
                         if (result != null)
+                        {
                             res.Childs.Add(result);
+                        }
                     }
                     break;
                 case TypeNode.Integer:
@@ -177,24 +184,26 @@ namespace ObjectConfig
                     break;
             }
 
-            AllNodes.Add(res);
             return res;
         }
-        Dictionary<string, TypeElement> types = new Dictionary<string, TypeElement>();
+
+        private readonly Dictionary<string, TypeElement> _types = new Dictionary<string, TypeElement>();
         private ConfigElement CreateConfigElement(TypeNode nodeType, string nodeKey, ConfigElement parrent)
         {
             var path = parrent.Path + "." + nodeKey;
-            return new ConfigElement(CreateType(nodeType, nodeKey, path), parrent, config, path);
+            return new ConfigElement(CreateType(nodeType, nodeKey, path), parrent, _config, path);
         }
 
         private TypeElement CreateType(TypeNode nodeType, string nodeKey, string nodePath)
         {
-            if (types.TryGetValue(nodePath, out var type))
+            if (_types.TryGetValue(nodePath, out var type))
+            {
                 return type;
+            }
             else
             {
                 var newType = new TypeElement(nodeType, nodeKey);
-                types.Add(nodePath, newType);
+                _types.Add(nodePath, newType);
                 return newType;
             }
         }

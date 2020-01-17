@@ -8,12 +8,12 @@ namespace ObjectConfig.Data
     {
         private ConfigElement() { }
 
-        public ConfigElement(TypeElement typeElement, ConfigElement parrent, Config config, string path)
+        public ConfigElement(TypeElement typeElement, ConfigElement? parrent, Config config, string? path)
         {
             Type = typeElement;
             Parrent = parrent;
             Config = config;
-            Path = path;
+            Path = path ?? ".";
         }
 
         public long ConfigElementId { get; set; }
@@ -28,7 +28,7 @@ namespace ObjectConfig.Data
 
         public long? ParrentConfigElementId { get; set; }
 
-        public ConfigElement Parrent { get; set; }
+        public ConfigElement? Parrent { get; set; }
 
         public List<ValueElement> Value { get; set; } = new List<ValueElement>();
 

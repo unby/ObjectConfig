@@ -9,30 +9,30 @@ namespace ObjectConfig.Model
     {
         public ConfigRepository(ObjectConfigContext configContext, ConfigElementRepository configElementRepository)
         {
-            ConfigContext = configContext;
-            ConfigElementRepository = configElementRepository;
+            _configContext = configContext;
+            _configElementRepository = configElementRepository;
         }
 
-        readonly ObjectConfigContext ConfigContext;
-        readonly ConfigElementRepository ConfigElementRepository;
+        private readonly ObjectConfigContext _configContext;
+        private readonly ConfigElementRepository _configElementRepository;
 
         public Config CreateConfig(Config config)
         {
-            var trackConfig = ConfigContext.Configs.Add(config);
-            ConfigContext.SaveChanges();
+            var trackConfig = _configContext.Configs.Add(config);
+            _configContext.SaveChanges();
             return trackConfig.Entity;
         }
 
         public Task<Config> Find(int id)
         {
-            var result = ConfigContext.Configs.AsNoTracking().FirstOrDefaultAsync(f => f.ConfigId == id);
+            var result = _configContext.Configs.AsNoTracking().FirstOrDefaultAsync(f => f.ConfigId == id);
 
             return result;
         }
 
         public Task<Config> Find(string code)
         {
-            return ConfigContext.Configs.AsNoTracking().FirstOrDefaultAsync(f => f.Code == code && f.DateFrom > DateTimeOffset.UtcNow && (f.DateTo == null) && f.VersionTo == null);
+            return _configContext.Configs.AsNoTracking().FirstOrDefaultAsync(f => f.Code == code && f.DateFrom > DateTimeOffset.UtcNow && (f.DateTo == null) && f.VersionTo == null);
         }
     }
 }

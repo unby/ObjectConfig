@@ -9,9 +9,9 @@ namespace UnitTests
 
     public class ApplictionRepositoryTest : BaseTest
     {
-        private string appCode;
-        private string envCode;
-        private string configCode;
+        private string _appCode;
+        private string _envCode;
+        private string _configCode;
 
         public ApplictionRepositoryTest(ITestOutputHelper output) : base(output)
         {
@@ -20,66 +20,51 @@ namespace UnitTests
         [Fact]
         public async void CreateApp()
         {
-            appCode = Utils.GetStr;
-            envCode = Utils.GetStr;
-            configCode = Utils.GetStr;
-            using (var scope = GetScope())
-            {
-                var rep = scope.GetInstance<ApplicationRepository>();
+            _appCode = Utils.GetStr;
+            _envCode = Utils.GetStr;
+            _configCode = Utils.GetStr;
+            using var scope = GetScope();
+            var rep = scope.GetInstance<ApplicationRepository>();
 
-                Assert.NotNull(rep);
-                var app = new Application(Utils.GetStr, appCode, null);
-                app.Environments.Add(new Environment() { Code = envCode, Name = Utils.GetStr });
-                await rep.Create(app);
+            Assert.NotNull(rep);
+            var app = new Application(Utils.GetStr, _appCode, null);
+            app.Environments.Add(new Environment() { Code = _envCode, Name = Utils.GetStr });
+            await rep.Create(app);
 
-                app = await rep.Find(appCode);
-                Assert.NotNull(app);
-                Assert.Equal(app.Environments[0].Code, envCode);
+            app = await rep.Find(_appCode);
+            Assert.NotNull(app);
+            Assert.Equal(app.Environments[0].Code, _envCode);
 
 
-                var configRepository = scope.GetInstance<ConfigRepository>();
+            var configRepository = scope.GetInstance<ConfigRepository>();
 
-                var config = new Config("test", new System.Version(1, 0), app.Environments[0].EnvironmentId, null);
-                configRepository.CreateConfig(config);
+            var config = new Config("test", new System.Version(1, 0), app.Environments[0].EnvironmentId, null);
+            configRepository.CreateConfig(config);
 
-                var configc = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(config).Parse(Data));
-                Assert.NotEqual(0, configc.ConfigElementId);
-                //     
-                //     config = configRepository.CreateConfig(config);
-                //
-                //     var configFromStore = await configRepository.Find(configCode);
-                //
-                //
-                //     Assert.NotNull(configFromStore);
-                //     
-                //     Assert.NotEqual(configFromStore, config);
-            }
+            var configc = await scope.GetInstance<ConfigElementRepository>().Create(await new ObjectConfigReader(config).Parse(Data));
+            Assert.NotEqual(0, configc.ConfigElementId);
         }
 
         [Fact]
         public async void DeleteConfig()
         {
-            appCode = Utils.GetStr;
-            envCode = Utils.GetStr;
-            configCode = Utils.GetStr;
-            using (var scope = GetScope())
-            {
-                var rep = scope.GetInstance<ConfigElementRepository>();
+            _appCode = Utils.GetStr;
+            _envCode = Utils.GetStr;
+            _configCode = Utils.GetStr;
+            using var scope = GetScope();
+            var rep = scope.GetInstance<ConfigElementRepository>();
 
-                var conf = await rep.GetConfigElement(3);
-                Log.WriteLine(conf);
-                //  context.ConfigElement.Remove(configElement);
-                //    context.SaveChanges();
-            }
+            var conf = await rep.GetConfigElement(3);
+            Log.WriteLine(conf);
         }
 
-        static string Json =
+        public static readonly string Json =
 @"{
   ""Default"": ""Information"",
   ""Microsoft"": ""Warning"",
   ""Microsoft.Hosting.Lifetime"": ""Information""
 }";
-        static string Data = @"{
+        public static readonly string Data = @"{
   ""Logging"": {
     ""LogLevel"": {
       ""Default"": ""Information"",
