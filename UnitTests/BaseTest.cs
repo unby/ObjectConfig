@@ -13,11 +13,9 @@ namespace UnitTests
     {
         protected ObjectConfigContext GetObjectConfigContext()
         {
-            DbContextOptions<ObjectConfigContext> options;
             var builder = new DbContextOptionsBuilder<ObjectConfigContext>();
             builder.UseInMemoryDatabase("nunit");
-            options = builder.Options;
-            ObjectConfigContext personDataContext = new ObjectConfigContext(options);
+            ObjectConfigContext personDataContext = new ObjectConfigContext(builder.Options);
             personDataContext.Database.EnsureDeleted();
             personDataContext.Database.EnsureCreated();
 
@@ -59,9 +57,3 @@ namespace UnitTests
         }
     }
 }
-/*,
-""Array"": [
-""123"",
-""sto""
-]
-*/

@@ -20,11 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ObjectConfig.Api\ObjectConfig.Api.csproj" />
     <ProjectReference Include="..\ObjectConfig\ObjectConfig.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mock\" />
   </ItemGroup>
 
 </Project>

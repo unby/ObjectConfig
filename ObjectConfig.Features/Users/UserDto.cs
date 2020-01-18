@@ -4,6 +4,10 @@ namespace ObjectConfig.Features.Users
 {
     public class UserDto
     {
+        public UserDto()
+        {
+        }
+
         public int UserId { get; set; }
 
         public string ExternalId { get; set; }

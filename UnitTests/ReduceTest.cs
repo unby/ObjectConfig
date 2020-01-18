@@ -2,7 +2,6 @@
 using ObjectConfig;
 using ObjectConfig.Data;
 using System;
-using System.Linq;
 using UnitTests.Data;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,7 +37,7 @@ namespace UnitTests
             var origin = JObject.FromObject(new TestEntity());
             ConfigElement configElemnt = await reader.Parse(origin);
             Assert.Equal(TypeNode.Root, configElemnt.Type.Type);
-          
+
             Log.WriteLine(origin);
             var reducerJobject = new JsonReducer().Parse(configElemnt).Result;
 

@@ -1,11 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig;
 using ObjectConfig.Data;
+using System.Net.Http;
 using Xunit.Abstractions;
 
 namespace UnitTests
 {
-    public static class Extention
+    public static class TestExtensions
     {
         public static User Admin(this ObjectConfigContext context)
         {
@@ -20,6 +22,13 @@ namespace UnitTests
         public static void WriteLine(this ITestOutputHelper output, object obj)
         {
             output.WriteLine(obj != null ? obj.ToString() : "null");
+        }
+
+        public static HttpClient CreateHttpClient(this TestServer server)
+        {
+            var client = server.CreateClient();
+            client.BaseAddress = new System.Uri(client.BaseAddress.ToString() + "feature");
+            return client;
         }
     }
 }

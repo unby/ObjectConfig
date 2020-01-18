@@ -7,7 +7,7 @@ using System.Linq;
 namespace ObjectConfig.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("feature/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -26,6 +26,7 @@ namespace ObjectConfig.Controllers
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
+            _logger.LogInformation("asd");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),

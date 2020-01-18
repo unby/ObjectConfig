@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Applictaions
 {
-    [Route("api/[controller]")]
+    [Route("feature/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {

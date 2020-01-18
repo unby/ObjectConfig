@@ -124,7 +124,7 @@ namespace ObjectConfig
                     }
                     break;
                 case TypeNode.Array:
-                    res = CreateConfigElement(TypeNode.Array, key, parrent); 
+                    res = CreateConfigElement(TypeNode.Array, key, parrent);
                     foreach (var item in node)
                     {
                         var result = await ReadChild(item, key, res, deep);
