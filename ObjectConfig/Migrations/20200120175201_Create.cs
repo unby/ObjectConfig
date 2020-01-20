@@ -49,7 +49,7 @@ namespace ObjectConfig.Migrations
                     ApplicationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Code = table.Column<string>(maxLength: 64, nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: true)
+                    Description = table.Column<string>(maxLength: 512, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,7 +62,7 @@ namespace ObjectConfig.Migrations
                 {
                     TypeElementId = table.Column<long>(nullable: false),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: true),
+                    Description = table.Column<string>(maxLength: 512, nullable: false),
                     Type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -75,10 +75,10 @@ namespace ObjectConfig.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(nullable: false),
-                    ExternalId = table.Column<string>(maxLength: 256, nullable: true),
+                    ExternalId = table.Column<string>(maxLength: 256, nullable: false),
                     DisplayName = table.Column<string>(maxLength: 128, nullable: false),
                     Email = table.Column<string>(maxLength: 128, nullable: false),
-                    IsGlobalAdmin = table.Column<bool>(nullable: false)
+                    AccessRole = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -92,7 +92,7 @@ namespace ObjectConfig.Migrations
                     EnvironmentId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Code = table.Column<string>(maxLength: 64, nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: true),
+                    Description = table.Column<string>(maxLength: 512, nullable: false),
                     ApplicationId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -137,7 +137,7 @@ namespace ObjectConfig.Migrations
                 {
                     UserId = table.Column<int>(nullable: false),
                     ValueTypeId = table.Column<int>(nullable: false),
-                    ValueTypeTypeElementId = table.Column<long>(nullable: true),
+                    ValueTypeTypeElementId = table.Column<long>(nullable: false),
                     AccessRole = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -154,7 +154,7 @@ namespace ObjectConfig.Migrations
                         column: x => x.ValueTypeTypeElementId,
                         principalTable: "TypeElements",
                         principalColumn: "TypeElementId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -167,7 +167,7 @@ namespace ObjectConfig.Migrations
                     DateTo = table.Column<DateTimeOffset>(nullable: true),
                     VersionFrom = table.Column<long>(nullable: false),
                     VersionTo = table.Column<long>(nullable: true),
-                    Description = table.Column<string>(maxLength: 512, nullable: true),
+                    Description = table.Column<string>(maxLength: 512, nullable: false),
                     EnvironmentId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -212,8 +212,8 @@ namespace ObjectConfig.Migrations
                 {
                     ConfigElementId = table.Column<long>(nullable: false),
                     ConfigId = table.Column<int>(nullable: false),
-                    Path = table.Column<string>(maxLength: 1024, nullable: true),
-                    TypeElementId = table.Column<long>(nullable: true),
+                    Path = table.Column<string>(maxLength: 1024, nullable: false),
+                    TypeElementId = table.Column<long>(nullable: false),
                     ParrentConfigElementId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
@@ -236,7 +236,7 @@ namespace ObjectConfig.Migrations
                         column: x => x.TypeElementId,
                         principalTable: "TypeElements",
                         principalColumn: "TypeElementId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -245,10 +245,10 @@ namespace ObjectConfig.Migrations
                 {
                     ValueElementId = table.Column<long>(nullable: false),
                     Value = table.Column<string>(maxLength: 2147483647, nullable: true),
-                    Comment = table.Column<string>(maxLength: 256, nullable: true),
+                    Comment = table.Column<string>(maxLength: 256, nullable: false),
                     DateFrom = table.Column<DateTimeOffset>(nullable: false),
                     DateTo = table.Column<DateTimeOffset>(nullable: true),
-                    TypeElementId = table.Column<long>(nullable: true),
+                    TypeElementId = table.Column<long>(nullable: false),
                     ChangeOwnerUserId = table.Column<int>(nullable: true),
                     ConfigElementId = table.Column<long>(nullable: true)
                 },
@@ -272,13 +272,13 @@ namespace ObjectConfig.Migrations
                         column: x => x.TypeElementId,
                         principalTable: "TypeElements",
                         principalColumn: "TypeElementId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "UserId", "DisplayName", "Email", "ExternalId", "IsGlobalAdmin" },
-                values: new object[] { 1, "GlobalAdmin", "admin@global.net", "1b9ad0d9-cda2-4ee2-989f-a256c3dd2104", true });
+                columns: new[] { "UserId", "AccessRole", "DisplayName", "Email", "ExternalId" },
+                values: new object[] { 1, 3, "GlobalAdmin", "admin@global.net", "06e94993-242d-49cb-905a-a53d5cdc9e92" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_Code",
@@ -333,8 +333,7 @@ namespace ObjectConfig.Migrations
                 name: "IX_Users_ExternalId",
                 table: "Users",
                 column: "ExternalId",
-                unique: true,
-                filter: "[ExternalId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UsersApplications_ApplicationId",

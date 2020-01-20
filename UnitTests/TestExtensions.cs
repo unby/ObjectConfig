@@ -30,5 +30,10 @@ namespace UnitTests
             client.BaseAddress = new System.Uri(client.BaseAddress.ToString() + "feature");
             return client;
         }
+
+        public static T Deserialize<T>(this HttpResponseMessage httpResponse)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(httpResponse.Content.ReadAsStringAsync().Result);
+        }
     }
 }

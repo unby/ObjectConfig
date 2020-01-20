@@ -10,7 +10,7 @@ using ObjectConfig.Data;
 namespace ObjectConfig.Migrations
 {
     [DbContext(typeof(ObjectConfigContext))]
-    [Migration("20200105184509_Create")]
+    [Migration("20200120175201_Create")]
     partial class Create
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,7 @@ namespace ObjectConfig.Migrations
                         .HasMaxLength(64);
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -78,6 +79,7 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -115,10 +117,11 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Path")
+                        .IsRequired()
                         .HasColumnType("nvarchar(1024)")
                         .HasMaxLength(1024);
 
-                    b.Property<long?>("TypeElementId")
+                    b.Property<long>("TypeElementId")
                         .HasColumnType("bigint");
 
                     b.HasKey("ConfigElementId");
@@ -149,6 +152,7 @@ namespace ObjectConfig.Migrations
                         .HasMaxLength(64);
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -176,6 +180,7 @@ namespace ObjectConfig.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -200,6 +205,9 @@ namespace ObjectConfig.Migrations
                         .HasAnnotation("SqlServer:HiLoSequenceName", "User_HiloSeq")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
+                    b.Property<int>("AccessRole")
+                        .HasColumnType("int");
+
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasColumnType("nvarchar(128)")
@@ -211,11 +219,9 @@ namespace ObjectConfig.Migrations
                         .HasMaxLength(128);
 
                     b.Property<string>("ExternalId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
-
-                    b.Property<bool>("IsGlobalAdmin")
-                        .HasColumnType("bit");
 
                     b.HasKey("UserId");
 
@@ -223,8 +229,7 @@ namespace ObjectConfig.Migrations
                         .IsUnique();
 
                     b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasFilter("[ExternalId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Users");
 
@@ -232,10 +237,10 @@ namespace ObjectConfig.Migrations
                         new
                         {
                             UserId = 1,
+                            AccessRole = 3,
                             DisplayName = "GlobalAdmin",
                             Email = "admin@global.net",
-                            ExternalId = "1b9ad0d9-cda2-4ee2-989f-a256c3dd2104",
-                            IsGlobalAdmin = true
+                            ExternalId = "06e94993-242d-49cb-905a-a53d5cdc9e92"
                         });
                 });
 
@@ -286,7 +291,7 @@ namespace ObjectConfig.Migrations
                     b.Property<int>("AccessRole")
                         .HasColumnType("int");
 
-                    b.Property<long?>("ValueTypeTypeElementId")
+                    b.Property<long>("ValueTypeTypeElementId")
                         .HasColumnType("bigint");
 
                     b.HasKey("UserId", "ValueTypeId");
@@ -308,6 +313,7 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
+                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 
@@ -320,7 +326,7 @@ namespace ObjectConfig.Migrations
                     b.Property<DateTimeOffset?>("DateTo")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long?>("TypeElementId")
+                    b.Property<long>("TypeElementId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Value")
@@ -361,7 +367,9 @@ namespace ObjectConfig.Migrations
 
                     b.HasOne("ObjectConfig.Data.TypeElement", "Type")
                         .WithMany()
-                        .HasForeignKey("TypeElementId");
+                        .HasForeignKey("TypeElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.Environment", b =>
@@ -413,7 +421,9 @@ namespace ObjectConfig.Migrations
 
                     b.HasOne("ObjectConfig.Data.TypeElement", "ValueType")
                         .WithMany()
-                        .HasForeignKey("ValueTypeTypeElementId");
+                        .HasForeignKey("ValueTypeTypeElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ObjectConfig.Data.ValueElement", b =>
@@ -428,7 +438,9 @@ namespace ObjectConfig.Migrations
 
                     b.HasOne("ObjectConfig.Data.TypeElement", "Type")
                         .WithMany()
-                        .HasForeignKey("TypeElementId");
+                        .HasForeignKey("TypeElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

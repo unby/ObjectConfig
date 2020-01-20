@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig.Features.Users;
 using System;
@@ -18,6 +19,8 @@ namespace ObjectConfig.Features
             services.ObjectConfigServices(configureDb);
 
             services.UserFeatureRegister();
+
+            services.AddAutoMapper(typeof(FeaturesComponent).Assembly);
 
             return services;
         }

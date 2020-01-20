@@ -36,7 +36,7 @@ namespace ObjectConfig.Features.Users
 
         private User MapUser(UserDto tempUser)
         {
-            return new User(tempUser.ExternalId, tempUser.DisplayName, tempUser.DisplayName, User.Role.Viewer);
+            return new User(tempUser.ExternalId, tempUser.DisplayName, tempUser.Email, User.Role.Viewer);
         }
     }
 }

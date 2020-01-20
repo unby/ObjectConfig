@@ -1,11 +1,31 @@
 ﻿using ObjectConfig.Data;
 using ObjectConfig.Features.Users;
+using System;
 
 namespace UnitTests.Mock
 {
     public class MockUserProvider : IUserProvider
     {
-        private readonly UserDto _user;
+        public readonly UserDto _user;
+
+        public MockUserProvider(User.Role role)
+            : this(Guid.NewGuid().ToString(),
+                  Guid.NewGuid().ToString(),
+                  Guid.NewGuid().ToString() + "@test.test",
+                  role)
+        {
+        }
+
+        public MockUserProvider(string externalId, string displayName, string email, User.Role role)
+        {
+            _user = new UserDto()
+            {
+                ExternalId = externalId,
+                DisplayName = displayName,
+                AccessRole = role,
+                Email = email
+            };
+        }
 
         public MockUserProvider(UserDto user)
         {

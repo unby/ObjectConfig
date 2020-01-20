@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ObjectConfig;
+using ObjectConfig.Features.Users;
 using System;
 using Xunit.Abstractions;
 
@@ -43,6 +44,16 @@ namespace UnitTests.Controllers
 
                 services(s);
             };
+        }
+
+        protected virtual TestServer TestServer(IUserProvider userProvider, Action<IServiceCollection> services = null)
+        {
+            Action<IServiceCollection> intenalAction = (s) =>
+            {
+                services?.Invoke(s);
+                s.AddSingleton(userProvider);
+            };
+            return TestServer(intenalAction);
         }
 
         protected virtual TestServer TestServer(Action<IServiceCollection> services = null)
