@@ -30,9 +30,7 @@ namespace ObjectConfig.Data.Configurations
 
         protected Type GetPKType<TProp>(Expression<Func<Entity, TProp>> expression)
         {
-            var body = expression.Body as MemberExpression;
-
-            if (body == null)
+            if (!(expression.Body is MemberExpression body))
             {
                 throw new ArgumentException("'expression' should be a member expression");
             }

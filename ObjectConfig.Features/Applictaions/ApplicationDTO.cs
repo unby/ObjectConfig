@@ -1,4 +1,5 @@
-﻿using ObjectConfig.Data;
+﻿#nullable disable
+using ObjectConfig.Data;
 
 namespace ObjectConfig.Features.Applictaions
 {

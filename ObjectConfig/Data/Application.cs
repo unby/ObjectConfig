@@ -10,7 +10,7 @@ namespace ObjectConfig.Data
         {
         }
 
-        public Application(int applicationId, string name, string code, string description) : this(applicationId)
+        public Application(int applicationId, string name, string code, string? description) : this(applicationId)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -27,7 +27,7 @@ namespace ObjectConfig.Data
             Description = description;
         }
 
-        public Application(string name, string code, string description)
+        public Application(string name, string code, string? description)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -55,7 +55,7 @@ namespace ObjectConfig.Data
 
         public string Code { get; protected set; }
 
-        public string Description { get; protected set; }
+        public string? Description { get; protected set; }
 
         public virtual IList<Environment> Environments { get; set; } = new List<Environment>();
 

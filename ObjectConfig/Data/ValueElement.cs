@@ -21,7 +21,7 @@ namespace ObjectConfig.Data
 
         public string? Value { get; protected set; }
 
-        public string Comment { get; protected set; }
+        public string? Comment { get; protected set; }
 
         public DateTimeOffset DateFrom { get; protected set; }
 

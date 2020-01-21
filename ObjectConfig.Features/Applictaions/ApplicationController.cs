@@ -8,12 +8,12 @@ namespace ObjectConfig.Features.Applictaions
 {
     [Route("feature/[controller]")]
     [ApiController]
-    public class ApplictaionController : ControllerBase
+    public class ApplicationController : ControllerBase
     {
         private readonly ApplicationService _applicationService;
         private readonly IMapper _mapper;
 
-        public ApplictaionController(IMapper mapper, ApplicationService applicationService)
+        public ApplicationController(IMapper mapper, ApplicationService applicationService)
         {
             this._applicationService = applicationService;
             this._mapper = mapper;
@@ -23,6 +23,12 @@ namespace ObjectConfig.Features.Applictaions
         public async Task<IActionResult> GetApplications()
         {
             return Ok(_mapper.Map<List<UsersApplications>, List<ApplicationDTO>>(await _applicationService.GetApplications()));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateApplications(ApplicationDTO application)
+        {
+            return Ok(_mapper.Map<UsersApplications, ApplicationDTO>(await _applicationService.CreateApplication(application)));
         }
     }
 }

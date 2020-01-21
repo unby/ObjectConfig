@@ -7,7 +7,7 @@ namespace ObjectConfig.Data
     {
         private Config() { }
 
-        public Config(string code, Version versionFrom, int environmentId, string description)
+        public Config(string code, Version versionFrom, int environmentId, string? description)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -37,7 +37,7 @@ namespace ObjectConfig.Data
 
         public long? VersionTo { get; protected set; }
 
-        public string Description { get; protected set; }
+        public string? Description { get; protected set; }
 
         public int EnvironmentId { get; protected set; }
 

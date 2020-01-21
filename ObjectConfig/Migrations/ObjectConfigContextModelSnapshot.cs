@@ -40,7 +40,6 @@ namespace ObjectConfig.Migrations
                         .HasMaxLength(64);
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -77,7 +76,6 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -150,7 +148,6 @@ namespace ObjectConfig.Migrations
                         .HasMaxLength(64);
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -178,7 +175,6 @@ namespace ObjectConfig.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.SequenceHiLo);
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
@@ -238,7 +234,7 @@ namespace ObjectConfig.Migrations
                             AccessRole = 3,
                             DisplayName = "GlobalAdmin",
                             Email = "admin@global.net",
-                            ExternalId = "06e94993-242d-49cb-905a-a53d5cdc9e92"
+                            ExternalId = "81715d6b-5b8a-4a8a-b25e-3fad407ae04b"
                         });
                 });
 
@@ -311,7 +307,6 @@ namespace ObjectConfig.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
 

@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ObjectConfig;
+using ObjectConfig.Data;
 using ObjectConfig.Features.Users;
 using System;
+using UnitTests.Mock;
 using Xunit.Abstractions;
 
 namespace UnitTests.Controllers
@@ -16,7 +18,7 @@ namespace UnitTests.Controllers
 
         static ServerTestBase()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_Environment", "Development");
+            System.Environment.SetEnvironmentVariable("ASPNETCORE_Environment", "Development");
         }
 
         public ServerTestBase(ITestOutputHelper output) : base(output)
@@ -45,7 +47,11 @@ namespace UnitTests.Controllers
                 services(s);
             };
         }
-
+        protected virtual TestServer TestServer(User.Role userRole, Action<IServiceCollection> services = null)
+        {
+            
+            return TestServer(new MockUserProvider(userRole), services);
+        }
         protected virtual TestServer TestServer(IUserProvider userProvider, Action<IServiceCollection> services = null)
         {
             Action<IServiceCollection> intenalAction = (s) =>

@@ -1,12 +1,16 @@
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ObjectConfig.Exceptions;
 using ObjectConfig.Features;
 using System;
+using System.Net.Http;
 
 namespace ObjectConfig
 {
@@ -31,6 +35,31 @@ namespace ObjectConfig
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddProblemDetails(ConfigureProblemDetails);
+        }
+
+        private void ConfigureProblemDetails(ProblemDetailsOptions options)
+        {
+            // This is the default behavior; only include exception details in a development environment.
+            // todo override initial
+            options.IncludeExceptionDetails = ctx => true;
+
+            // This will map NotImplementedException to the 501 Not Implemented status code.
+            options.Map<NotImplementedException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status501NotImplemented));
+
+            // This will map HttpRequestException to the 503 Service Unavailable status code.
+            options.Map<HttpRequestException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status503ServiceUnavailable));
+
+            options.Map<ObjectConfigBaseException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
+            options.Map<NotFoundException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status404NotFound));
+            options.Map<ForbidenException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status403Forbidden));
+            options.Map<RequestException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status400BadRequest));
+            options.Map<OperationException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
+
+            // Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
+            // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
+            options.Map<Exception>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,6 +98,8 @@ namespace ObjectConfig
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            app.UseProblemDetails();
         }
     }
 }

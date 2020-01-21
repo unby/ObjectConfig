@@ -9,24 +9,24 @@ namespace ObjectConfig.Model
     {
         public ConfigElementRepository(ObjectConfigContext configContext)
         {
-            ConfigContext = configContext;
+            _configContext = configContext;
         }
 
-        private readonly ObjectConfigContext ConfigContext;
+        private readonly ObjectConfigContext _configContext;
 
         public async Task<ConfigElement> Create(ConfigElement configElement)
         {
             configElement.Config.ConfigElement.Add(configElement);
             //  ConfigContext.Entry(configElement.Config)
-            ConfigContext.Configs.Update(configElement.Config);
-            await ConfigContext.SaveChangesAsync();
+            _configContext.Configs.Update(configElement.Config);
+            await _configContext.SaveChangesAsync();
             return configElement;
         }
 
         public Task<ConfigElement> GetConfigElement(int id)
         {
 
-            var t = ConfigContext.ConfigElements.Include(i => i.Childs).Include(i => i.Type).Include(i => i.Value).Where(s => s.ConfigId == id);
+            var t = _configContext.ConfigElements.Include(i => i.Childs).Include(i => i.Type).Include(i => i.Value).Where(s => s.ConfigId == id);
             return t.FirstOrDefaultAsync(s => s.ParrentConfigElementId == null);
         }
     }

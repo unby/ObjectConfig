@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using ObjectConfig.Data;
+using ObjectConfig.Features.Applictaions;
+using System;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,11 +15,12 @@ namespace UnitTests.Controllers
         }
 
         [Fact]
-        public async Task It_should_get_user()
+        public async Task CreateApplication()
         {
-            using var server = TestServer();
+            var testApp = new ApplicationDTO() { Code=Guid.NewGuid().ToString(),Name=Guid.NewGuid().ToString() };
+            using var server = TestServer(User.Role.Administrator);
             using var client = server.CreateHttpClient();
-            var result = await client.GetAsync("feature/WeatherForecast");
+            var result = await client.PostAsync("feature/application", testApp.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using ObjectConfig;
 using ObjectConfig.Data;
 using System.Net.Http;
@@ -24,16 +25,24 @@ namespace UnitTests
             output.WriteLine(obj != null ? obj.ToString() : "null");
         }
 
-        public static HttpClient CreateHttpClient(this TestServer server)
+        public static HttpClient CreateHttpClient(this TestServer server, string subAdress = "feature")
         {
             var client = server.CreateClient();
-            client.BaseAddress = new System.Uri(client.BaseAddress.ToString() + "feature");
+            client.BaseAddress = new System.Uri(client.BaseAddress.ToString() + subAdress);
             return client;
         }
 
         public static T Deserialize<T>(this HttpResponseMessage httpResponse)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(httpResponse.Content.ReadAsStringAsync().Result);
+            return JsonConvert.DeserializeObject<T>(httpResponse.Content.ReadAsStringAsync().Result);
+        }
+
+        public static HttpContent Serialize<T>(this T obj) 
+        {
+            var stringPayload = JsonConvert.SerializeObject(obj);
+
+            var httpContent = new StringContent(stringPayload, System.Text.Encoding.UTF8, "application/json");
+            return httpContent;
         }
     }
 }

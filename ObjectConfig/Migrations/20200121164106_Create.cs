@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ObjectConfig.Migrations
 {
@@ -49,7 +49,7 @@ namespace ObjectConfig.Migrations
                     ApplicationId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Code = table.Column<string>(maxLength: 64, nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: false)
+                    Description = table.Column<string>(maxLength: 512, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,7 +62,7 @@ namespace ObjectConfig.Migrations
                 {
                     TypeElementId = table.Column<long>(nullable: false),
                     Name = table.Column<string>(maxLength: 256, nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: false),
+                    Description = table.Column<string>(maxLength: 512, nullable: true),
                     Type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -92,7 +92,7 @@ namespace ObjectConfig.Migrations
                     EnvironmentId = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 128, nullable: false),
                     Code = table.Column<string>(maxLength: 64, nullable: false),
-                    Description = table.Column<string>(maxLength: 512, nullable: false),
+                    Description = table.Column<string>(maxLength: 512, nullable: true),
                     ApplicationId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -167,7 +167,7 @@ namespace ObjectConfig.Migrations
                     DateTo = table.Column<DateTimeOffset>(nullable: true),
                     VersionFrom = table.Column<long>(nullable: false),
                     VersionTo = table.Column<long>(nullable: true),
-                    Description = table.Column<string>(maxLength: 512, nullable: false),
+                    Description = table.Column<string>(maxLength: 512, nullable: true),
                     EnvironmentId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -245,7 +245,7 @@ namespace ObjectConfig.Migrations
                 {
                     ValueElementId = table.Column<long>(nullable: false),
                     Value = table.Column<string>(maxLength: 2147483647, nullable: true),
-                    Comment = table.Column<string>(maxLength: 256, nullable: false),
+                    Comment = table.Column<string>(maxLength: 256, nullable: true),
                     DateFrom = table.Column<DateTimeOffset>(nullable: false),
                     DateTo = table.Column<DateTimeOffset>(nullable: true),
                     TypeElementId = table.Column<long>(nullable: false),
@@ -278,7 +278,7 @@ namespace ObjectConfig.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UserId", "AccessRole", "DisplayName", "Email", "ExternalId" },
-                values: new object[] { 1, 3, "GlobalAdmin", "admin@global.net", "06e94993-242d-49cb-905a-a53d5cdc9e92" });
+                values: new object[] { 1, 3, "GlobalAdmin", "admin@global.net", "81715d6b-5b8a-4a8a-b25e-3fad407ae04b" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Applications_Code",

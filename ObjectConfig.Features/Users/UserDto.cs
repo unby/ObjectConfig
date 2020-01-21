@@ -1,5 +1,6 @@
 ﻿using ObjectConfig.Data;
 
+#nullable disable
 namespace ObjectConfig.Features.Users
 {
     public class UserDto
