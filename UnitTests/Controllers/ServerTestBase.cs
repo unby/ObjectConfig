@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,39 +28,52 @@ namespace UnitTests.Controllers
 
         protected virtual string[] Args => new string[] { };
 
+
         protected virtual Action<IServiceCollection> DefaultServices(Action<IServiceCollection> services)
         {
             return (s) =>
             {
                 s.AddLogging((builder) => builder.AddXUnit(Log));
-                s.ObjectConfigServices((a) =>
-                {
-                    if (_integration)
-                    {
-                        a.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds));
-                    }
-                    else
-                    {
-                        a.UseInMemoryDatabase("xunit");
-                    }
-                });
-
+                s.AddObjectConfigContext(ConfigureDb);
                 services(s);
             };
         }
+
+        protected virtual void SeedData(ObjectConfigContext context, MockUserProvider userProvider)
+        {
+
+        }
+
+        /// <summary>
+        /// Configure virtual app server and seed data
+        /// </summary>
+        /// <param name="userRole">use provider role</param>
+        /// <param name="services">func for mock configure</param>
+        /// <returns></returns>
         protected virtual TestServer TestServer(User.Role userRole, Action<IServiceCollection> services = null)
         {
-            
-            return TestServer(new MockUserProvider(userRole), services);
+            var userProvider = new MockUserProvider(userRole);
+            return TestServer(userProvider, services);
         }
-        protected virtual TestServer TestServer(IUserProvider userProvider, Action<IServiceCollection> services = null)
+
+        protected TestServer TestServer(MockUserProvider userProvider, Action<IServiceCollection> services = null)
         {
-            Action<IServiceCollection> intenalAction = (s) =>
+            Action<IServiceCollection> internalAction = (s) =>
             {
                 services?.Invoke(s);
-                s.AddSingleton(userProvider);
+                s.AddSingleton<IUserProvider>(userProvider);
             };
-            return TestServer(intenalAction);
+            
+            var testServer = TestServer(internalAction);
+            testServer.CreateClient();
+
+            var (instance, scope) = testServer.GetInstanceFromScope<ObjectConfigContext>();
+            instance.Database.EnsureCreated();
+            SeedData(instance, userProvider);
+            instance.SaveChanges();
+            instance.Dispose();
+            scope.Dispose();
+            return testServer;
         }
 
         protected virtual TestServer TestServer(Action<IServiceCollection> services = null)

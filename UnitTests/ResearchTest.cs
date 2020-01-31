@@ -11,7 +11,7 @@ namespace UnitTests
         {
         }
 
-        [Fact]
+    /*    [Fact]
         public void ChekUser()
         {
             using (var context = GetObjectConfigContext())
@@ -21,7 +21,7 @@ namespace UnitTests
                 Assert.Equal(Constants.AdminId, admin.UserId);
                 Assert.Equal("GlobalAdmin", admin.DisplayName);
             }
-        }
+        }*/
 
         [Fact]
         public void Decode()

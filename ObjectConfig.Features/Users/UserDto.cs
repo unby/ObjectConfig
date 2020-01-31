@@ -5,18 +5,27 @@ namespace ObjectConfig.Features.Users
 {
     public class UserDto
     {
-        public UserDto()
+        private UserDto()
         {
         }
 
-        public int UserId { get; set; }
+        public UserDto(int userId, string externalId, string displayName, string email, User.Role accessRole)
+        {
+            Email = email;
+            AccessRole = accessRole;
+            UserId = userId;
+            ExternalId = externalId;
+            DisplayName = displayName;
+        }
 
-        public string ExternalId { get; set; }
+        public string Email { get; private set; }
 
-        public string DisplayName { get; set; }
+        public User.Role AccessRole { get; private set; }
 
-        public string Email { get; set; }
+        public int UserId { get; private set; }
 
-        public User.Role AccessRole { get; set; }
+        public string ExternalId { get; private set; }
+
+        public string DisplayName { get; private set; }
     }
 }

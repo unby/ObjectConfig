@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig.Features.Applictaions;
@@ -15,14 +16,15 @@ namespace ObjectConfig.Features
             return services;
         }
 
-        public static IServiceCollection FeaturesRegister(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDb)
+        public static IServiceCollection FeaturesRegister(this IServiceCollection services)
         {
-            services.ObjectConfigServices(configureDb);
+            services.AddRepositories();
 
             services.UserFeatureRegister();
             services.ApplicationFeatureRegister();
 
             services.AddAutoMapper(typeof(FeaturesComponent).Assembly);
+            services.AddMediatR(typeof(FeaturesComponent).Assembly);
 
             return services;
         }

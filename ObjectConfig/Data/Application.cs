@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ObjectConfig.Data
 {
-    public class Application
+    public class Application : IUsers<UsersApplications, UsersApplications.Role>
     {
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         private Application()
@@ -49,7 +50,17 @@ namespace ObjectConfig.Data
             ApplicationId = applicationId;
         }
 
+        public void Rename(string name)
+        {
+            Name = name;
+        }
+
         public int ApplicationId { get; protected set; }
+
+        public void NewDefinition(string? description)
+        {
+            Description = description;
+        }
 
         public string Name { get; protected set; }
 

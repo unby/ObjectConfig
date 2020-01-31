@@ -1,24 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.InMemory.ValueGeneration.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
+using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
 {
 
     public class ApplicationConfiguration : ConfigurationBase<Application>
     {
-        public ApplicationConfiguration(ModelBuilder modelBuilder, int increment = 5) : base(modelBuilder, increment)
+        public ApplicationConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100) : base(modelBuilder, dbType, increment, startsAt)
         {
         }
 
-        protected override Type PrimeryKeyType => GetPKType(k => k.ApplicationId);
+        protected override PropertyInfo KeyProperty => GetPKType(k => k.ApplicationId);
 
         protected override void ConfigureProperty(EntityTypeBuilder<Application> builder)
         {
-            builder.HasKey(p => p.ApplicationId);
-
-            builder.Property(p => p.ApplicationId).UseHiLo(SequenceName);
-
             builder.Property(s => s.Code).IsRequired().HasMaxLength(64);
 
             builder.HasIndex(u => u.Code).IsUnique();

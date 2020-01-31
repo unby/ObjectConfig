@@ -8,10 +8,16 @@ namespace ObjectConfig
 {
     public static class ServiceRegister
     {
-        public static IServiceCollection ObjectConfigServices(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDb)
+        public static IServiceCollection AddObjectConfigContext(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDb)
+        {
+            
+            services.AddDbContext<ObjectConfigContext>(configureDb);
+            
+            return services;
+        }
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<UserRepository>();
-            services.AddDbContext<ObjectConfigContext>(configureDb);
             services.AddScoped<ApplicationRepository>();
             services.AddScoped<ConfigRepository>();
             services.AddScoped<ConfigElementRepository>();

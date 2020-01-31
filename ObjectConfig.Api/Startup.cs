@@ -1,5 +1,6 @@
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -7,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using ObjectConfig.Data;
 using ObjectConfig.Exceptions;
 using ObjectConfig.Features;
 using System;
@@ -28,13 +31,26 @@ namespace ObjectConfig
         {
             services.AddControllersWithViews().ControllersRegister();
 
-            services.FeaturesRegister(a => a.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
+            services.FeaturesRegister();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ObjectConfig API", Version = "1" });
+            });
+
+            services.AddHealthChecks();
+            if (!Configuration.GetValue<bool>("IsUnitTest"))
+            { 
+                services.AddHealthChecksUI();
+
+                services.AddDbContext<ObjectConfigContext>(a => a.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
+            }
 
             services.AddProblemDetails(ConfigureProblemDetails);
         }
@@ -89,13 +105,32 @@ namespace ObjectConfig
                     pattern: "{controller}/{action=Index}/{id?}");
             });
 
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("v1/swagger.json", "ObjectConfig(V1)");
+            });
+
+            app.UseHealthChecks("/hc", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                // ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            app.UseHealthChecksUI(config => config.UIPath = "/hc-ui");
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())
                 {
+                    // https://stackoverflow.com/questions/50633863/how-to-set-a-default-port-for-asp-net-core-angular-app/50980371#50980371
                     spa.UseReactDevelopmentServer(npmScript: "start");
+
+                    // https://medium.com/@faisal_/live-reloading-angular-application-with-asp-net-core-in-visual-studio-2017-957619f31008
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
                 }
             });
 

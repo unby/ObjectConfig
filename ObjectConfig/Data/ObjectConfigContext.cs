@@ -13,16 +13,16 @@ namespace ObjectConfig.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            new ApplicationConfiguration(modelBuilder);
-            new ConfigConfiguration(modelBuilder);
-            new ConfigElementConfiguration(modelBuilder, 150);
-            new EnvironmentConfiguration(modelBuilder);
-            new TypeElementConfiguration(modelBuilder, 150);
-            new UserConfiguration(modelBuilder);
+            new ApplicationConfiguration(modelBuilder, Database.ProviderName);
+            new ConfigConfiguration(modelBuilder, Database.ProviderName);
+            new ConfigElementConfiguration(modelBuilder, Database.ProviderName, 50);
+            new EnvironmentConfiguration(modelBuilder, Database.ProviderName);
+            new TypeElementConfiguration(modelBuilder, Database.ProviderName, 50);
+            new UserConfiguration(modelBuilder, Database.ProviderName);
             modelBuilder.ApplyConfiguration(new UsersApplicationsConfiguration());
             modelBuilder.ApplyConfiguration(new UsersEnvironmentsConfiguration());
             modelBuilder.ApplyConfiguration(new UsersTypesConfiguration());
-            new ValueElementConfiguration(modelBuilder, 150);
+            new ValueElementConfiguration(modelBuilder, Database.ProviderName, 50);
 
             modelBuilder.Entity<User>().HasData(new User(Constants.AdminId, Guid.NewGuid().ToString(), "GlobalAdmin", "admin@global.net", User.Role.GlobalAdministrator));
         }

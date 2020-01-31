@@ -18,29 +18,22 @@ namespace UnitTests.Mock
 
         public MockUserProvider(string externalId, string displayName, string email, User.Role role)
         {
-            _user = new UserDto()
-            {
-                ExternalId = externalId,
-                DisplayName = displayName,
-                AccessRole = role,
-                Email = email
-            };
+            _user = new UserDto(-1, externalId, displayName, email, role);
+            User = new User(externalId, displayName, email, role);
         }
+
+        public User User { get; }
 
         public MockUserProvider(UserDto user)
         {
             _user = user;
+            User = new User(user.ExternalId, user.DisplayName, user.Email, user.AccessRole);
         }
 
         public MockUserProvider(User user)
         {
-            _user = new UserDto()
-            {
-                ExternalId = user.ExternalId,
-                DisplayName = user.DisplayName,
-                AccessRole = user.AccessRole,
-                Email = user.Email
-            };
+            _user = new UserDto(-1, user.ExternalId, user.DisplayName, user.Email, user.AccessRole);
+            User = user;
         }
 
         public UserDto GetCurrentUser()

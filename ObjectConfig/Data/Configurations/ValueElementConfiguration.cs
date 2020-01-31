@@ -1,21 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
+using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
 {
     public class ValueElementConfiguration : ConfigurationBase<ValueElement>
     {
-        public ValueElementConfiguration(ModelBuilder modelBuilder, int increment = 5) : base(modelBuilder, increment)
+        public ValueElementConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100) : base(modelBuilder, dbType, increment, startsAt)
         {
         }
 
-        protected override Type PrimeryKeyType => GetPKType(k => k.ValueElementId);
+        protected override PropertyInfo KeyProperty => GetPKType(k => k.ValueElementId);
 
         protected override void ConfigureProperty(EntityTypeBuilder<ValueElement> builder)
         {
-            builder.HasKey(p => p.ValueElementId);
-            builder.Property(p => p.ValueElementId).UseHiLo(SequenceName);
+           // builder.HasKey(p => p.ValueElementId);
+           // builder.Property(p => p.ValueElementId).UseHiLo(SequenceName);
 
             builder.Property(p => p.Value).HasMaxLength(int.MaxValue);
 

@@ -2,7 +2,7 @@
 
 namespace ObjectConfig.Data
 {
-    public class UsersApplications
+    public class UsersApplications : IRole<UsersApplications.Role>
     {
         public UsersApplications(int userId, int applicationId, Role accessRole)
         {
@@ -26,7 +26,7 @@ namespace ObjectConfig.Data
 
         public virtual Application Application { get; protected set; }
 
-        public Role AccessRole { get; protected set; }
+        public Role AccessRole { get; set; }
 
         public enum Role { Viewer, Editor, Administrator }
     }
