@@ -59,6 +59,8 @@ namespace ObjectConfig
         private void ConfigureProblemDetails(ProblemDetailsOptions options)
         {
             options.IncludeExceptionDetails = ctx => true;
+            // logging all bad response
+            options.ShouldLogUnhandledException = (x, y, z) => true;
 
             // This will map NotImplementedException to the 501 Not Implemented status code.
             options.Map<NotImplementedException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status501NotImplemented));

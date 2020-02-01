@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Applictaions\Handler\" />
-    <Folder Include="Applictaions\Dto\" />
-    <Folder Include="Applictaions\Query\" />
-    <Folder Include="Applictaions\Response\" />
     <Folder Include="Configs\Command\" />
     <Folder Include="Configs\Handler\" />
     <Folder Include="Configs\Query\" />

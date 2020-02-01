@@ -20,5 +20,7 @@ namespace UnitTests.Data
         public static Application Application1 => new Application(1, "Application1", "Application1", "Application1");
 
         public static Application Application2 => new Application(2, "Application2", "Application2", "Application2");
+
+        public static Application Application3 => new Application(3, "Application3", "Application3", "Application3");
     }
 }

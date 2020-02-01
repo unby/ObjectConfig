@@ -6,7 +6,6 @@ using ObjectConfig.Data;
 using ObjectConfig.Features.Applictaions.Create;
 using ObjectConfig.Features.Applictaions.FindByCode;
 using ObjectConfig.Features.Applictaions.Update;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -41,17 +40,9 @@ namespace ObjectConfig.Features.Applictaions
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetApplication(string code)
         {
-            try
-            {
-                var response = await _mediator.Send(new FindByCodeCommand(code));
-                var rr = _mapper.Map<UsersApplications, ApplicationDTO>(response);
-                return Ok(rr);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex);
-                throw ex;
-            }
+            var response = await _mediator.Send(new FindByCodeCommand(code));
+            var rr = _mapper.Map<UsersApplications, ApplicationDTO>(response);
+            return Ok(rr);
         }
 
         [HttpPost]

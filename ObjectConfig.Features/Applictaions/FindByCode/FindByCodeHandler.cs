@@ -27,12 +27,7 @@ namespace ObjectConfig.Features.Applictaions.FindByCode
             UsersApplications? result = null;
             if (application == null)
             {
-                if (isGlobalAdmin)
-                {
-                    throw new NotFoundException($"Application '{request.Code}' isn't found");
-                }
-
-                throw new ForbidenException($"Application '{request.Code}' is denied access");
+                throw new NotFoundException($"Application '{request.Code}' isn't found");
             }
 
             var user = await _securityService.GetCurrentUser();

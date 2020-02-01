@@ -12,9 +12,9 @@ using Xunit.Abstractions;
 
 namespace UnitTests.Controllers
 {
-    public class ApplicationGlobalAdminRoles : ServerTestBase
+    public class ApplicationGlobalAdminsRole : ServerTestBase
     {
-        public ApplicationGlobalAdminRoles(ITestOutputHelper output) : base(output)
+        public ApplicationGlobalAdminsRole(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -37,17 +37,6 @@ namespace UnitTests.Controllers
             var result = await client.PostAsync("feature/application", testApp.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        }
-
-        [Fact]
-        public async Task It_should_Forbidden()
-        {
-            var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.Administrator);
-            using var client = server.CreateHttpClient();
-            var result = await client.GetAsync("feature/application/notcode");
-
-            Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
         }
 
         [Fact]
