@@ -10,9 +10,9 @@ namespace ObjectConfig
     {
         public static IServiceCollection AddObjectConfigContext(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDb)
         {
-            
+
             services.AddDbContext<ObjectConfigContext>(configureDb);
-            
+
             return services;
         }
         public static IServiceCollection AddRepositories(this IServiceCollection services)

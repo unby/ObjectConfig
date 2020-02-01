@@ -12,9 +12,9 @@ using Xunit.Abstractions;
 
 namespace UnitTests.Controllers
 {
-    public class Application : ServerTestBase
+    public class ApplicationAdminRoles : ServerTestBase
     {
-        public Application(ITestOutputHelper output) : base(output)
+        public ApplicationAdminRoles(ITestOutputHelper output) : base(output)
         {
         }
 
@@ -25,11 +25,12 @@ namespace UnitTests.Controllers
             var viewer = DataSeed.UserViewer1;
             var admin = DataSeed.UserAdmin1;
             context.UsersApplications.Add(new UsersApplications(viewer, app1, UsersApplications.Role.Viewer));
+            context.UsersApplications.Add(new UsersApplications(admin, app2, UsersApplications.Role.Administrator));
             context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, UsersApplications.Role.Administrator));
         }
 
         [Fact]
-        public async Task CreateApplication()
+        public async Task It_should_create()
         {
             var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
             using var server = TestServer(User.Role.Administrator);
@@ -38,14 +39,13 @@ namespace UnitTests.Controllers
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
-
         [Fact]
-        public async Task UpdateApplication()
+        public async Task It_should_not_update_if_user_forbiden()
         {
-            var testApp = DataSeed.Application1;
+            var testApp = DataSeed.Application2;
             using var server = TestServer(User.Role.Administrator);
             using var client = server.CreateHttpClient();
-           
+
             var updtestApp = new UpdateApplicationDto()
             {
                 ApplicationDefinition = new ApplicationDefinitionDto()
@@ -55,7 +55,27 @@ namespace UnitTests.Controllers
                 }
             };
 
-           var result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
+            var result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
+            Log.WriteLine(result.Content.ReadAsStringAsync().Result);
+            Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
+        }
+        [Fact]
+        public async Task It_should_update()
+        {
+            var testApp = DataSeed.Application1;
+            using var server = TestServer(User.Role.Administrator);
+            using var client = server.CreateHttpClient();
+
+            var updtestApp = new UpdateApplicationDto()
+            {
+                ApplicationDefinition = new ApplicationDefinitionDto()
+                {
+                    Description = Guid.NewGuid().ToString(),
+                    Name = Guid.NewGuid().ToString()
+                }
+            };
+
+            var result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
             Log.WriteLine(result.Content.ReadAsStringAsync().Result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 

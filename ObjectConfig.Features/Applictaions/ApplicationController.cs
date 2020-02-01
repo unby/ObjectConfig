@@ -6,6 +6,7 @@ using ObjectConfig.Data;
 using ObjectConfig.Features.Applictaions.Create;
 using ObjectConfig.Features.Applictaions.FindByCode;
 using ObjectConfig.Features.Applictaions.Update;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -40,8 +41,17 @@ namespace ObjectConfig.Features.Applictaions
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetApplication(string code)
         {
-            var response = await _mediator.Send(new FindByCodeCommand(code));
-            return Ok(_mapper.Map<UsersApplications, ApplicationDTO>(response));
+            try
+            {
+                var response = await _mediator.Send(new FindByCodeCommand(code));
+                var rr = _mapper.Map<UsersApplications, ApplicationDTO>(response);
+                return Ok(rr);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex);
+                throw ex;
+            }
         }
 
         [HttpPost]
@@ -59,7 +69,7 @@ namespace ObjectConfig.Features.Applictaions
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateApplication([FromRoute]string code,[FromBody] UpdateApplicationDto application)
+        public async Task<IActionResult> UpdateApplication([FromRoute]string code, [FromBody] UpdateApplicationDto application)
         {
             var app = await _mediator.Send(new UpdateCommand(code, application));
             var response = new ApplicationDTO(app);

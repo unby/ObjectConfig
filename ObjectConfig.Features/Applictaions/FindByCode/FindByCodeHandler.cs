@@ -41,8 +41,14 @@ namespace ObjectConfig.Features.Applictaions.FindByCode
             {
                 throw new ForbidenException($"Application '{request.Code}' is denied access");
             }
-
-            return result;
+            else if (isGlobalAdmin && result == null)
+            {
+                return new UsersApplications(await _securityService.GetCurrentUser(), application, UsersApplications.Role.Administrator);
+            }
+            else
+            {
+                return result;
+            }
         }
     }
 }

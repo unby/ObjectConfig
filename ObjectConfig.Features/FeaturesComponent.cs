@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig.Features.Applictaions;
 using ObjectConfig.Features.Users;
-using System;
 
 namespace ObjectConfig.Features
 {

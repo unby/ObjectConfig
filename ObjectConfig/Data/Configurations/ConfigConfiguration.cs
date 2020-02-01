@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
 using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
@@ -15,9 +14,6 @@ namespace ObjectConfig.Data.Configurations
 
         protected override void ConfigureProperty(EntityTypeBuilder<Config> builder)
         {
-            //builder.HasKey(p => p.ConfigId);
-            //builder.Property(p => p.ConfigId).UseHiLo(SequenceName);
-
             builder.Property(s => s.Code).IsRequired().HasMaxLength(128);
 
             builder.Property(s => s.VersionFrom).IsRequired();

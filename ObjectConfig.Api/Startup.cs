@@ -29,6 +29,7 @@ namespace ObjectConfig
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddProblemDetails(ConfigureProblemDetails).AddMvcCore(r => r.EnableEndpointRouting = false).AddJsonOptions(json => { json.JsonSerializerOptions.IgnoreNullValues = true; });
             services.AddControllersWithViews().ControllersRegister();
 
             services.FeaturesRegister();
@@ -46,19 +47,17 @@ namespace ObjectConfig
 
             services.AddHealthChecks();
             if (!Configuration.GetValue<bool>("IsUnitTest"))
-            { 
+            {
                 services.AddHealthChecksUI();
 
                 services.AddDbContext<ObjectConfigContext>(a => a.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
             }
 
-            services.AddProblemDetails(ConfigureProblemDetails);
+
         }
 
         private void ConfigureProblemDetails(ProblemDetailsOptions options)
         {
-            // This is the default behavior; only include exception details in a development environment.
-            // todo override initial
             options.IncludeExceptionDetails = ctx => true;
 
             // This will map NotImplementedException to the 501 Not Implemented status code.
@@ -67,32 +66,34 @@ namespace ObjectConfig
             // This will map HttpRequestException to the 503 Service Unavailable status code.
             options.Map<HttpRequestException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status503ServiceUnavailable));
 
-            options.Map<ObjectConfigBaseException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
+
             options.Map<NotFoundException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status404NotFound));
             options.Map<ForbidenException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status403Forbidden));
             options.Map<RequestException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status400BadRequest));
             options.Map<OperationException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
-
-            // Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
-            // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
-            options.Map<Exception>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
+            options.Map<Exception>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status503ServiceUnavailable));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseProblemDetails();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                // app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            if (!Configuration.GetValue<bool>("IsUnitTest"))
+            {
+                app.UseHttpsRedirection();
+            }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
@@ -133,8 +134,6 @@ namespace ObjectConfig
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:4200");
                 }
             });
-
-            app.UseProblemDetails();
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ObjectConfig;
@@ -63,7 +61,7 @@ namespace UnitTests.Controllers
                 services?.Invoke(s);
                 s.AddSingleton<IUserProvider>(userProvider);
             };
-            
+
             var testServer = TestServer(internalAction);
             testServer.CreateClient();
 

@@ -69,7 +69,7 @@ namespace ObjectConfig.Features.Applictaions.Update
             }
 
             await _configContext.SaveChangesAsync();
-            
+
             return await _mediator.Send(new FindByCodeCommand(application.Code), cancellationToken);
         }
     }

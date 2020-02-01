@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory.ValueGeneration.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Linq.Expressions;
@@ -35,7 +34,7 @@ namespace ObjectConfig.Data.Configurations
         {
             ConfigureProperty(builder);
             builder.HasKey(KeyProperty.Name);
-            var keyProperty = builder.Property(KeyProperty.PropertyType, KeyProperty.Name); 
+            var keyProperty = builder.Property(KeyProperty.PropertyType, KeyProperty.Name);
 
             if (_dbType.Contains("lite"))
             {

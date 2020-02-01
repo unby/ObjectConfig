@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
 using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
@@ -15,9 +14,6 @@ namespace ObjectConfig.Data.Configurations
 
         protected override void ConfigureProperty(EntityTypeBuilder<ValueElement> builder)
         {
-           // builder.HasKey(p => p.ValueElementId);
-           // builder.Property(p => p.ValueElementId).UseHiLo(SequenceName);
-
             builder.Property(p => p.Value).HasMaxLength(int.MaxValue);
 
             builder.Property(p => p.Comment).HasMaxLength(256);

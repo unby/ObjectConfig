@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using ObjectConfig;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -10,18 +9,6 @@ namespace UnitTests
         public ResearchTest(ITestOutputHelper output) : base(output)
         {
         }
-
-    /*    [Fact]
-        public void ChekUser()
-        {
-            using (var context = GetObjectConfigContext())
-            {
-
-                var admin = context.Admin();
-                Assert.Equal(Constants.AdminId, admin.UserId);
-                Assert.Equal("GlobalAdmin", admin.DisplayName);
-            }
-        }*/
 
         [Fact]
         public void Decode()

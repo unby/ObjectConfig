@@ -72,7 +72,7 @@ namespace ObjectConfig.Features.Users
             where TUser : IRole<TRoleEnum>
         {
             var user = await GetCurrentUser();
-            var userEntity = entity.Users.Single(f => f.UserId == user.UserId);
+            var userEntity = entity.Users.SingleOrDefault(f => f.UserId == user.UserId);
 
             if ((userEntity != null && Convert.ToInt32(userEntity.AccessRole) >= Convert.ToInt32(minimalEntityRole))
                 || await TryCheckAccess(globalRole))

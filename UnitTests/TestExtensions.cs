@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ObjectConfig;
 using ObjectConfig.Data;
-using System;
 using System.Net.Http;
 using Xunit.Abstractions;
 
@@ -46,7 +45,7 @@ namespace UnitTests
         public static HttpClient CreateHttpClient(this TestServer server)
         {
             var client = server.CreateClient();
-            
+
             return client;
         }
 
