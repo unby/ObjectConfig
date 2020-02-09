@@ -22,5 +22,20 @@ namespace UnitTests.Data
         public static Application Application2 => new Application(2, "Application2", "Application2", "Application2");
 
         public static Application Application3 => new Application(3, "Application3", "Application3", "Application3");
+
+        public static Environment Environment1(Application app)
+        {
+            return new Environment("Environment1", "Environment1", "Environment1", app);
+        }
+
+        public static Environment Environment2(Application app)
+        {
+            return new Environment("Environment2", "Environment2", "Environment2", app);
+        }
+
+        public static Environment Environment3(Application app)
+        {
+            return new Environment("Environment3", "Environment3", "Environment3", app);
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace UnitTests.Controllers
 {
     public class ServerTestBase : BaseTest
     {
-        private static readonly Action<IServiceCollection> EmptyMethod = (s) => { };
+        private static readonly Action<IServiceCollection> _emptyMethod = (s) => { };
 
         static ServerTestBase()
         {
@@ -32,7 +32,8 @@ namespace UnitTests.Controllers
             return (s) =>
             {
                 s.AddLogging((builder) => builder.AddXUnit(Log));
-                s.AddObjectConfigContext(ConfigureDb);
+
+                s.AddObjectConfigContext(ConfigureDb(CreateConnection()));
                 services(s);
             };
         }
@@ -76,7 +77,7 @@ namespace UnitTests.Controllers
 
         protected virtual TestServer TestServer(Action<IServiceCollection> services = null)
         {
-            var overideServices = services ?? EmptyMethod;
+            var overideServices = services ?? _emptyMethod;
             var server = new TestServer(
                 WebHost.CreateDefaultBuilder<Startup>(Args)
                 .ConfigureTestServices(DefaultServices(overideServices)));

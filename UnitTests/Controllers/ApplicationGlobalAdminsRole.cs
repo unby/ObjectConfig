@@ -21,11 +21,8 @@ namespace UnitTests.Controllers
         protected override void SeedData(ObjectConfigContext context, MockUserProvider userProvider)
         {
             var app1 = DataSeed.Application1;
-            var app2 = DataSeed.Application2;
             var viewer = DataSeed.UserViewer1;
-            var admin = DataSeed.UserAdmin1;
             context.UsersApplications.Add(new UsersApplications(viewer, app1, UsersApplications.Role.Viewer));
-            //  context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, UsersApplications.Role.Administrator));
         }
 
         [Fact]
@@ -59,7 +56,7 @@ namespace UnitTests.Controllers
 
             var updtestApp = new UpdateApplicationDto()
             {
-                ApplicationDefinition = new ApplicationDefinitionDto()
+                ApplicationDefinition = new DefinitionDto()
                 {
                     Description = Guid.NewGuid().ToString(),
                     Name = Guid.NewGuid().ToString()

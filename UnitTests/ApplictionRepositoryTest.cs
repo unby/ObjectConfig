@@ -28,7 +28,7 @@ namespace UnitTests
 
             Assert.NotNull(rep);
             var app = new Application(Utils.GetStr, _appCode, null);
-            app.Environments.Add(new Environment() { Code = _envCode, Name = Utils.GetStr });
+            app.Environments.Add(new Environment(Utils.GetStr, _envCode, null));
             await rep.Create(app);
 
             app = await rep.Find(_appCode);

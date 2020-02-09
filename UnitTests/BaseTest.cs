@@ -5,16 +5,18 @@ using Microsoft.Extensions.Logging;
 using ObjectConfig;
 using ObjectConfig.Data;
 using System;
+using System.Data.Common;
 using Xunit.Abstractions;
 
 namespace UnitTests
 {
 
-    public class BaseTest : IDisposable
+    public class BaseTest
     {
         protected IServiceProvider GetDi(Func<IServiceCollection, IServiceCollection> func = null)
         {
-            var sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).AddObjectConfigContext(ConfigureDb).AddRepositories();
+
+            var sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).AddObjectConfigContext(ConfigureDb(CreateConnection())).AddRepositories();
             if (func != null)
             {
                 sc = func(sc);
@@ -29,41 +31,31 @@ namespace UnitTests
             return sp;
         }
 
-        public void Dispose()
+        protected DbConnection CreateConnection()
         {
-            this.DisposeInternal(true);
-            GC.SuppressFinalize(this);
+            var sqliteConnection = new SqliteConnection($"Data Source={Guid.NewGuid()};Mode=Memory;Cache=Shared");
+            sqliteConnection.Open();
+            return sqliteConnection;
         }
 
-
-        protected virtual void ConfigureDb(DbContextOptionsBuilder dbContextOptionsBuilder)
+        protected virtual Action<DbContextOptionsBuilder> ConfigureDb(DbConnection connection)
         {
-            if (_integration)
+            return (DbContextOptionsBuilder dbContextOptionsBuilder) =>
             {
-                Log.WriteLine("mssql");
-                dbContextOptionsBuilder.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds));
-            }
-            else
-            {
-                Log.WriteLine("UseSqlite");
-                dbContextOptionsBuilder.UseSqlite(SqliteConnection);
-            }
+                if (_integration)
+                {
+                    Log.WriteLine("mssql");
+                    dbContextOptionsBuilder.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds));
+                }
+                else
+                {
+                    Log.WriteLine("UseSqlite");
+
+                    dbContextOptionsBuilder.UseSqlite(connection);
+                }
+            };
         }
 
-        protected SqliteConnection SqliteConnection { get; set; }
-
-        protected virtual void Dispose(bool disposing)
-        {
-        }
-
-        private void DisposeInternal(bool disposing)
-        {
-            if (disposing)
-            {
-                SqliteConnection.Dispose();
-                Dispose(disposing);
-            }
-        }
         protected IServiceScope GetScope(Func<IServiceCollection, IServiceCollection> func = null)
         {
             return GetDi(func).CreateScope();
@@ -75,8 +67,7 @@ namespace UnitTests
         public BaseTest(ITestOutputHelper output)
         {
             this.Log = output;
-            SqliteConnection = new SqliteConnection($"Data Source={GetType().Name};Mode=Memory;Cache=Shared"); //"DataSource=:memory:");
-            SqliteConnection.Open();
+
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿namespace ObjectConfig.Features.Applictaions.Update
 {
-    public class ApplicationDefinitionDto
+#nullable disable
+    public class DefinitionDto
     {
         public string Name { get; set; }
-        public string? Description { get; set; }
+        public string Description { get; set; }
     }
 }

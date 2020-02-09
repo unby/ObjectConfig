@@ -48,7 +48,7 @@ namespace UnitTests.Controllers
 
             var updtestApp = new UpdateApplicationDto()
             {
-                ApplicationDefinition = new ApplicationDefinitionDto()
+                ApplicationDefinition = new DefinitionDto()
                 {
                     Description = Guid.NewGuid().ToString(),
                     Name = Guid.NewGuid().ToString()
@@ -80,7 +80,7 @@ namespace UnitTests.Controllers
 
             var updtestApp = new UpdateApplicationDto()
             {
-                ApplicationDefinition = new ApplicationDefinitionDto()
+                ApplicationDefinition = new DefinitionDto()
                 {
                     Description = Guid.NewGuid().ToString(),
                     Name = Guid.NewGuid().ToString()

@@ -16,7 +16,7 @@ namespace ObjectConfig.Data
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("message", nameof(name));
+                throw new ArgumentException($"Constructor requires data for {nameof(TypeElement)}'s", nameof(name));
             }
 
             Type = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
@@ -28,7 +28,7 @@ namespace ObjectConfig.Data
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("message", nameof(name));
+                throw new ArgumentException($"Constructor requires data for {nameof(TypeElement)}'s", nameof(name));
             }
 
             Type = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");

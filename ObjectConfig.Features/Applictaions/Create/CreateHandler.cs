@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Applictaions.Create
 {
-    public class UpdateHandler : IRequestHandler<CreateCommand, UsersApplications>
+    public class CreateHandler : IRequestHandler<CreateCommand, UsersApplications>
     {
         private readonly SecurityService _securityService;
         private readonly ApplicationRepository _applicationRepository;
 
-        public UpdateHandler(SecurityService securityService, ApplicationRepository applicationRepository)
+        public CreateHandler(SecurityService securityService, ApplicationRepository applicationRepository)
         {
             _securityService = securityService;
             _applicationRepository = applicationRepository;

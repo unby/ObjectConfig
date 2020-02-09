@@ -14,6 +14,7 @@ namespace ObjectConfig.Features.Users
         private readonly IUserProvider _userProvider;
 
         private User? _domainUser;
+        private AccessCardOfUser? _userCard;
 
         public SecurityService(UserRepository userRepository, IUserProvider userProvider)
         {
@@ -36,6 +37,16 @@ namespace ObjectConfig.Features.Users
             }
 
             return _domainUser;
+        }
+
+        public async Task<AccessCardOfUser> GetUserCard()
+        {
+            if (_userCard == null)
+            {
+                var user = await GetCurrentUser();
+                _userCard = new AccessCardOfUser(user.UserId, user.AccessRole);
+            }
+            return _userCard;
         }
 
         public bool IsGlobalAdminitrator()

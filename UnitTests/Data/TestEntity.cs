@@ -18,7 +18,7 @@ namespace UnitTests.Data
     {
         public string EntityName { get; set; } = nameof(ThirdEntity);
 
-        public string[] SimpleArray { get; set; } = new string[] { "SimpleArrayItem1", "SimpleArrayItem2" };
+        public string[] SimpleArray { get; set; } = new[] { "SimpleArrayItem1", "SimpleArrayItem2" };
     }
 
     public class SecondEntity

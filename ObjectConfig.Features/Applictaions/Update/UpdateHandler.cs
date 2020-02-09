@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using ObjectConfig.Data;
-using ObjectConfig.Exceptions;
 using ObjectConfig.Features.Applictaions.FindByCode;
+using ObjectConfig.Features.Common;
 using ObjectConfig.Features.Users;
 using ObjectConfig.Model;
 using System.Linq;
@@ -30,11 +30,9 @@ namespace ObjectConfig.Features.Applictaions.Update
 
         public async Task<UsersApplications> Handle(UpdateCommand request, CancellationToken cancellationToken)
         {
-            var application = await _applicationRepository.Find(request.Code);
-            if (application == null)
-            {
-                throw new NotFoundException("Application not found");
-            }
+            var application = await _applicationRepository.Find(request.ApplicationCode);
+
+            request.ThrowNotFoundExceptionWhenValueIsNull(application);
 
             var userApplication = await _securityService.CheckEntityAcces(application, UsersApplications.Role.Administrator);
             if (request.ApplicationDefinition != null)

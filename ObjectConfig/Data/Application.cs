@@ -14,12 +14,12 @@ namespace ObjectConfig.Data
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new System.ArgumentException("message", nameof(name));
+                throw new System.ArgumentException($"Constructor requires data for {nameof(Application)}'s", nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(code))
             {
-                throw new System.ArgumentException("message", nameof(code));
+                throw new System.ArgumentException($"Constructor requires data for {nameof(Application)}'s", nameof(code));
             }
 
             Name = name;
@@ -31,12 +31,12 @@ namespace ObjectConfig.Data
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new System.ArgumentException("message", nameof(name));
+                throw new System.ArgumentException($"Constructor requires data for {nameof(Application)}'s", nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(code))
             {
-                throw new System.ArgumentException("message", nameof(code));
+                throw new System.ArgumentException($"Constructor requires data for {nameof(Application)}'s", nameof(code));
             }
 
             Name = name;

@@ -7,40 +7,41 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace ObjectConfig.Features.Applictaions.Update
+namespace ObjectConfig.Features.Environments.Update
 {
-    public class UpdateCommand : ApplicationArgumentCommand, IRequest<UsersApplications>
+    public class UpdateEnvironmentCommand : EnvironmentArgumentCommand, IRequest<UsersEnvironments>
     {
-        public UpdateCommand(string code, UpdateApplicationDto updateApplication) : base(code)
+        public UpdateEnvironmentCommand(string applicationCode, string environmentCode, UpdateEnvironmentDto updateApplication)
+            : base(applicationCode, environmentCode)
         {
             if (updateApplication.ApplicationDefinition != null)
             {
-                ApplicationDefinition = new Definition(
+                EnvironmentDefinition = new Definition(
                     updateApplication.ApplicationDefinition.Name,
                     updateApplication.ApplicationDefinition.Description);
             }
 
             if (updateApplication.Users != null && updateApplication.Users.Any())
             {
-                Users = new Lazy<ReadOnlyCollection<UpdateCommand.User>>(
+                Users = new Lazy<ReadOnlyCollection<UpdateEnvironmentCommand.User>>(
                     () => new ReadOnlyCollection<User>(updateApplication.Users.
                         Select(s => new User(s.UserId, s.Role, s.Operation)).ToList()));
             }
 
-            if (ApplicationDefinition == null && Users == null)
+            if (EnvironmentDefinition == null && Users == null)
             {
                 throw new RequestException($"Parameters is invalid");
             }
         }
 
-        public Definition? ApplicationDefinition { get; }
+        public Definition? EnvironmentDefinition { get; }
 
-        public Lazy<ReadOnlyCollection<UpdateCommand.User>>? Users { get; }
+        public Lazy<ReadOnlyCollection<UpdateEnvironmentCommand.User>>? Users { get; }
 
         public class User
-            : IUserAcessLevel<UsersApplications.Role>
+            : IUserAcessLevel<UsersEnvironments.Role>
         {
-            public User(int userId, UsersApplications.Role role, EntityOperation operation)
+            public User(int userId, UsersEnvironments.Role role, EntityOperation operation)
             {
                 if (userId < 1)
                 {
@@ -53,7 +54,7 @@ namespace ObjectConfig.Features.Applictaions.Update
             }
 
             public int UserId { get; }
-            public UsersApplications.Role Role { get; }
+            public UsersEnvironments.Role Role { get; }
             public EntityOperation Operation { get; }
         }
 

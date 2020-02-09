@@ -11,10 +11,6 @@
     <Folder Include="Configs\Handler\" />
     <Folder Include="Configs\Query\" />
     <Folder Include="Configs\Response\" />
-    <Folder Include="Environments\Command\" />
-    <Folder Include="Environments\Handler\" />
-    <Folder Include="Environments\Query\" />
-    <Folder Include="Environments\Response\" />
     <Folder Include="Users\Command\" />
     <Folder Include="Users\Handler\" />
     <Folder Include="Users\Query\" />

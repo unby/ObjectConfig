@@ -4,6 +4,11 @@ namespace ObjectConfig.Features.Environments
 {
     public class EnvironmentDto
     {
+#nullable disable
+        private EnvironmentDto()
+        {
+        }
+#nullable enable
         public EnvironmentDto(string code, string name, string? description, UsersEnvironments.Role role)
         {
             Code = code;
@@ -25,12 +30,12 @@ namespace ObjectConfig.Features.Environments
             Role = usersEnvironments.AccessRole;
         }
 
-        public string Code { get; }
+        public string Code { get; private set; }
 
-        public string Name { get; }
+        public string Name { get; protected set; }
 
-        public string? Description { get; }
+        public string? Description { get; protected set; }
 
-        public UsersEnvironments.Role Role { get; }
+        public UsersEnvironments.Role Role { get; protected set; }
     }
 }

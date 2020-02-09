@@ -5,10 +5,11 @@ namespace ObjectConfig.Features.Applictaions
 {
     public class ApplicationDTO
     {
+#nullable disable
         private ApplicationDTO()
         {
         }
-
+#nullable enable
         public ApplicationDTO(int applicationId, string name, string code, string? description, UsersApplications.Role role)
         {
             ApplicationId = applicationId;

@@ -10,7 +10,7 @@ namespace UnitTests
 {
     public static class TestExtensions
     {
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings()
+        public static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings()
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
         };

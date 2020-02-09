@@ -28,6 +28,6 @@ namespace ObjectConfig.Data
 
         public Role AccessRole { get; set; }
 
-        public enum Role { Viewer, Editor, Administrator }
+        public enum Role { Viewer, Administrator }
     }
 }

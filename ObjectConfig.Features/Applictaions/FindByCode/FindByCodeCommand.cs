@@ -1,21 +1,13 @@
 ﻿using MediatR;
 using ObjectConfig.Data;
-using ObjectConfig.Exceptions;
+using ObjectConfig.Features.Common;
 
 namespace ObjectConfig.Features.Applictaions.FindByCode
 {
-    public class FindByCodeCommand : IRequest<UsersApplications>
+    public class FindByCodeCommand : ApplicationArgumentCommand, IRequest<UsersApplications>
     {
-        public FindByCodeCommand(string code)
+        public FindByCodeCommand(string code) : base(code)
         {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                throw new RequestException($"Parameter '{nameof(code)}' isn't should empty");
-            }
-
-            Code = code;
         }
-
-        public string Code { get; }
     }
 }

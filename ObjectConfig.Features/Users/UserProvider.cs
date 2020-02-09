@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System;
 
 namespace ObjectConfig.Features.Users
 {
@@ -10,7 +11,7 @@ namespace ObjectConfig.Features.Users
 
         public UserDto GetCurrentUser()
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }
