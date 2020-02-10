@@ -5,7 +5,7 @@ namespace ObjectConfig.Features.Environments.Update
 {
     public class UpdateEnvironmentDto
     {
-        public DefinitionDto? ApplicationDefinition { get; set; }
+        public DefinitionDto? Definition { get; set; }
 
         public List<EnvironmentUserRolesDto>? Users { get; set; }
     }

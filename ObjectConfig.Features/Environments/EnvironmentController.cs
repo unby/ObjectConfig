@@ -6,6 +6,7 @@ using ObjectConfig.Data;
 using ObjectConfig.Features.Environments.Create;
 using ObjectConfig.Features.Environments.FindAll;
 using ObjectConfig.Features.Environments.FindByCode;
+using ObjectConfig.Features.Environments.Update;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -52,16 +53,15 @@ namespace ObjectConfig.Features.Environments
             return Ok(new EnvironmentDto(result));
         }
 
-        [HttpPatch("{code}/update")]
-        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [HttpPatch("/features/application/{appCode}/environment/{envCode}")]
+        [ProducesResponseType(typeof(EnvironmentDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateEnvironment([FromRoute]string code, [FromBody] EnvironmentDto application)
+        public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode, [FromRoute]string envCode, [FromBody] UpdateEnvironmentDto application)
         {
-            //var app = await _mediator.Send(new UpdateCommand(code, application));
-            //var response = new ApplicationDTO(app);
-            return Ok(null);
+            var app = await _mediator.Send(new UpdateEnvironmentCommand(appCode, envCode, application));
+            return Ok(new EnvironmentDto(app));
         }
     }
 }

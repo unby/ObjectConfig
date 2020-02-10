@@ -28,7 +28,7 @@ namespace ObjectConfig.Features.Common
             {
                 if (command is EnvironmentArgumentCommand environmenCommand)
                 {
-                    throw new ForbidenException($"Environment '{environmenCommand.EnvironmentCode}({command.ApplicationCode})' isn't found");
+                    throw new NotFoundException($"Environment '{environmenCommand.EnvironmentCode}({command.ApplicationCode})' isn't found");
                 }
 
                 throw new NotFoundException($"Application '{command.ApplicationCode}' isn't found");

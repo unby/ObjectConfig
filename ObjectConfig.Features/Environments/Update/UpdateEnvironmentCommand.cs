@@ -14,11 +14,11 @@ namespace ObjectConfig.Features.Environments.Update
         public UpdateEnvironmentCommand(string applicationCode, string environmentCode, UpdateEnvironmentDto updateApplication)
             : base(applicationCode, environmentCode)
         {
-            if (updateApplication.ApplicationDefinition != null)
+            if (updateApplication.Definition != null)
             {
                 EnvironmentDefinition = new Definition(
-                    updateApplication.ApplicationDefinition.Name,
-                    updateApplication.ApplicationDefinition.Description);
+                    updateApplication.Definition.Name,
+                    updateApplication.Definition.Description);
             }
 
             if (updateApplication.Users != null && updateApplication.Users.Any())

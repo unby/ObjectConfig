@@ -49,23 +49,22 @@ namespace ObjectConfig.Data
             ApplicationId = applicationId;
         }
 
-        public void Rename(string name)
-        {
-            Name = name;
-        }
-
         public int ApplicationId { get; protected set; }
-
-        public void NewDefinition(string? description)
-        {
-            Description = description;
-        }
 
         public string Name { get; protected set; }
 
         public string Code { get; protected set; }
 
         public string? Description { get; protected set; }
+
+        public void Rename(string name)
+        {
+            Name = name;
+        }
+        public void NewDefinition(string? description)
+        {
+            Description = description;
+        }
 
         public virtual IList<Environment> Environments { get; set; } = new List<Environment>();
 

@@ -2,6 +2,7 @@
 using ObjectConfig.Data;
 using ObjectConfig.Features.Environments;
 using ObjectConfig.Features.Environments.Create;
+using ObjectConfig.Features.Environments.Update;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -127,39 +128,51 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_update()
         {
-            var testEnv = new CreateEnvironmentDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString(), Description = Guid.NewGuid().ToString() };
+            var updtestEnv = new UpdateEnvironmentDto()
+            {
+                Definition = new ObjectConfig.Features.Applictaions.Update.DefinitionDto()
+                {
+                    Description = Guid.NewGuid().ToString(),
+                    Name = Guid.NewGuid().ToString()
+                }
+            };
+
             using var server = TestServer(User.Role.Administrator);
             using var client = server.CreateHttpClient();
-            var result = await client.PatchAsync($"features/application/{ForUpdateEnv.Application.Code}/environment/{ForUpdateEnv.Code}", testEnv.Serialize());
+            var result = await client.PatchAsync($"features/application/{ForUpdateEnv.Application.Code}/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            Log.WriteLine(result.Content.ReadAsStringAsync().Result);
-            var env = result.Deserialize<EnvironmentDto>();
-            Assert.Equal(testEnv.Code, env.Code);
-            Assert.Equal(testEnv.Description, env.Description);
-            Assert.Equal(testEnv.Name, env.Name);
 
-            result = await client.GetAsync($"features/application/{DataSeed.Application1.Code}/environment/{testEnv.Code}");
+            var env = result.Deserialize<EnvironmentDto>();
+            Assert.Equal(updtestEnv.Definition.Description, env.Description);
+            Assert.Equal(updtestEnv.Definition.Name, env.Name);
+
+            result = await client.GetAsync($"features/application/{ForUpdateEnv.Application.Code}/environment/{ForUpdateEnv.Code}");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             env = result.Deserialize<EnvironmentDto>();
-            Assert.Equal(testEnv.Code, env.Code);
-            Assert.Equal(testEnv.Description, env.Description);
-            Assert.Equal(testEnv.Name, env.Name);
+            Assert.Equal(updtestEnv.Definition.Description, env.Description);
+            Assert.Equal(updtestEnv.Definition.Name, env.Name);
         }
 
         [Fact]
         public async Task It_should_forbiden_update()
         {
-            var testEnv = new CreateEnvironmentDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString(), Description = Guid.NewGuid().ToString() };
+            var updtestEnv = new UpdateEnvironmentDto()
+            {
+                Definition = new ObjectConfig.Features.Applictaions.Update.DefinitionDto()
+                {
+                    Description = Guid.NewGuid().ToString(),
+                    Name = Guid.NewGuid().ToString()
+                }
+            };
+
             using var server = TestServer(User.Role.Administrator);
             using var client = server.CreateHttpClient();
-            var result = await client.PostAsync($"features/application/{DataSeed.Application2.Code}/environment/", testEnv.Serialize());
+            var result = await client.PatchAsync($"features/application/notfound/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
 
-            Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
-
-            result = await client.GetAsync($"features/application/{DataSeed.Application2.Code}/environment/{testEnv.Code}");
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+
         }
     }
 }
