@@ -4,12 +4,12 @@ using ObjectConfig.Features.Users;
 namespace ObjectConfig.Features.Applictaions.Update
 {
     public class ApplicationUserRolesDto
-        : IUserAcessLevel<UsersApplications.Role>
+        : IUserAcessLevel<ApplicationRole>
     {
         private ApplicationUserRolesDto()
         { }
 
-        public ApplicationUserRolesDto(int userId, UsersApplications.Role role, EntityOperation operation)
+        public ApplicationUserRolesDto(int userId, ApplicationRole role, EntityOperation operation)
         {
             UserId = userId;
             Role = role;
@@ -17,7 +17,7 @@ namespace ObjectConfig.Features.Applictaions.Update
         }
 
         public int UserId { get; }
-        public UsersApplications.Role Role { get; }
+        public ApplicationRole Role { get; }
         public EntityOperation Operation { get; }
     }
 }

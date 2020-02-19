@@ -9,7 +9,7 @@ namespace ObjectConfig.Features.Users
         {
         }
 
-        public UserDto(int userId, string externalId, string displayName, string email, User.Role accessRole)
+        public UserDto(int userId, string externalId, string displayName, string email, UserRole accessRole)
         {
             Email = email;
             AccessRole = accessRole;
@@ -20,7 +20,7 @@ namespace ObjectConfig.Features.Users
 
         public string Email { get; private set; }
 
-        public User.Role AccessRole { get; private set; }
+        public UserRole AccessRole { get; private set; }
 
         public int UserId { get; private set; }
 

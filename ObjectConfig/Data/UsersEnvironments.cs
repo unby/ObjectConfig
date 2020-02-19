@@ -6,14 +6,14 @@
         {
         }
 
-        public UsersEnvironments(User user, Environment environment, Role accessRole)
+        public UsersEnvironments(User user, Environment environment, EnvironmentRole accessRole)
             : this(user.UserId, environment.EnvironmentId, accessRole)
         {
             User = user;
             Environment = environment;
         }
 
-        public UsersEnvironments(int userId, int environmentId, Role accessRole)
+        public UsersEnvironments(int userId, int environmentId, EnvironmentRole accessRole)
         {
             UserId = userId;
             EnvironmentId = environmentId;
@@ -28,8 +28,6 @@
 
         public virtual Environment Environment { get; protected set; }
 
-        public Role AccessRole { get; protected set; }
-
-        public enum Role { Viewer, TargetEditor, Editor }
+        public EnvironmentRole AccessRole { get; protected set; }
     }
 }

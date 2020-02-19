@@ -17,7 +17,7 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_get_user()
         {
-            var testUser = new MockUserProvider(User.Role.Viewer);
+            var testUser = new MockUserProvider(UserRole.Viewer);
             using var server = TestServer(testUser);
             using var client = server.CreateHttpClient();
             var result = await client.GetAsync("feature/user");

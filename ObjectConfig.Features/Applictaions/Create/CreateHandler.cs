@@ -20,10 +20,10 @@ namespace ObjectConfig.Features.Applictaions.Create
 
         public async Task<UsersApplications> Handle(CreateCommand request, CancellationToken cancellationToken)
         {
-            await _securityService.CheckAccess(User.Role.Administrator);
+            await _securityService.CheckAccess(UserRole.Administrator);
 
             Application application = new Application(request.Name, request.Code, request.Description);
-            var userApp = new UsersApplications(await _securityService.GetCurrentUser(), application, UsersApplications.Role.Administrator);
+            var userApp = new UsersApplications(await _securityService.GetCurrentUser(), application, ApplicationRole.Administrator);
             application.Users.Add(userApp);
 
             await _applicationRepository.Create(application);

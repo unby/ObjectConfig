@@ -39,9 +39,9 @@ namespace ObjectConfig.Features.Environments.Update
         public Lazy<ReadOnlyCollection<UpdateEnvironmentCommand.User>>? Users { get; }
 
         public class User
-            : IUserAcessLevel<UsersEnvironments.Role>
+            : IUserAcessLevel<EnvironmentRole>
         {
-            public User(int userId, UsersEnvironments.Role role, EntityOperation operation)
+            public User(int userId, EnvironmentRole role, EntityOperation operation)
             {
                 if (userId < 1)
                 {
@@ -54,7 +54,7 @@ namespace ObjectConfig.Features.Environments.Update
             }
 
             public int UserId { get; }
-            public UsersEnvironments.Role Role { get; }
+            public EnvironmentRole Role { get; }
             public EntityOperation Operation { get; }
         }
 

@@ -38,7 +38,7 @@ namespace ObjectConfig.Features.Applictaions.FindByCode
             }
             else if (isGlobalAdmin && result == null)
             {
-                return new UsersApplications(await _securityService.GetCurrentUser(), application, UsersApplications.Role.Administrator);
+                return new UsersApplications(await _securityService.GetCurrentUser(), application, ApplicationRole.Administrator);
             }
             else
             {

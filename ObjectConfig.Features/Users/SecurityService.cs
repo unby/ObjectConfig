@@ -51,7 +51,7 @@ namespace ObjectConfig.Features.Users
 
         public bool IsGlobalAdminitrator()
         {
-            return TryCheckAccess(User.Role.GlobalAdministrator).Result;
+            return TryCheckAccess(UserRole.GlobalAdministrator).Result;
         }
 
         private User MapUser(UserDto tempUser)
@@ -59,13 +59,13 @@ namespace ObjectConfig.Features.Users
             return new User(tempUser.ExternalId, tempUser.DisplayName, tempUser.Email, tempUser.AccessRole);
         }
 
-        public async Task<bool> TryCheckAccess(User.Role minimalAccessLevel)
+        public async Task<bool> TryCheckAccess(UserRole minimalAccessLevel)
         {
             var user = await GetCurrentUser();
             return user.AccessRole >= minimalAccessLevel;
         }
 
-        public async Task<bool> CheckAccess(User.Role minimalAccessLevel,
+        public async Task<bool> CheckAccess(UserRole minimalAccessLevel,
             [CallerMemberName] string callMemeber = "")
         {
             if (!(await TryCheckAccess(minimalAccessLevel)))
@@ -77,7 +77,7 @@ namespace ObjectConfig.Features.Users
 
         public async Task<TUser> CheckEntityAcces<TRoleEnum, TUser>(IUsers<TUser, TRoleEnum> entity,
             TRoleEnum minimalEntityRole,
-            User.Role globalRole = User.Role.GlobalAdministrator,
+            UserRole globalRole = UserRole.GlobalAdministrator,
             [CallerMemberName] string callMemeber = "")
             where TRoleEnum : Enum
             where TUser : IRole<TRoleEnum>

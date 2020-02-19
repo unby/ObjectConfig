@@ -27,7 +27,7 @@ namespace ObjectConfig.Features.Environments.FindAll
             var result = (from app in _configContext.UsersApplications.Where(w => w.Application.Code.Equals(request.ApplicationCode) && w.UserId.Equals(card.UserId))
                           join env in _configContext.UsersEnvironments.Include(i => i.Environment) on app.ApplicationId equals env.Environment.ApplicationId into userEnv
                           from environmentAccess in userEnv.DefaultIfEmpty()
-                          where ((environmentAccess.UserId.Equals(card.UserId) && app.AccessRole < UsersApplications.Role.Administrator) || (!environmentAccess.UserId.Equals(card.UserId) && app.AccessRole >= UsersApplications.Role.Administrator))
+                          where ((environmentAccess.UserId.Equals(card.UserId) && app.AccessRole < ApplicationRole.Administrator) || (!environmentAccess.UserId.Equals(card.UserId) && app.AccessRole >= ApplicationRole.Administrator))
                           select new
                           {
                               appId = app.ApplicationId,

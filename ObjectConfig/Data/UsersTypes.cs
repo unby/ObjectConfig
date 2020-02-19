@@ -10,8 +10,6 @@
 
         public TypeElement ValueType { get; protected set; }
 
-        public Role AccessRole { get; protected set; }
-
-        public enum Role { SaveViewer, Viewer, SaveEditor, Editor }
+        public TypeRole AccessRole { get; protected set; }
     }
 }

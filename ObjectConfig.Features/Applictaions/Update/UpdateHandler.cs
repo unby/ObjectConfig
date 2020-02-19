@@ -34,7 +34,7 @@ namespace ObjectConfig.Features.Applictaions.Update
 
             request.ThrowNotFoundExceptionWhenValueIsNull(application);
 
-            var userApplication = await _securityService.CheckEntityAcces(application, UsersApplications.Role.Administrator);
+            var userApplication = await _securityService.CheckEntityAcces(application, ApplicationRole.Administrator);
             if (request.ApplicationDefinition != null)
             {
                 application.Rename(request.ApplicationDefinition.Name);

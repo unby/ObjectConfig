@@ -10,7 +10,7 @@ namespace ObjectConfig.Features.Applictaions
         {
         }
 #nullable enable
-        public ApplicationDTO(int applicationId, string name, string code, string? description, UsersApplications.Role role)
+        public ApplicationDTO(int applicationId, string name, string code, string? description, ApplicationRole role)
         {
             ApplicationId = applicationId;
             Name = name;
@@ -36,6 +36,6 @@ namespace ObjectConfig.Features.Applictaions
 
         public string? Description { get; protected set; }
 
-        public UsersApplications.Role Role { get; protected set; }
+        public ApplicationRole Role { get; protected set; }
     }
 }

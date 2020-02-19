@@ -22,14 +22,14 @@ namespace UnitTests.Controllers
         {
             var app1 = DataSeed.Application1;
             var viewer = DataSeed.UserViewer1;
-            context.UsersApplications.Add(new UsersApplications(viewer, app1, UsersApplications.Role.Viewer));
+            context.UsersApplications.Add(new UsersApplications(viewer, app1, ApplicationRole.Viewer));
         }
 
         [Fact]
         public async Task It_should_create()
         {
             var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.GlobalAdministrator);
+            using var server = TestServer(UserRole.GlobalAdministrator);
             using var client = server.CreateHttpClient();
             var result = await client.PostAsync("feature/application", testApp.Serialize());
 
@@ -40,7 +40,7 @@ namespace UnitTests.Controllers
         public async Task It_should_FotFound()
         {
             var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.GlobalAdministrator);
+            using var server = TestServer(UserRole.GlobalAdministrator);
             using var client = server.CreateHttpClient();
             var result = await client.GetAsync("feature/application/notcode");
 
@@ -51,7 +51,7 @@ namespace UnitTests.Controllers
         public async Task It_should_update()
         {
             var testApp = DataSeed.Application1;
-            using var server = TestServer(User.Role.GlobalAdministrator);
+            using var server = TestServer(UserRole.GlobalAdministrator);
             using var client = server.CreateHttpClient();
 
             var updtestApp = new UpdateApplicationDto()

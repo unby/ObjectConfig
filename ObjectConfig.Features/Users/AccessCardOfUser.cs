@@ -5,7 +5,7 @@ namespace ObjectConfig.Features.Users
 {
     public class AccessCardOfUser : IAccessCardOfUser
     {
-        public AccessCardOfUser(int userId, User.Role userRole)
+        public AccessCardOfUser(int userId, UserRole userRole)
         {
             if (userId < 1)
             {
@@ -17,6 +17,6 @@ namespace ObjectConfig.Features.Users
         }
 
         public int UserId { get; }
-        public User.Role UserRole { get; }
+        public UserRole UserRole { get; }
     }
 }

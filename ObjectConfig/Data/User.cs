@@ -8,7 +8,7 @@ namespace ObjectConfig.Data
         {
         }
 
-        public User(int userId, string externalId, string displayName, string email, User.Role role)
+        public User(int userId, string externalId, string displayName, string email, UserRole role)
         {
             UserId = userId;
             ExternalId = externalId;
@@ -17,7 +17,7 @@ namespace ObjectConfig.Data
             AccessRole = role;
         }
 
-        public User(string externalId, string displayName, string email, User.Role role)
+        public User(string externalId, string displayName, string email, UserRole role)
         {
             ExternalId = externalId;
             DisplayName = displayName;
@@ -33,9 +33,7 @@ namespace ObjectConfig.Data
 
         public string Email { get; protected set; }
 
-        public Role AccessRole { get; protected set; }
-
-        public enum Role { Anonym, Viewer, Administrator, GlobalAdministrator }
+        public UserRole AccessRole { get; protected set; }
 
         public List<UsersApplications> Applications { get; set; } = new List<UsersApplications>();
 

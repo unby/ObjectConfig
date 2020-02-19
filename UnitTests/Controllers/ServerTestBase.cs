@@ -49,7 +49,7 @@ namespace UnitTests.Controllers
         /// <param name="userRole">use provider role</param>
         /// <param name="services">func for mock configure</param>
         /// <returns></returns>
-        protected virtual TestServer TestServer(User.Role userRole, Action<IServiceCollection> services = null)
+        protected virtual TestServer TestServer(UserRole userRole, Action<IServiceCollection> services = null)
         {
             var userProvider = new MockUserProvider(userRole);
             return TestServer(userProvider, services);

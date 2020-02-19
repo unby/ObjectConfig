@@ -31,30 +31,30 @@ namespace UnitTests.Controllers
             var viewer = DataSeed.UserViewer1;
             var admin = DataSeed.UserAdmin1;
 
-            context.UsersApplications.Add(new UsersApplications(viewer, app1, UsersApplications.Role.Viewer));
-            context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, UsersApplications.Role.Administrator));
-            context.UsersApplications.Add(new UsersApplications(userProvider.User, app2, UsersApplications.Role.Viewer));
+            context.UsersApplications.Add(new UsersApplications(viewer, app1, ApplicationRole.Viewer));
+            context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, ApplicationRole.Administrator));
+            context.UsersApplications.Add(new UsersApplications(userProvider.User, app2, ApplicationRole.Viewer));
 
             var env1 = DataSeed.Environment1(app1);
             var env2 = DataSeed.Environment2(app1);
             ForUpdateEnv = DataSeed.Environment3(app1);
 
-            context.UsersEnvironments.Add(new UsersEnvironments(admin, env1, UsersEnvironments.Role.Editor));
-            context.UsersEnvironments.Add(new UsersEnvironments(admin, env2, UsersEnvironments.Role.Editor));
-            context.UsersEnvironments.Add(new UsersEnvironments(admin, ForUpdateEnv, UsersEnvironments.Role.Editor));
+            context.UsersEnvironments.Add(new UsersEnvironments(admin, env1, EnvironmentRole.Editor));
+            context.UsersEnvironments.Add(new UsersEnvironments(admin, env2, EnvironmentRole.Editor));
+            context.UsersEnvironments.Add(new UsersEnvironments(admin, ForUpdateEnv, EnvironmentRole.Editor));
 
-            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, env1, UsersEnvironments.Role.Viewer));
-            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, env2, UsersEnvironments.Role.Viewer));
-            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, ForUpdateEnv, UsersEnvironments.Role.Viewer));
+            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, env1, EnvironmentRole.TargetEditor));
+            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, env2, EnvironmentRole.TargetEditor));
+            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, ForUpdateEnv, EnvironmentRole.TargetEditor));
 
             _app2env1 = DataSeed.Environment1(app2);
-            context.UsersEnvironments.Add(new UsersEnvironments(admin, _app2env1, UsersEnvironments.Role.Editor));
+            context.UsersEnvironments.Add(new UsersEnvironments(admin, _app2env1, EnvironmentRole.Editor));
         }
 
         [Fact]
         public async Task It_should_get_all()
         {
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.GetAsync($"features/application/{DataSeed.Application1.Code}/environments");
 
@@ -67,7 +67,7 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_notfound()
         {
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.GetAsync($"features/application/{_app2env1.Application.Code}/environment/{_app2env1.Code}");
 
@@ -77,7 +77,7 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_found()
         {
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.GetAsync($"features/application/{DataSeed.Application1.Code}/environment/Environment2");
 
@@ -91,7 +91,7 @@ namespace UnitTests.Controllers
         public async Task It_should_create()
         {
             var testEnv = new CreateEnvironmentDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString(), Description = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.PostAsync($"features/application/{DataSeed.Application1.Code}/environment/", testEnv.Serialize());
 
@@ -115,7 +115,7 @@ namespace UnitTests.Controllers
         public async Task It_should_forbiden_create()
         {
             var testEnv = new CreateEnvironmentDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString(), Description = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.PostAsync($"features/application/{DataSeed.Application2.Code}/environment/", testEnv.Serialize());
 
@@ -137,7 +137,7 @@ namespace UnitTests.Controllers
                 }
             };
 
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.PatchAsync($"features/application/{ForUpdateEnv.Application.Code}/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
 
@@ -167,7 +167,7 @@ namespace UnitTests.Controllers
                 }
             };
 
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.PatchAsync($"features/application/notfound/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
 

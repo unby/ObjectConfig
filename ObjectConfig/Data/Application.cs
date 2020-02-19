@@ -2,7 +2,7 @@
 
 namespace ObjectConfig.Data
 {
-    public class Application : IUsers<UsersApplications, UsersApplications.Role>
+    public class Application : IUsers<UsersApplications, ApplicationRole>
     {
 #pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
         private Application()

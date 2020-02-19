@@ -38,9 +38,9 @@ namespace ObjectConfig.Features.Applictaions.Update
         public Lazy<ReadOnlyCollection<UpdateCommand.User>>? Users { get; }
 
         public class User
-            : IUserAcessLevel<UsersApplications.Role>
+            : IUserAcessLevel<ApplicationRole>
         {
-            public User(int userId, UsersApplications.Role role, EntityOperation operation)
+            public User(int userId, ApplicationRole role, EntityOperation operation)
             {
                 if (userId < 1)
                 {
@@ -53,7 +53,7 @@ namespace ObjectConfig.Features.Applictaions.Update
             }
 
             public int UserId { get; }
-            public UsersApplications.Role Role { get; }
+            public ApplicationRole Role { get; }
             public EntityOperation Operation { get; }
         }
 

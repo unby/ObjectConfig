@@ -8,7 +8,7 @@ namespace UnitTests.Mock
     {
         public readonly UserDto _user;
 
-        public MockUserProvider(User.Role role)
+        public MockUserProvider(UserRole role)
             : this(Guid.NewGuid().ToString(),
                   Guid.NewGuid().ToString(),
                   Guid.NewGuid().ToString() + "@test.test",
@@ -16,7 +16,7 @@ namespace UnitTests.Mock
         {
         }
 
-        public MockUserProvider(string externalId, string displayName, string email, User.Role role)
+        public MockUserProvider(string externalId, string displayName, string email, UserRole role)
         {
             _user = new UserDto(-1, externalId, displayName, email, role);
             User = new User(externalId, displayName, email, role);

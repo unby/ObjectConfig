@@ -25,7 +25,7 @@ namespace ObjectConfig.Features.Environments.Create
             var user = await _securityService.GetCurrentUser();
 
             var result = await (from app in _configContext.Applications.Where(w => w.Code.Equals(request.ApplicationCode))
-                                join users in _configContext.UsersApplications.Where(w => w.UserId.Equals(user.UserId) && w.AccessRole == UsersApplications.Role.Administrator)
+                                join users in _configContext.UsersApplications.Where(w => w.UserId.Equals(user.UserId) && w.AccessRole == ApplicationRole.Administrator)
                                         on app.ApplicationId equals users.ApplicationId into userApp
                                 from appAccess in userApp.DefaultIfEmpty()
                                 select new
@@ -39,7 +39,7 @@ namespace ObjectConfig.Features.Environments.Create
             request.ThrowForbidenExceptionWhenValueIsNull(result.appAccess);
 
             var environment = new Environment(request.Name, request.EnvironmentCode, request.Description, result.app);
-            var uEnv = new UsersEnvironments(user, environment, UsersEnvironments.Role.Editor);
+            var uEnv = new UsersEnvironments(user, environment, EnvironmentRole.Editor);
 
             _configContext.UsersEnvironments.Add(uEnv);
             await _configContext.SaveChangesAsync(cancellationToken);

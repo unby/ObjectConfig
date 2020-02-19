@@ -24,16 +24,16 @@ namespace UnitTests.Controllers
             var app2 = DataSeed.Application2;
             var viewer = DataSeed.UserViewer1;
             var admin = DataSeed.UserAdmin1;
-            context.UsersApplications.Add(new UsersApplications(viewer, app1, UsersApplications.Role.Viewer));
-            context.UsersApplications.Add(new UsersApplications(admin, app2, UsersApplications.Role.Administrator));
-            context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, UsersApplications.Role.Administrator));
+            context.UsersApplications.Add(new UsersApplications(viewer, app1, ApplicationRole.Viewer));
+            context.UsersApplications.Add(new UsersApplications(admin, app2, ApplicationRole.Administrator));
+            context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, ApplicationRole.Administrator));
         }
 
         [Fact]
         public async Task It_should_create()
         {
             var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.PostAsync("feature/application", testApp.Serialize());
 
@@ -43,7 +43,7 @@ namespace UnitTests.Controllers
         public async Task It_should_not_update_if_user_forbiden()
         {
             var testApp = DataSeed.Application2;
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
 
             var updtestApp = new UpdateApplicationDto()
@@ -64,7 +64,7 @@ namespace UnitTests.Controllers
         public async Task It_should_Forbidden()
         {
             var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result = await client.GetAsync("feature/application/notcode");
 
@@ -75,7 +75,7 @@ namespace UnitTests.Controllers
         public async Task It_should_update()
         {
             var testApp = DataSeed.Application1;
-            using var server = TestServer(User.Role.Administrator);
+            using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
 
             var updtestApp = new UpdateApplicationDto()

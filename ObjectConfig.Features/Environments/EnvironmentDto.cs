@@ -9,7 +9,7 @@ namespace ObjectConfig.Features.Environments
         {
         }
 #nullable enable
-        public EnvironmentDto(string code, string name, string? description, UsersEnvironments.Role role)
+        public EnvironmentDto(string code, string name, string? description, EnvironmentRole role)
         {
             Code = code;
             Name = name;
@@ -36,6 +36,6 @@ namespace ObjectConfig.Features.Environments
 
         public string? Description { get; protected set; }
 
-        public UsersEnvironments.Role Role { get; protected set; }
+        public EnvironmentRole Role { get; protected set; }
     }
 }

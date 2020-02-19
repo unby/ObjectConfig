@@ -16,7 +16,7 @@ namespace ObjectConfig.Features.Environments
         string ApplicationCode { get; }
         int ApplicationId { get; }
 
-        UsersApplications.Role ApplicationRole { get; }
+        ApplicationRole ApplicationRole { get; }
     }
 
     public interface IEnvironmentAccessCard : IApplicationAccessCard
@@ -25,21 +25,21 @@ namespace ObjectConfig.Features.Environments
 
         int EnvironmentId { get; }
 
-        UsersEnvironments.Role EnvironmentRole { get; }
+        EnvironmentRole EnvironmentRole { get; }
     }
 
     public class EnvironmentAccessCard : ApplicationAccessCard, IEnvironmentAccessCard
     {
-        public EnvironmentAccessCard(string environmentCode, int environmentId, UsersEnvironments.Role environmentRole, IApplicationAccessCard applicationAccessCard)
+        public EnvironmentAccessCard(string environmentCode, int environmentId, EnvironmentRole environmentRole, IApplicationAccessCard applicationAccessCard)
             : this(applicationAccessCard.UserId, applicationAccessCard.UserRole,
                   applicationAccessCard.ApplicationId, applicationAccessCard.ApplicationCode, applicationAccessCard.ApplicationRole,
                   environmentCode, environmentId, environmentRole)
         {
         }
 
-        public EnvironmentAccessCard(int userId, User.Role userRole,
-            int applicationId, string applicationCode, UsersApplications.Role applicationRole,
-            string environmentCode, int environmentId, UsersEnvironments.Role environmentRole)
+        public EnvironmentAccessCard(int userId, UserRole userRole,
+            int applicationId, string applicationCode, ApplicationRole applicationRole,
+            string environmentCode, int environmentId, EnvironmentRole environmentRole)
             : base(userId, userRole,
                   applicationId, applicationCode, applicationRole)
         {
@@ -61,12 +61,12 @@ namespace ObjectConfig.Features.Environments
 
         public int EnvironmentId { get; }
 
-        public UsersEnvironments.Role EnvironmentRole { get; }
+        public EnvironmentRole EnvironmentRole { get; }
     }
 
     public class ApplicationAccessCard : AccessCardOfUser, IApplicationAccessCard
     {
-        public ApplicationAccessCard(int userId, User.Role userRole, int applicationId, string applicationCode, UsersApplications.Role applicationRole)
+        public ApplicationAccessCard(int userId, UserRole userRole, int applicationId, string applicationCode, ApplicationRole applicationRole)
             : base(userId, userRole)
         {
             if (string.IsNullOrWhiteSpace(applicationCode))
@@ -83,7 +83,7 @@ namespace ObjectConfig.Features.Environments
             ApplicationRole = applicationRole;
         }
 
-        public ApplicationAccessCard(int applicationId, string applicationCode, UsersApplications.Role applicationRole, IAccessCardOfUser accessCardOfUser)
+        public ApplicationAccessCard(int applicationId, string applicationCode, ApplicationRole applicationRole, IAccessCardOfUser accessCardOfUser)
             : this(accessCardOfUser.UserId, accessCardOfUser.UserRole, applicationId, applicationCode, applicationRole)
         {
 
@@ -93,6 +93,6 @@ namespace ObjectConfig.Features.Environments
 
         public int ApplicationId { get; }
 
-        public UsersApplications.Role ApplicationRole { get; }
+        public ApplicationRole ApplicationRole { get; }
     }
 }

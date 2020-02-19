@@ -24,7 +24,7 @@ namespace ObjectConfig.Data
             modelBuilder.ApplyConfiguration(new UsersTypesConfiguration());
             new ValueElementConfiguration(modelBuilder, Database.ProviderName, 50);
 
-            modelBuilder.Entity<User>().HasData(new User(Constants.AdminId, Guid.NewGuid().ToString(), "GlobalAdmin", "admin@global.net", User.Role.GlobalAdministrator));
+            modelBuilder.Entity<User>().HasData(new User(Constants.AdminId, Guid.NewGuid().ToString(), "GlobalAdmin", "admin@global.net", UserRole.GlobalAdministrator));
         }
 
         public DbSet<User> Users { get; set; }

@@ -26,17 +26,17 @@ namespace UnitTests.Controllers
             var app2 = DataSeed.Application2;
             var app3 = DataSeed.Application3;
             var admin = DataSeed.UserAdmin1;
-            context.UsersApplications.Add(new UsersApplications(admin, app2, UsersApplications.Role.Administrator));
-            context.UsersApplications.Add(new UsersApplications(admin, app1, UsersApplications.Role.Administrator));
-            context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, UsersApplications.Role.Viewer));
-            context.UsersApplications.Add(new UsersApplications(userProvider.User, app3, UsersApplications.Role.Administrator));
+            context.UsersApplications.Add(new UsersApplications(admin, app2, ApplicationRole.Administrator));
+            context.UsersApplications.Add(new UsersApplications(admin, app1, ApplicationRole.Administrator));
+            context.UsersApplications.Add(new UsersApplications(userProvider.User, app1, ApplicationRole.Viewer));
+            context.UsersApplications.Add(new UsersApplications(userProvider.User, app3, ApplicationRole.Administrator));
         }
 
         [Fact]
         public async Task It_should_create()
         {
             var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(User.Role.Viewer);
+            using var server = TestServer(UserRole.Viewer);
             using var client = server.CreateHttpClient();
             var result = await client.PostAsync("feature/application", testApp.Serialize());
 
@@ -47,7 +47,7 @@ namespace UnitTests.Controllers
         public async Task It_should_not_update_if_user_forbiden()
         {
             var testApp = DataSeed.Application2;
-            using var server = TestServer(User.Role.Viewer);
+            using var server = TestServer(UserRole.Viewer);
             using var client = server.CreateHttpClient();
 
             var updtestApp = new UpdateApplicationDto()
@@ -66,7 +66,7 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_NotFound()
         {
-            using var server = TestServer(User.Role.Viewer);
+            using var server = TestServer(UserRole.Viewer);
             using var client = server.CreateHttpClient();
 
             var result = await client.GetAsync($"feature/application/notExists");
@@ -76,7 +76,7 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_found()
         {
-            using var server = TestServer(User.Role.Viewer);
+            using var server = TestServer(UserRole.Viewer);
             using var client = server.CreateHttpClient();
 
             var result = await client.GetAsync($"feature/application");
@@ -89,7 +89,7 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_forbiden()
         {
-            using var server = TestServer(User.Role.Viewer);
+            using var server = TestServer(UserRole.Viewer);
             using var client = server.CreateHttpClient();
 
             var result = await client.GetAsync($"feature/application/{DataSeed.Application2.Code}");
