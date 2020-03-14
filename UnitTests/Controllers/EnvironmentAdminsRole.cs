@@ -16,9 +16,9 @@ namespace UnitTests.Controllers
 {
     public class EnvironmentAdminsRole : ServerTestBase
     {
-        private ObjectConfig.Data.Environment _app2env1;
+        private ObjectConfig.Data.Environment _app2Env1;
 
-        public ObjectConfig.Data.Environment ForUpdateEnv { get; private set; }
+        private ObjectConfig.Data.Environment ForUpdateEnv { get; set; }
 
         public EnvironmentAdminsRole(ITestOutputHelper output) : base(output)
         {
@@ -47,8 +47,8 @@ namespace UnitTests.Controllers
             context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, env2, EnvironmentRole.TargetEditor));
             context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, ForUpdateEnv, EnvironmentRole.TargetEditor));
 
-            _app2env1 = DataSeed.Environment1(app2);
-            context.UsersEnvironments.Add(new UsersEnvironments(admin, _app2env1, EnvironmentRole.Editor));
+            _app2Env1 = DataSeed.Environment1(app2);
+            context.UsersEnvironments.Add(new UsersEnvironments(admin, _app2Env1, EnvironmentRole.Editor));
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace UnitTests.Controllers
         {
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
-            var result = await client.GetAsync($"features/application/{_app2env1.Application.Code}/environment/{_app2env1.Code}");
+            var result = await client.GetAsync($"features/application/{_app2Env1.Application.Code}/environment/{_app2Env1.Code}");
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
@@ -156,7 +156,7 @@ namespace UnitTests.Controllers
         }
 
         [Fact]
-        public async Task It_should_forbiden_update()
+        public async Task It_should_forbiden_updates()
         {
             var updtestEnv = new UpdateEnvironmentDto()
             {

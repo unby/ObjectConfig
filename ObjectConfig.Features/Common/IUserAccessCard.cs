@@ -1,6 +1,6 @@
 ﻿using ObjectConfig.Data;
 
-namespace ObjectConfig.Features.Users
+namespace ObjectConfig.Features.Common
 {
     public interface IAccessCardOfUser
     {

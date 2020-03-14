@@ -30,7 +30,7 @@ namespace ObjectConfig.Features.Environments.Create
                                 from appAccess in userApp.DefaultIfEmpty()
                                 select new
                                 {
-                                    app = app,
+                                    app,
                                     appAccess
                                 }).FirstOrDefaultAsync(cancellationToken);
 

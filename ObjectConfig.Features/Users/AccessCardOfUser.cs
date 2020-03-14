@@ -1,5 +1,6 @@
 ﻿using ObjectConfig.Data;
 using ObjectConfig.Exceptions;
+using ObjectConfig.Features.Common;
 
 namespace ObjectConfig.Features.Users
 {

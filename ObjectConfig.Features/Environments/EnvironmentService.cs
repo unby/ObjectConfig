@@ -1,98 +1,40 @@
-﻿using ObjectConfig.Data;
-using ObjectConfig.Exceptions;
+﻿using Microsoft.EntityFrameworkCore;
+using ObjectConfig.Data;
+using ObjectConfig.Features.Common;
 using ObjectConfig.Features.Users;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Environments
 {
     public class EnvironmentService
     {
+        private readonly SecurityService _securityService;
+        private readonly ObjectConfigContext _configContext;
 
-    }
-
-
-
-    public interface IApplicationAccessCard : IAccessCardOfUser
-    {
-        string ApplicationCode { get; }
-        int ApplicationId { get; }
-
-        ApplicationRole ApplicationRole { get; }
-    }
-
-    public interface IEnvironmentAccessCard : IApplicationAccessCard
-    {
-        string EnvironmentCode { get; }
-
-        int EnvironmentId { get; }
-
-        EnvironmentRole EnvironmentRole { get; }
-    }
-
-    public class EnvironmentAccessCard : ApplicationAccessCard, IEnvironmentAccessCard
-    {
-        public EnvironmentAccessCard(string environmentCode, int environmentId, EnvironmentRole environmentRole, IApplicationAccessCard applicationAccessCard)
-            : this(applicationAccessCard.UserId, applicationAccessCard.UserRole,
-                  applicationAccessCard.ApplicationId, applicationAccessCard.ApplicationCode, applicationAccessCard.ApplicationRole,
-                  environmentCode, environmentId, environmentRole)
+        public EnvironmentService(SecurityService securityService, ObjectConfigContext configContext)
         {
+            _securityService = securityService;
+            _configContext = configContext;
         }
 
-        public EnvironmentAccessCard(int userId, UserRole userRole,
-            int applicationId, string applicationCode, ApplicationRole applicationRole,
-            string environmentCode, int environmentId, EnvironmentRole environmentRole)
-            : base(userId, userRole,
-                  applicationId, applicationCode, applicationRole)
+        public async Task<UsersEnvironments> GetEnvironment(EnvironmentArgumentCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(environmentCode))
-            {
-                throw new OperationException($"{nameof(environmentCode)} must be has value");
-            }
-            if (environmentId < 1)
-            {
-                throw new OperationException($"{nameof(environmentId)} must be greater than zero");
-            }
+            var card = await _securityService.GetUserCard();
+            var result = await (from app in _configContext.UsersApplications.Include(i => i.Application).Where(w => w.Application.Code.Equals(request.ApplicationCode) && w.UserId.Equals(card.UserId))
+                                join env in _configContext.UsersEnvironments.Include(i => i.Environment) on app.ApplicationId equals env.Environment.ApplicationId into userEnv
+                                from environmentAccess in userEnv.DefaultIfEmpty()
+                                where (environmentAccess.Environment.Code.Equals(request.EnvironmentCode) && environmentAccess.UserId.Equals(card.UserId))
+                                select new
+                                {
+                                    appId = app.ApplicationId,
+                                    env = environmentAccess
+                                }).FirstOrDefaultAsync(cancellationToken);
 
-            EnvironmentCode = environmentCode;
-            EnvironmentId = environmentId;
-            EnvironmentRole = environmentRole;
+            request.ThrowNotFoundExceptionWhenValueIsNull(result);
+
+            return result.env;
         }
-
-        public string EnvironmentCode { get; }
-
-        public int EnvironmentId { get; }
-
-        public EnvironmentRole EnvironmentRole { get; }
-    }
-
-    public class ApplicationAccessCard : AccessCardOfUser, IApplicationAccessCard
-    {
-        public ApplicationAccessCard(int userId, UserRole userRole, int applicationId, string applicationCode, ApplicationRole applicationRole)
-            : base(userId, userRole)
-        {
-            if (string.IsNullOrWhiteSpace(applicationCode))
-            {
-                throw new OperationException($"{nameof(applicationCode)} must be has value");
-            }
-            if (applicationId < 1)
-            {
-                throw new OperationException($"{nameof(applicationId)} must be greater than zero");
-            }
-
-            ApplicationId = applicationId;
-            ApplicationCode = applicationCode;
-            ApplicationRole = applicationRole;
-        }
-
-        public ApplicationAccessCard(int applicationId, string applicationCode, ApplicationRole applicationRole, IAccessCardOfUser accessCardOfUser)
-            : this(accessCardOfUser.UserId, accessCardOfUser.UserRole, applicationId, applicationCode, applicationRole)
-        {
-
-        }
-
-        public string ApplicationCode { get; }
-
-        public int ApplicationId { get; }
-
-        public ApplicationRole ApplicationRole { get; }
     }
 }

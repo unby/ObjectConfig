@@ -7,6 +7,23 @@ namespace ObjectConfig.Data
     {
         private Config() { }
 
+        public Config(string code, Environment environment)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentException($"Constructor requires data for {nameof(Config)}'s", nameof(code));
+            }
+
+            if (environment is null)
+            {
+                throw new ArgumentNullException($"Constructor requires data for {nameof(Config)}'s", nameof(environment));
+            }
+
+            VersionFrom = 1;
+            Code = code;
+            Environment = environment;
+        }
+
         public Config(string code, Version versionFrom, int environmentId, string? description)
         {
             if (string.IsNullOrWhiteSpace(code))

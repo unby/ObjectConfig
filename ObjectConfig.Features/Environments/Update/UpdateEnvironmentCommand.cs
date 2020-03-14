@@ -23,7 +23,7 @@ namespace ObjectConfig.Features.Environments.Update
 
             if (updateApplication.Users != null && updateApplication.Users.Any())
             {
-                Users = new Lazy<ReadOnlyCollection<UpdateEnvironmentCommand.User>>(
+                Users = new Lazy<ReadOnlyCollection<User>>(
                     () => new ReadOnlyCollection<User>(updateApplication.Users.
                         Select(s => new User(s.UserId, s.Role, s.Operation)).ToList()));
             }
@@ -36,43 +36,26 @@ namespace ObjectConfig.Features.Environments.Update
 
         public Definition? EnvironmentDefinition { get; }
 
-        public Lazy<ReadOnlyCollection<UpdateEnvironmentCommand.User>>? Users { get; }
+        public Lazy<ReadOnlyCollection<User>>? Users { get; }
+    }
 
-        public class User
-            : IUserAcessLevel<EnvironmentRole>
+    public class User
+           : IUserAcessLevel<EnvironmentRole>
+    {
+        public User(int userId, EnvironmentRole role, EntityOperation operation)
         {
-            public User(int userId, EnvironmentRole role, EntityOperation operation)
+            if (userId < 1)
             {
-                if (userId < 1)
-                {
-                    throw new RequestException($"Parameter '{nameof(userId)}' isn't correct  value");
-                }
-
-                UserId = userId;
-                Role = role;
-                Operation = operation;
+                throw new RequestException($"Parameter '{nameof(userId)}' isn't correct  value");
             }
 
-            public int UserId { get; }
-            public EnvironmentRole Role { get; }
-            public EntityOperation Operation { get; }
+            UserId = userId;
+            Role = role;
+            Operation = operation;
         }
 
-        public class Definition
-        {
-            public Definition(string name, string? description)
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    throw new RequestException($"Parameter '{nameof(name)}' isn't should empty");
-                }
-
-                Name = name;
-                Description = description;
-            }
-
-            public string Name { get; }
-            public string? Description { get; }
-        }
+        public int UserId { get; }
+        public EnvironmentRole Role { get; }
+        public EntityOperation Operation { get; }
     }
 }

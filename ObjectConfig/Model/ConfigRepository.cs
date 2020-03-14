@@ -7,14 +7,12 @@ namespace ObjectConfig.Model
 {
     public class ConfigRepository
     {
-        public ConfigRepository(ObjectConfigContext configContext, ConfigElementRepository configElementRepository)
+        private readonly ObjectConfigContext _configContext;
+
+        public ConfigRepository(ObjectConfigContext configContext)
         {
             _configContext = configContext;
-            _configElementRepository = configElementRepository;
         }
-
-        private readonly ObjectConfigContext _configContext;
-        private readonly ConfigElementRepository _configElementRepository;
 
         public Config CreateConfig(Config config)
         {

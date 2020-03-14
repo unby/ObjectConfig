@@ -1,8 +1,9 @@
 ﻿using ObjectConfig.Data;
+using Environment = ObjectConfig.Data.Environment;
 
 namespace UnitTests.Data
 {
-    public class DataSeed
+    public static class DataSeed
     {
         public static User UserAdmin1 => new User(2, "admin1", "admin1", "admin1@test.test", UserRole.Administrator);
 
@@ -36,6 +37,13 @@ namespace UnitTests.Data
         public static Environment Environment3(Application app)
         {
             return new Environment("Environment3", "Environment3", "Environment3", app);
+        }
+
+        public static Config CreateConfig(this Environment env, string code)
+        {
+            var conf = new Config(code, env);
+            env.Configs.Add(conf);
+            return conf;
         }
     }
 }

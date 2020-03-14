@@ -22,7 +22,7 @@ namespace ObjectConfig.Features.Applictaions.Update
 
             if (updateApplication.Users != null && updateApplication.Users.Any())
             {
-                Users = new Lazy<ReadOnlyCollection<UpdateCommand.User>>(
+                Users = new Lazy<ReadOnlyCollection<User>>(
                     () => new ReadOnlyCollection<User>(updateApplication.Users.
                         Select(s => new User(s.UserId, s.Role, s.Operation)).ToList()));
             }
@@ -35,43 +35,28 @@ namespace ObjectConfig.Features.Applictaions.Update
 
         public Definition? ApplicationDefinition { get; }
 
-        public Lazy<ReadOnlyCollection<UpdateCommand.User>>? Users { get; }
+        public Lazy<ReadOnlyCollection<User>>? Users { get; }
 
-        public class User
-            : IUserAcessLevel<ApplicationRole>
+
+    }
+
+    public class User
+           : IUserAcessLevel<ApplicationRole>
+    {
+        public User(int userId, ApplicationRole role, EntityOperation operation)
         {
-            public User(int userId, ApplicationRole role, EntityOperation operation)
+            if (userId < 1)
             {
-                if (userId < 1)
-                {
-                    throw new RequestException($"Parameter '{nameof(userId)}' isn't correct  value");
-                }
-
-                UserId = userId;
-                Role = role;
-                Operation = operation;
+                throw new RequestException($"Parameter '{nameof(userId)}' isn't correct  value");
             }
 
-            public int UserId { get; }
-            public ApplicationRole Role { get; }
-            public EntityOperation Operation { get; }
+            UserId = userId;
+            Role = role;
+            Operation = operation;
         }
 
-        public class Definition
-        {
-            public Definition(string name, string? description)
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    throw new RequestException($"Parameter '{nameof(name)}' isn't should empty");
-                }
-
-                Name = name;
-                Description = description;
-            }
-
-            public string Name { get; }
-            public string? Description { get; }
-        }
+        public int UserId { get; }
+        public ApplicationRole Role { get; }
+        public EntityOperation Operation { get; }
     }
 }
