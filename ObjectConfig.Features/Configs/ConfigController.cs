@@ -29,9 +29,13 @@ namespace ObjectConfig.Features.Configs
 
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetConfig([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> GetConfig([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
-            var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode));
+            var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode, versionFrom));
             return Ok(new ConfigDto(result));
         }
 
@@ -51,10 +55,10 @@ namespace ObjectConfig.Features.Configs
         [ProducesResponseType(typeof(ConfigDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateConfigs([FromRoute]string appCode, [FromRoute]string envCode,
-            [FromRoute]string confCode)
+            [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
             var result = await _mediator.Send(
-                new CreateConfigCommand(appCode, envCode, confCode, await RequestBody()));
+                new CreateConfigCommand(appCode, envCode, confCode, await RequestBody(), versionFrom));
             return Ok(new ConfigDto(result));
         }
         
@@ -64,9 +68,10 @@ namespace ObjectConfig.Features.Configs
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode,
-            [FromRoute]string envCode, [FromRoute]string confCode)
+            [FromRoute]string envCode, [FromRoute]string confCode, 
+            [FromQuery]string versionFrom, [FromQuery]string versionTo)
         {
-            var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode));
+            var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode, versionFrom, versionTo));
             return Ok(new ConfigDto(result));
         }
 

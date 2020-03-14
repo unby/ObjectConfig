@@ -15,5 +15,10 @@ namespace ObjectConfig.Features.Common
         }
 
         public string EnvironmentCode { get; }
+
+        public override string ToString()
+        {
+            return $"Environment {EnvironmentCode}(app:{ApplicationCode})";
+        }
     }
 }

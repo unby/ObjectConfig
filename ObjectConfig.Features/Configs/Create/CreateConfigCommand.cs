@@ -7,8 +7,8 @@ namespace ObjectConfig.Features.Configs.Create
 {
     public class CreateConfigCommand : ConfigArgumentCommand, IRequest<Config>
     {
-        public CreateConfigCommand(string applicationCode, string environmentCode, string configCode, string data)
-                  : base(applicationCode, environmentCode, configCode)
+        public CreateConfigCommand(string applicationCode, string environmentCode, string configCode, string data, string? versionFrom)
+                  : base(applicationCode, environmentCode, configCode, versionFrom)
         {
             if (string.IsNullOrWhiteSpace(data))
             {

@@ -12,13 +12,11 @@ namespace ObjectConfig.Features.Configs.FindAll
 {
     public class GetAllConfigsHandler : IRequestHandler<GetAllConfigsCommand, List<Config>>
     {
-        private readonly SecurityService _securityService;
         private readonly ObjectConfigContext _configContext;
         private readonly EnvironmentService _environmentService;
 
-        public GetAllConfigsHandler(SecurityService securityService, ObjectConfigContext configContext, EnvironmentService environmentService)
+        public GetAllConfigsHandler(ObjectConfigContext configContext, EnvironmentService environmentService)
         {
-            _securityService = securityService;
             _configContext = configContext;
             _environmentService = environmentService;
         }

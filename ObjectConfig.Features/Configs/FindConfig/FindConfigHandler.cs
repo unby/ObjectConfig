@@ -25,11 +25,10 @@ namespace ObjectConfig.Features.Configs.FindByCode
         {
             var env = await _environmentService.GetEnvironment(request, cancellationToken);
 
-            var result = await _configContext.Configs.
-                SingleOrDefaultAsync(w => w.EnvironmentId.Equals(env.EnvironmentId) && w.Code == request.ConfigCode && w.VersionTo == null, cancellationToken);
+            var result = await _configContext.GetConfig(env.EnvironmentId, request.ConfigCode, request.VersionFrom, cancellationToken);
 
             request.ThrowNotFoundExceptionWhenValueIsNull(result);
-            
+
             return result;
         }
     }

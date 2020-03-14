@@ -7,7 +7,7 @@ namespace ObjectConfig.Data
     {
         private Config() { }
 
-        public Config(string code, Environment environment)
+        public Config(string code, Environment environment, long versionFrom = _majorSection, long? versionTo = null)
         {
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -18,8 +18,8 @@ namespace ObjectConfig.Data
             {
                 throw new ArgumentNullException($"Constructor requires data for {nameof(Config)}'s", nameof(environment));
             }
-
-            VersionFrom = 1;
+            VersionTo = versionTo;
+            VersionFrom = versionFrom;
             Code = code;
             Environment = environment;
         }
@@ -64,7 +64,7 @@ namespace ObjectConfig.Data
 
         public ConfigElement RootConfigElement { get; set; }
 
-        public Version? GetVersionFrom => ConvertLongToVersion(VersionFrom);
+        public Version GetVersionFrom => ConvertLongToVersion(VersionFrom);
         public Version? GetVersionTo => ConvertLongToVersion(VersionTo);
 
         public void SetVersionFrom(Version version)
@@ -76,13 +76,13 @@ namespace ObjectConfig.Data
         {
             if (version != null)
             {
-                VersionFrom = ConvertVersionToLong(version);
+                VersionTo = ConvertVersionToLong(version);
             }
         }
 
-        private static readonly Version _default = new Version(1, 0, 0);
         private const long _minorSection = 100000;
-        private const long _majorSection = 100000 * _minorSection;
+        public const long _majorSection = 100000 * _minorSection;
+        public static readonly Version _default = ConvertLongToVersion(_majorSection);   
 
         public static Version? ConvertLongToVersion(long? version)
         {

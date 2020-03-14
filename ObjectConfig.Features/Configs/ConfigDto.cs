@@ -16,7 +16,7 @@ namespace ObjectConfig.Features.Configs
             Code = config.Code;
             DateFrom = config.DateFrom;
             DateTo = config.DateTo;
-            VersionFrom = config.GetVersionFrom?.ToString();
+            VersionFrom = config.GetVersionFrom.ToString();
             VersionTo = config.GetVersionTo?.ToString();
             Description = config.Description;
             EnvironmentId = config.EnvironmentId;

@@ -16,6 +16,11 @@ namespace ObjectConfig.Features.Common
         }
 
         public string ApplicationCode { get; }
+
+        public override string ToString()
+        {
+            return $"Application {ApplicationCode}";
+        }
     }
 
     public static class CommnadExtentions
@@ -47,19 +52,16 @@ namespace ObjectConfig.Features.Common
         {
             if (obj == null)
             {
+                if (command is ConfigArgumentCommand configCommand)
+                {
+                    throw new NotFoundException($"Config '{configCommand.EnvironmentCode}(env:{configCommand.EnvironmentCode}, app:{configCommand.ApplicationCode})' is denied access");
+                }
+
                 if (command is EnvironmentArgumentCommand environmenCommand)
                 {
                     throw new ForbidenException($"Environment '{environmenCommand.EnvironmentCode}(app:{command.ApplicationCode})' is denied access");
                 }
 
-                throw new ForbidenException($"Application '{command.ApplicationCode}' is denied access");
-            }
-        }
-
-        public static void ThrowForbidenExceptionWhenValueIsNull<T>(this ApplicationArgumentCommand command, Func<bool> expression) where T : class
-        {
-            if (expression())
-            {
                 throw new ForbidenException($"Application '{command.ApplicationCode}' is denied access");
             }
         }
