@@ -36,5 +36,14 @@ namespace ObjectConfig.Features.Environments
 
             return result.env;
         }
+
+        public async Task<Environment> GetEnvironment(EnvironmentArgumentCommand request, EnvironmentRole requiredRole, CancellationToken cancellationToken) 
+        {
+            var env = await GetEnvironment(request, cancellationToken);
+
+            await _securityService.CheckEntityAcces(env.Environment, requiredRole);
+
+            return env.Environment;
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ObjectConfig.Data
 {
-    public class UsersEnvironments
+    public class UsersEnvironments : IRole<EnvironmentRole>
     {
         private UsersEnvironments()
         {
@@ -28,6 +28,6 @@
 
         public virtual Environment Environment { get; protected set; }
 
-        public EnvironmentRole AccessRole { get; protected set; }
+        public EnvironmentRole AccessRole { get; set; }
     }
 }

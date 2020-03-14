@@ -5,26 +5,19 @@ using ObjectConfig.Features.Common;
 
 namespace ObjectConfig.Features.Configs.Create
 {
-    public class CreateConfigCommand : EnvironmentArgumentCommand, IRequest<Config>
+    public class CreateConfigCommand : ConfigArgumentCommand, IRequest<Config>
     {
-        public CreateConfigCommand(string applicationCode, string environmentCode, string configCode, string name, string? description)
-                  : base(applicationCode, environmentCode)
+        public CreateConfigCommand(string applicationCode, string environmentCode, string configCode, string data)
+                  : base(applicationCode, environmentCode, configCode)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(data))
             {
-                throw new RequestException($"Parameter '{nameof(name)}' isn't should empty");
+                throw new RequestException($"Parameter '{nameof(data)}' isn't should empty");
             }
 
-            if (string.IsNullOrWhiteSpace(environmentCode))
-            {
-                throw new RequestException($"Parameter '{nameof(environmentCode)}' isn't should empty");
-            }
-
-            Name = name;
-            Description = description;
+            Data = data;
         }
 
-        public string Name { get; }
-        public string? Description { get; }
+        public string Data { get; }
     }
 }

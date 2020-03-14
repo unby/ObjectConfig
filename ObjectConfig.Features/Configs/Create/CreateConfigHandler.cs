@@ -3,27 +3,36 @@ using ObjectConfig.Data;
 using ObjectConfig.Features.Users;
 using System.Threading;
 using System.Threading.Tasks;
+using ObjectConfig.Features.Environments;
 
 namespace ObjectConfig.Features.Configs.Create
 {
     public class CreateConfigHandler : IRequestHandler<CreateConfigCommand, Config>
     {
         private readonly SecurityService _securityService;
+        private readonly EnvironmentService _environmentService;
         private readonly ObjectConfigContext _configContext;
 
-        public CreateConfigHandler(SecurityService securityService, ObjectConfigContext configContext)
+        public CreateConfigHandler(EnvironmentService environmentService, ObjectConfigContext configContext)
         {
-            _securityService = securityService;
+            _environmentService = environmentService;
             _configContext = configContext;
         }
 
         public async Task<Config> Handle(CreateConfigCommand request, CancellationToken cancellationToken)
-        {
-            var user = await _securityService.GetCurrentUser();
+        { 
+            var environment = await _environmentService.GetEnvironment(request, EnvironmentRole.Editor, cancellationToken);
 
+            var config = new Config(request.ConfigCode, environment);
 
+            var reader = new ObjectConfigReader(config);
+            
+            ConfigElement configElemnt = await reader.Parse(request.Data);
 
-            return null;
+            _configContext.ConfigElements.Add(configElemnt);
+            await _configContext.SaveChangesAsync();
+
+            return config;
         }
     }
 }

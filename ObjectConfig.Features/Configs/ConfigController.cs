@@ -8,7 +8,9 @@ using ObjectConfig.Features.Configs.FindAll;
 using ObjectConfig.Features.Configs.FindByCode;
 using ObjectConfig.Features.Configs.Update;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using ObjectConfig.Features.Configs.FindConfig;
 
 namespace ObjectConfig.Features.Configs
 {
@@ -29,7 +31,7 @@ namespace ObjectConfig.Features.Configs
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetConfig([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode)
         {
-            var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode, null, null));
+            var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode));
             return Ok(new ConfigDto(result));
         }
 
@@ -49,22 +51,29 @@ namespace ObjectConfig.Features.Configs
         [ProducesResponseType(typeof(ConfigDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateConfigs([FromRoute]string appCode, [FromRoute]string envCode,
-            [FromRoute]string confCode, [FromBody]CreateConfigDefenitionDto config)
+            [FromRoute]string confCode)
         {
             var result = await _mediator.Send(
-                new CreateConfigCommand(appCode, envCode, config.Name, config.Code, config.Description));
+                new CreateConfigCommand(appCode, envCode, confCode, await RequestBody()));
             return Ok(new ConfigDto(result));
         }
-
+        
         [HttpPatch("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [ProducesResponseType(typeof(ConfigDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode)
+        public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode,
+            [FromRoute]string envCode, [FromRoute]string confCode)
         {
-            var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode, null, null));
+            var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode));
             return Ok(new ConfigDto(result));
+        }
+
+        private Task<string> RequestBody()
+        {
+            var bodyStream = new StreamReader(Request.Body);
+            return bodyStream.ReadToEndAsync();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ObjectConfig.Data
 {
-    public class Environment
+    public class Environment : IUsers<UsersEnvironments, EnvironmentRole>
     {
         private Environment()
         {

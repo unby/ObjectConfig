@@ -6,18 +6,17 @@ using ObjectConfig.Features.Environments;
 using ObjectConfig.Features.Users;
 using System.Threading;
 using System.Threading.Tasks;
+using ObjectConfig.Features.Configs.FindConfig;
 
 namespace ObjectConfig.Features.Configs.FindByCode
 {
     public class FindConfigHandler : IRequestHandler<FindConfigCommand, Config>
     {
-        private readonly SecurityService _securityService;
         private readonly ObjectConfigContext _configContext;
         private readonly EnvironmentService _environmentService;
 
-        public FindConfigHandler(SecurityService securityService, ObjectConfigContext configContext, EnvironmentService environmentService)
+        public FindConfigHandler(ObjectConfigContext configContext, EnvironmentService environmentService)
         {
-            _securityService = securityService;
             _configContext = configContext;
             _environmentService = environmentService;
         }

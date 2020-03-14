@@ -200,12 +200,10 @@ namespace ObjectConfig
             {
                 return type;
             }
-            else
-            {
-                var newType = new TypeElement(nodeType, nodeKey);
-                _types.Add(nodePath, newType);
-                return newType;
-            }
+
+            var newType = new TypeElement(nodeType, nodeKey);
+            _types.Add(nodePath, newType);
+            return newType;
         }
     }
 }
