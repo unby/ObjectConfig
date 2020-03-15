@@ -45,6 +45,7 @@ namespace UnitTests
             Assert.Equal(origin.ToString(), reducerJobject.ToString());
         }
 
+        /*
         [Fact]
         public void TestDesiralize()
         {
@@ -71,6 +72,7 @@ namespace UnitTests
             Log.WriteLine(SecondEntityJObject);
             Assert.Equal(origin, SecondEntityJObject);
         }
+        */
 
 
         [Fact]

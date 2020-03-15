@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Environments;
-using ObjectConfig.Features.Users;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

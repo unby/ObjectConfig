@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Common;
 using ObjectConfig.Features.Users;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace ObjectConfig.Features.Configs.Update
 
             await _configContext.SaveChangesAsync(cancellationToken);
 
-            return null;
+            throw new NotImplementedException();
         }
     }
 }

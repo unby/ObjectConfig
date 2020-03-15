@@ -61,8 +61,10 @@ namespace ObjectConfig
                     }
                     else
                     {
+#nullable disable
                         var array = configElement.Value.Select(s => s.Value).ToArray();
-                        return new JProperty(configElement.Type.Name, array);
+                        return new JProperty(configElement.Type.Name, content: array);
+#nullable enable
                     }
                 default:
                     return new JProperty(configElement.Type.Name, ParseByType(configElement.Value[0].Value, configElement.Type.Type));

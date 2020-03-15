@@ -49,33 +49,21 @@ namespace ObjectConfig
 
         private TypeNode GetType(JToken token)
         {
-            switch (token.Type)
+            return token.Type switch
             {
-                case JTokenType.Object:
-                    return TypeNode.Complex;
-                case JTokenType.Array:
-                    return TypeNode.Array;
-                case JTokenType.Integer:
-                    return TypeNode.Integer;
-                case JTokenType.Float:
-                    return TypeNode.Float;
-                case JTokenType.String:
-                    return TypeNode.String;
-                case JTokenType.Boolean:
-                    return TypeNode.Boolean;
-                case JTokenType.Null:
-                    return TypeNode.Null;
-                case JTokenType.Date:
-                    return TypeNode.Date;
-                case JTokenType.Guid:
-                    return TypeNode.Guid;
-                case JTokenType.Uri:
-                    return TypeNode.Uri;
-                case JTokenType.TimeSpan:
-                    return TypeNode.TimeSpan;
-                default:
-                    return TypeNode.None;
-            }
+                JTokenType.Object => TypeNode.Complex,
+                JTokenType.Array => TypeNode.Array,
+                JTokenType.Integer => TypeNode.Integer,
+                JTokenType.Float => TypeNode.Float,
+                JTokenType.String => TypeNode.String,
+                JTokenType.Boolean => TypeNode.Boolean,
+                JTokenType.Null => TypeNode.Null,
+                JTokenType.Date => TypeNode.Date,
+                JTokenType.Guid => TypeNode.Guid,
+                JTokenType.Uri => TypeNode.Uri,
+                JTokenType.TimeSpan => TypeNode.TimeSpan,
+                _ => TypeNode.None,
+            };
         }
 
         private async Task<ConfigElement?> ReadChild(JToken node, string key, ConfigElement parrent, int deep)

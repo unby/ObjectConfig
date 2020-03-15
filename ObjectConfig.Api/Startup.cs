@@ -67,7 +67,7 @@ namespace ObjectConfig
             options.Map<NotFoundException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status404NotFound));
             options.Map<ForbidenException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status403Forbidden));
             options.Map<OperationException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
-            
+
             options.Map<DbUpdateException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status409Conflict));
             options.Map<EntityException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status409Conflict));
 

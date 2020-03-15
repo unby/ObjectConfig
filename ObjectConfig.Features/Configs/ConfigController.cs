@@ -5,18 +5,22 @@ using Microsoft.AspNetCore.Mvc;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Configs.Create;
 using ObjectConfig.Features.Configs.FindAll;
-using ObjectConfig.Features.Configs.FindByCode;
+using ObjectConfig.Features.Configs.FindConfig;
+using ObjectConfig.Features.Configs.JsonConverter;
 using ObjectConfig.Features.Configs.Update;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using ObjectConfig.Features.Configs.FindConfig;
 
 namespace ObjectConfig.Features.Configs
 {
     [Route("feature/[controller]")]
     [ApiController]
-    public class ConfigController : ControllerBase
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public partial class ConfigController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
@@ -28,12 +32,9 @@ namespace ObjectConfig.Features.Configs
         }
 
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
+        [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}/devenition")]
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> GetConfig([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
+        public async Task<IActionResult> GetConfigDevenition([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
             var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode, versionFrom));
             return Ok(new ConfigDto(result));
@@ -41,9 +42,6 @@ namespace ObjectConfig.Features.Configs
 
         [HttpGet("/features/application/{appCode}/environment/{envCode}/configs")]
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetConfigs(string appCode, string envCode)
         {
             var result = await _mediator.Send(
@@ -53,7 +51,6 @@ namespace ObjectConfig.Features.Configs
 
         [HttpPost("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [ProducesResponseType(typeof(ConfigDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateConfigs([FromRoute]string appCode, [FromRoute]string envCode,
             [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
@@ -61,18 +58,23 @@ namespace ObjectConfig.Features.Configs
                 new CreateConfigCommand(appCode, envCode, confCode, await RequestBody(), versionFrom));
             return Ok(new ConfigDto(result));
         }
-        
+
         [HttpPatch("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [ProducesResponseType(typeof(ConfigDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode,
-            [FromRoute]string envCode, [FromRoute]string confCode, 
+            [FromRoute]string envCode, [FromRoute]string confCode,
             [FromQuery]string versionFrom, [FromQuery]string versionTo)
         {
             var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode, versionFrom, versionTo));
             return Ok(new ConfigDto(result));
+        }
+
+        [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetConfigJson([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
+        {
+            var result = await _mediator.Send(new JsonConverterCommand(appCode, envCode, confCode, versionFrom));
+            return this.Content(result, "application/json");
         }
 
         private Task<string> RequestBody()

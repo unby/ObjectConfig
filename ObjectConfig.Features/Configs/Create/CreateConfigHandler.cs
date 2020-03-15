@@ -1,12 +1,9 @@
 ﻿using MediatR;
 using ObjectConfig.Data;
-using ObjectConfig.Features.Users;
+using ObjectConfig.Exceptions;
+using ObjectConfig.Features.Environments;
 using System.Threading;
 using System.Threading.Tasks;
-using ObjectConfig.Features.Environments;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using ObjectConfig.Exceptions;
 
 namespace ObjectConfig.Features.Configs.Create
 {
@@ -14,23 +11,27 @@ namespace ObjectConfig.Features.Configs.Create
     {
         private readonly EnvironmentService _environmentService;
         private readonly ObjectConfigContext _configContext;
+        private readonly ConfigService _configService;
 
-        public CreateConfigHandler(EnvironmentService environmentService, ObjectConfigContext configContext)
+        public CreateConfigHandler(EnvironmentService environmentService, ObjectConfigContext configContext, ConfigService configService)
         {
             _environmentService = environmentService;
             _configContext = configContext;
+            _configService = configService;
         }
 
         public async Task<Config> Handle(CreateConfigCommand request, CancellationToken cancellationToken)
-        { 
+        {
             var env = await _environmentService.GetEnvironment(request, EnvironmentRole.Editor, cancellationToken);
 
-            var existConfig = await _configContext.GetConfig(env.EnvironmentId,request.ConfigCode, request.VersionFrom, cancellationToken);
+            var existConfig = await _configService.GetConfig(env.EnvironmentId, request, cancellationToken);
 
             if (existConfig != null && existConfig.VersionFrom == request.VersionFrom)
+            {
                 throw new EntityException($"{request} is exists");
+            }
 
-            Config? config = null;
+            Config config;
             if (existConfig != null && existConfig.VersionTo == null)
             {
                 config = new Config(request.ConfigCode, env, request.VersionFrom);

@@ -14,7 +14,7 @@ namespace ObjectConfig.Features.Common
             EnvironmentCode = environmentCode;
         }
 
-        public string EnvironmentCode { get; }
+        public string EnvironmentCode { get; protected set; }
 
         public override string ToString()
         {

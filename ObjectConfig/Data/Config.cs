@@ -82,22 +82,27 @@ namespace ObjectConfig.Data
 
         private const long _minorSection = 100000;
         public const long _majorSection = 100000 * _minorSection;
-        public static readonly Version _default = ConvertLongToVersion(_majorSection);   
+        public static readonly Version _default = ConvertLongToVersion(_majorSection);
 
         public static Version? ConvertLongToVersion(long? version)
         {
             if (version.HasValue)
             {
-                int major, minor, build;
-
-                major = (int)(version / _majorSection);
-                minor = (int)((version - major * _majorSection) / _minorSection);
-                build = (int)((version - major * _majorSection - minor * _minorSection));
-
-                return new Version(major, minor, build);
+                return ConvertLongToVersion(version.Value);
             }
 
             return null;
+        }
+
+        public static Version ConvertLongToVersion(long version)
+        {
+            int major, minor, build;
+
+            major = (int)(version / _majorSection);
+            minor = (int)((version - major * _majorSection) / _minorSection);
+            build = (int)((version - major * _majorSection - minor * _minorSection));
+
+            return new Version(major, minor, build);
         }
 
         /// <summary>

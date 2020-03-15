@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using ObjectConfig.Data;
+using ObjectConfig.Features.Configs;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using ObjectConfig.Features.Configs;
 using UnitTests.Data;
 using UnitTests.Mock;
 using Xunit;
@@ -14,8 +14,8 @@ namespace UnitTests.Controllers
 {
     public class ConfigAdminsRole : ServerTestBase
     {
-        private Environment env2;
-        private Environment env1;
+        private Environment _env2;
+        private Environment _env1;
 
 
         public ConfigAdminsRole(ITestOutputHelper output) : base(output)
@@ -34,19 +34,19 @@ namespace UnitTests.Controllers
                 ApplicationRole.Administrator));
             context.UsersApplications.Add(new UsersApplications(userProvider.User, app2, ApplicationRole.Viewer));
 
-            env1 = DataSeed.Environment1(app1);
-            env2 = DataSeed.Environment2(app1);
+            _env1 = DataSeed.Environment1(app1);
+            _env2 = DataSeed.Environment2(app1);
 
-            context.UsersEnvironments.Add(new UsersEnvironments(admin, env1, EnvironmentRole.Editor));
-            context.UsersEnvironments.Add(new UsersEnvironments(admin, env2, EnvironmentRole.Editor));
+            context.UsersEnvironments.Add(new UsersEnvironments(admin, _env1, EnvironmentRole.Editor));
+            context.UsersEnvironments.Add(new UsersEnvironments(admin, _env2, EnvironmentRole.Editor));
 
 
-            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, env1, EnvironmentRole.TargetEditor));
-            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, env2, EnvironmentRole.Editor));
+            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, _env1, EnvironmentRole.TargetEditor));
+            context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, _env2, EnvironmentRole.Editor));
 
-            env1.CreateConfig("conf1");
-            env1.CreateConfig("conf2");
-            env1.CreateConfig("conf3");
+            _env1.CreateConfig("conf1");
+            _env1.CreateConfig("conf2");
+            _env1.CreateConfig("conf3");
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace UnitTests.Controllers
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result =
-                await client.GetAsync($"features/application/{env1.Application.Code}/environment/{env1.Code}/configs");
+                await client.GetAsync($"features/application/{_env1.Application.Code}/environment/{_env1.Code}/configs");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
@@ -69,7 +69,7 @@ namespace UnitTests.Controllers
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
             var result =
-                await client.GetAsync($"features/application/{env1.Application.Code}/environment/notfound/configs");
+                await client.GetAsync($"features/application/{_env1.Application.Code}/environment/notfound/configs");
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
@@ -81,7 +81,7 @@ namespace UnitTests.Controllers
             using var client = server.CreateHttpClient();
             var result =
                 await client.GetAsync(
-                    $"features/application/{env1.Application.Code}/environment/{env1.Code}/config/notfound");
+                    $"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/notfound");
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
@@ -93,7 +93,7 @@ namespace UnitTests.Controllers
             using var client = server.CreateHttpClient();
             var result =
                 await client.GetAsync(
-                    $"features/application/{env1.Application.Code}/environment/{env1.Code}/config/conf1");
+                    $"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/conf1");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var env = result.Deserialize<ConfigDto>();
@@ -107,14 +107,14 @@ namespace UnitTests.Controllers
             var testEntity = new TestEntity();
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
-            var result = await client.PostAsync($"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createtest", testEntity.Serialize());
+            var result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createtest", testEntity.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            
+
             var configFound =
                  await client.GetAsync(
-                     $"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createtest");
+                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createtest");
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
-            
+
             var env = result.Deserialize<ConfigDto>();
             Assert.Equal("createtest", env.Code);
         }
@@ -122,19 +122,23 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_create_with_version_and_without()
         {
-            var testEntity = new TestEntity();
+            var testEntityV1 = new TestEntity();
+            testEntityV1.ThirdEntity.EntityName = nameof(testEntityV1);
+
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
 
-            var result = await client.PostAsync($"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createver", testEntity.Serialize());
+            var result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver", testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            result = await client.PostAsync($"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createver?versionFrom=2.0.0", testEntity.Serialize());
+            var testEntityV2 = new TestEntity();
+            testEntityV2.ThirdEntity.EntityName = nameof(testEntityV2);
+            result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0", testEntityV2.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            
+
             var configVerFound =
                  await client.GetAsync(
-                     $"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createver?versionFrom=2.0.0");
+                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0");
             Assert.Equal(HttpStatusCode.OK, configVerFound.StatusCode);
 
             var confV2Devenition = configVerFound.Deserialize<ConfigDto>();
@@ -143,7 +147,7 @@ namespace UnitTests.Controllers
 
             var configOriginalFound =
                 await client.GetAsync(
-                    $"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createver");
+                    $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver");
             Assert.Equal(HttpStatusCode.OK, configOriginalFound.StatusCode);
 
             var confV1Devenition = configOriginalFound.Deserialize<ConfigDto>();
@@ -151,6 +155,18 @@ namespace UnitTests.Controllers
             Assert.NotEqual(confV1Devenition.VersionFrom, confV2Devenition.VersionFrom);
             Assert.Null(confV2Devenition.VersionTo);
             Assert.NotNull(confV1Devenition.VersionTo);
+
+            var ver1Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json");
+            Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
+
+            var ver1Data = ver1Json.Deserialize<TestEntity>();
+            Assert.Equal(ver1Data.ThirdEntity.EntityName, testEntityV1.ThirdEntity.EntityName);
+
+            var ver2Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json?versionFrom=2.0.0");
+            Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
+
+            var ver2Data = ver2Json.Deserialize<TestEntity>();
+            Assert.Equal(ver2Data.ThirdEntity.EntityName, testEntityV2.ThirdEntity.EntityName);
         }
 
 
@@ -160,12 +176,12 @@ namespace UnitTests.Controllers
             var testEntity = new TestEntity();
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
-            var result = await client.PostAsync($"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createver?versionFrom=2.0.0", testEntity.Serialize());
+            var result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0", testEntity.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var configFound =
                  await client.GetAsync(
-                     $"features/application/{env2.Application.Code}/environment/{env2.Code}/config/createver?versionFrom=2.0.0");
+                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0");
 
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
             var confDevenition = result.Deserialize<ConfigDto>();
@@ -179,13 +195,13 @@ namespace UnitTests.Controllers
             var testEntity = new TestEntity();
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
-            var result = await client.PostAsync($"features/application/{env1.Application.Code}/environment/{env1.Code}/config/createtest", testEntity.Serialize());
+            var result = await client.PostAsync($"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/createtest", testEntity.Serialize());
 
             Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
 
             var configFound =
                  await client.GetAsync(
-                     $"features/application/{env1.Application.Code}/environment/{env1.Code}/config/createtest");
+                     $"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/createtest");
             Assert.Equal(HttpStatusCode.NotFound, configFound.StatusCode);
         }
 
@@ -197,16 +213,16 @@ namespace UnitTests.Controllers
             using var server = TestServer(UserRole.Administrator);
             using var client = server.CreateHttpClient();
 
-            var result = 
+            var result =
                 await client.PostAsync(
-                    $"features/application/{env2.Application.Code}/environment/{env2.Code}/config/updatetest", testEntity.Serialize());
+                    $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/updatetest", testEntity.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
             var updateEntity = new TestEntity();
             updateEntity.ThirdEntity.EntityName = nameof(updateEntity);
-            var patchResult = 
+            var patchResult =
                 await client.PostAsync(
-                    $"features/application/{env2.Application.Code}/environment/{env2.Code}/config/updatetest", updateEntity.Serialize());
+                    $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/updatetest", updateEntity.Serialize());
             Assert.Equal(HttpStatusCode.Conflict, patchResult.StatusCode);
         }
         /*

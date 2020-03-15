@@ -1,31 +1,51 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Common;
-using ObjectConfig.Features.Users;
-using System;
-using System.Linq;
+using ObjectConfig.Features.Environments;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Configs
 {
-    public static class ConfigService
+    public class ConfigService
     {
+        private readonly ObjectConfigContext _objectConfigContext;
+        private readonly EnvironmentService _environmentService;
 
-        public static async Task<Config> GetConfig(this ObjectConfigContext context, int environmentId, string configCode, long versionFrom, CancellationToken cancellationToken)
+        public ConfigService(ObjectConfigContext objectConfigContext, EnvironmentService environmentService)
         {
-            var result = await context.Configs.
-                 SingleOrDefaultAsync(w => w.EnvironmentId.Equals(environmentId) && w.Code == configCode && w.DateTo == null
-                 && ((w.VersionFrom <= versionFrom && versionFrom < w.VersionTo) || (w.VersionFrom <= versionFrom && w.VersionTo == null)), cancellationToken);
+            _objectConfigContext = objectConfigContext;
+            _environmentService = environmentService;
+        }
+
+        public async Task<Config> GetConfig(ConfigArgumentCommand request, CancellationToken cancellationToken)
+        {
+            var env = await _environmentService.GetEnvironment(request, cancellationToken);
+
+            var result = await GetConfig(env.EnvironmentId, request, cancellationToken);
+
+            request.ThrowNotFoundExceptionWhenValueIsNull(result);
 
             return result;
         }
-        /*  var result = from current in context.Configs.
-                 Where(w => w.EnvironmentId.Equals(environmentId) && w.Code == configCode && w.DateTo == null
-                 && ((w.VersionFrom >= versionFrom && versionFrom < w.VersionTo) || (w.VersionFrom >= versionFrom && w.VersionTo == null)))
-                         join next in context.Configs.
-                         Where(w => w.EnvironmentId.Equals(environmentId) && w.Code == configCode && w.DateTo == null
-                         && ((w.VersionFrom >= versionFrom && versionFrom < w.VersionTo) || (w.VersionFrom >= versionFrom && w.VersionTo == null))) on current.VersionFrom equals next.VersionTo into nextConf
-                         from next1 in nextConf.DefaultIfEmpty()*/
+
+        public async Task<Config> GetConfig(ConfigArgumentCommand request, EnvironmentRole environmentRole, CancellationToken cancellationToken)
+        {
+            var env = await _environmentService.GetEnvironment(request, environmentRole, cancellationToken);
+
+            var result = await GetConfig(env.EnvironmentId, request, cancellationToken);
+
+            request.ThrowNotFoundExceptionWhenValueIsNull(result);
+
+            return result;
+        }
+
+        public async Task<Config> GetConfig(int environmentId, ConfigArgumentCommand request, CancellationToken cancellationToken)
+        {
+            return await _objectConfigContext.Configs.SingleOrDefaultAsync(
+                w => w.EnvironmentId.Equals(environmentId) && w.Code == request.ConfigCode && w.DateTo == null &&
+                     ((w.VersionFrom <= request.VersionFrom && request.VersionFrom < w.VersionTo) ||
+                      (w.VersionFrom <= request.VersionFrom && w.VersionTo == null)), cancellationToken);
+        }
     }
 }

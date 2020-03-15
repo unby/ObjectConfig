@@ -21,7 +21,7 @@ namespace ObjectConfig.Features.Common
                 From = new Version(versionFrom);
                 VersionFrom = Config.ConvertVersionToLong(From);
             }
-            else 
+            else
             {
                 From = Config._default;
                 VersionFrom = Config._majorSection;

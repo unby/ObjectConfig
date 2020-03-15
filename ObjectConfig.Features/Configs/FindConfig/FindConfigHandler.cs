@@ -1,35 +1,22 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
-using ObjectConfig.Features.Common;
-using ObjectConfig.Features.Environments;
-using ObjectConfig.Features.Users;
 using System.Threading;
 using System.Threading.Tasks;
-using ObjectConfig.Features.Configs.FindConfig;
 
-namespace ObjectConfig.Features.Configs.FindByCode
+namespace ObjectConfig.Features.Configs.FindConfig
 {
     public class FindConfigHandler : IRequestHandler<FindConfigCommand, Config>
     {
-        private readonly ObjectConfigContext _configContext;
-        private readonly EnvironmentService _environmentService;
+        private readonly ConfigService _configService;
 
-        public FindConfigHandler(ObjectConfigContext configContext, EnvironmentService environmentService)
+        public FindConfigHandler(ConfigService configService)
         {
-            _configContext = configContext;
-            _environmentService = environmentService;
+            _configService = configService;
         }
 
         public async Task<Config> Handle(FindConfigCommand request, CancellationToken cancellationToken)
         {
-            var env = await _environmentService.GetEnvironment(request, cancellationToken);
-
-            var result = await _configContext.GetConfig(env.EnvironmentId, request.ConfigCode, request.VersionFrom, cancellationToken);
-
-            request.ThrowNotFoundExceptionWhenValueIsNull(result);
-
-            return result;
+            return await _configService.GetConfig(request, cancellationToken);
         }
     }
 }

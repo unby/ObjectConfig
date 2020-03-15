@@ -2,8 +2,10 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using ObjectConfig.Features.Applictaions;
+using ObjectConfig.Features.Configs;
 using ObjectConfig.Features.Environments;
 using ObjectConfig.Features.Users;
+using ObjectConfig.Model;
 
 namespace ObjectConfig.Features
 {
@@ -25,6 +27,9 @@ namespace ObjectConfig.Features
             services.AddAutoMapper(typeof(FeaturesComponent).Assembly);
             services.AddMediatR(typeof(FeaturesComponent).Assembly);
             services.AddScoped<EnvironmentService>();
+            services.AddScoped<ConfigService>();
+
+            services.AddScoped<ConfigElementRepository>();
             return services;
         }
     }

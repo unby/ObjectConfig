@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ObjectConfig.Model
@@ -17,17 +18,16 @@ namespace ObjectConfig.Model
         public async Task<ConfigElement> Create(ConfigElement configElement)
         {
             configElement.Config.ConfigElement.Add(configElement);
-            //  ConfigContext.Entry(configElement.Config)
             _configContext.Configs.Update(configElement.Config);
             await _configContext.SaveChangesAsync();
             return configElement;
         }
 
-        public Task<ConfigElement> GetConfigElement(int id)
+        public async Task<(ConfigElement root, ConfigElement[] all)> GetConfigElement(int id, CancellationToken token)
         {
-
-            var t = _configContext.ConfigElements.Include(i => i.Childs).Include(i => i.Type).Include(i => i.Value).Where(s => s.ConfigId == id);
-            return t.FirstOrDefaultAsync(s => s.ParrentConfigElementId == null);
+            var all = await _configContext.ConfigElements.Include(i => i.Childs).Include(i => i.Type).Include(i => i.Value).Where(s => s.ConfigId == id).ToArrayAsync(token);
+            var root = all.First(f => f.ParrentConfigElementId == null);
+            return (root, all);
         }
     }
 }
