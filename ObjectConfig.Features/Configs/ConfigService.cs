@@ -43,7 +43,7 @@ namespace ObjectConfig.Features.Configs
         public async Task<Config> GetConfig(int environmentId, ConfigArgumentCommand request, CancellationToken cancellationToken)
         {
             return await _objectConfigContext.Configs.SingleOrDefaultAsync(
-                w => w.EnvironmentId.Equals(environmentId) && w.Code == request.ConfigCode && w.DateTo == null &&
+                w => w.EnvironmentId.Equals(environmentId) && w.Code == request.ConfigCode &&
                      ((w.VersionFrom <= request.VersionFrom && request.VersionFrom < w.VersionTo) ||
                       (w.VersionFrom <= request.VersionFrom && w.VersionTo == null)), cancellationToken);
         }

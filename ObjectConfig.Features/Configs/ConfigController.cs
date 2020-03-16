@@ -34,7 +34,8 @@ namespace ObjectConfig.Features.Configs
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}/devenition")]
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetConfigDevenition([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
+        public async Task<IActionResult> GetConfigDevenition([FromRoute]string appCode,
+            [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
             var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode, versionFrom));
             return Ok(new ConfigDto(result));
@@ -71,7 +72,8 @@ namespace ObjectConfig.Features.Configs
 
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetConfigJson([FromRoute]string appCode, [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
+        public async Task<IActionResult> GetConfigJson([FromRoute]string appCode, [FromRoute]string envCode,
+            [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
             var result = await _mediator.Send(new JsonConverterCommand(appCode, envCode, confCode, versionFrom));
             return this.Content(result, "application/json");

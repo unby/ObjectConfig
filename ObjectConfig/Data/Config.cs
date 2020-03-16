@@ -18,7 +18,9 @@ namespace ObjectConfig.Data
             {
                 throw new ArgumentNullException($"Constructor requires data for {nameof(Config)}'s", nameof(environment));
             }
-            VersionTo = versionTo;
+
+            if(versionTo.HasValue && versionTo > 0)
+                VersionTo = versionTo;
             VersionFrom = versionFrom;
             Code = code;
             Environment = environment;

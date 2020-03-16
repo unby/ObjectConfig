@@ -63,7 +63,7 @@ namespace ObjectConfig
                     {
 #nullable disable
                         var array = configElement.Value.Select(s => s.Value).ToArray();
-                        return new JProperty(configElement.Type.Name, content: array);
+                        return new JProperty(configElement.Type.Name, array);
 #nullable enable
                     }
                 default:

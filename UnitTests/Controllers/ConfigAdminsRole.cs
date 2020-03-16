@@ -136,6 +136,11 @@ namespace UnitTests.Controllers
             result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0", testEntityV2.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
+            var testEntityV3 = new TestEntity();
+            testEntityV3.ThirdEntity.EntityName = nameof(testEntityV3);
+            result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=0.5.0", testEntityV3.Serialize());
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
             var configVerFound =
                  await client.GetAsync(
                      $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0");
@@ -167,6 +172,12 @@ namespace UnitTests.Controllers
 
             var ver2Data = ver2Json.Deserialize<TestEntity>();
             Assert.Equal(ver2Data.ThirdEntity.EntityName, testEntityV2.ThirdEntity.EntityName);
+
+            var ver3Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json?versionFrom=0.5.0");
+            Assert.Equal(HttpStatusCode.OK, ver3Json.StatusCode);
+
+            var ver3Data = ver3Json.Deserialize<TestEntity>();
+            Assert.Equal(ver3Data.ThirdEntity.EntityName, testEntityV3.ThirdEntity.EntityName);
         }
 
 
