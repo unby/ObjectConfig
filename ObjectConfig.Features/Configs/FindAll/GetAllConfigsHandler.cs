@@ -24,7 +24,12 @@ namespace ObjectConfig.Features.Configs.FindAll
         {
             var env = await _environmentService.GetEnvironment(request, cancellationToken);
 
-            return await _configContext.Configs.Where(w => w.EnvironmentId.Equals(env.EnvironmentId) && w.VersionTo == null).ToListAsync(cancellationToken);
+            return await _configContext
+                .Configs.Where(w =>
+                    w.EnvironmentId.Equals(env.EnvironmentId)
+                    && w.VersionTo == null
+                    && w.DateTo == null)
+                .ToListAsync(cancellationToken);
         }
     }
 }

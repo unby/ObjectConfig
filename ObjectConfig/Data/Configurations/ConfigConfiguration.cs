@@ -22,7 +22,7 @@ namespace ObjectConfig.Data.Configurations
 
             builder.Property(s => s.Description).HasMaxLength(512);
 
-            builder.HasIndex(p => new { p.Code, p.VersionFrom, p.EnvironmentId }).IsUnique();
+            builder.HasIndex(p => new { p.Code, p.VersionFrom, p.EnvironmentId, p.DateTo }).IsUnique();
 
             builder.Ignore(s => s.RootConfigElement);
         }

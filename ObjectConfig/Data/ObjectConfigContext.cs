@@ -19,6 +19,7 @@ namespace ObjectConfig.Data
             new EnvironmentConfiguration(modelBuilder, Database.ProviderName);
             new TypeElementConfiguration(modelBuilder, Database.ProviderName, 50);
             new UserConfiguration(modelBuilder, Database.ProviderName);
+            new ConfigCacheConfiguration(modelBuilder, Database.ProviderName);
             modelBuilder.ApplyConfiguration(new UsersApplicationsConfiguration());
             modelBuilder.ApplyConfiguration(new UsersEnvironmentsConfiguration());
             modelBuilder.ApplyConfiguration(new UsersTypesConfiguration());
@@ -42,6 +43,8 @@ namespace ObjectConfig.Data
         public DbSet<Config> Configs { get; set; }
 
         public DbSet<ConfigElement> ConfigElements { get; set; }
+
+        public DbSet<ConfigCache> ConfigCache { get; set; }
 
         public DbSet<TypeElement> TypeElements { get; set; }
 

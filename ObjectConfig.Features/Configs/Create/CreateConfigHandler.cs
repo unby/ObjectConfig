@@ -53,14 +53,14 @@ namespace ObjectConfig.Features.Configs.Create
 
                 if (minVer != 0 && minVer < request.VersionFrom)
                     throw new OperationException(
-                        "Incorrect config version in store, VersionTo must be null. Contact your system administrator");
+                        "Incorrect config latest version in storage, 'VersionTo' must be null. Contact your system administrator");
 
                 config = new Config(request.ConfigCode, env, request.VersionFrom, minVer);
             }
 
             var reader = new ObjectConfigReader(config);
             ConfigElement configElemnt = await reader.Parse(request.Data);
-            _configContext.ConfigElements.Add(configElemnt);
+            _configContext.ConfigCache.Add(new ConfigCache(config, request.Data));
 
             await _configContext.SaveChangesAsync(cancellationToken);
 

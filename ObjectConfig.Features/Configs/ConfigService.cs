@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Common;
 using ObjectConfig.Features.Environments;
@@ -43,9 +45,17 @@ namespace ObjectConfig.Features.Configs
         public async Task<Config> GetConfig(int environmentId, ConfigArgumentCommand request, CancellationToken cancellationToken)
         {
             return await _objectConfigContext.Configs.SingleOrDefaultAsync(
-                w => w.EnvironmentId.Equals(environmentId) && w.Code == request.ConfigCode &&
+                w => w.EnvironmentId.Equals(environmentId) && w.Code == request.ConfigCode && w.DateTo == null &&
                      ((w.VersionFrom <= request.VersionFrom && request.VersionFrom < w.VersionTo) ||
                       (w.VersionFrom <= request.VersionFrom && w.VersionTo == null)), cancellationToken);
+        }
+
+        public async Task<string> GetConfigValue(Func<Task<Config>> func, CancellationToken cancellationToken)
+        {
+            var id = (await func()).ConfigId;
+            var k = (await _objectConfigContext.ConfigCache.
+                SingleOrDefaultAsync(f => f.ConfigId == id, cancellationToken)).ConfigValue;
+            return k;
         }
     }
 }

@@ -18,11 +18,9 @@ namespace ObjectConfig.Features.Configs.JsonConverter
 
         public async Task<string> Handle(JsonConverterCommand request, CancellationToken cancellationToken)
         {
-            var result = await _configService.GetConfig(request, cancellationToken);
-
-            var element = (await _configElementRepository.GetConfigElement(result.ConfigId, cancellationToken)).root;
-
-            return (await new JsonReducer().Parse(element)).ToString();
+            return await _configService.GetConfigValue(
+                () => _configService.GetConfig(request, cancellationToken),
+                cancellationToken);
         }
     }
 }
