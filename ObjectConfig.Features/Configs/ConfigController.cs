@@ -34,7 +34,7 @@ namespace ObjectConfig.Features.Configs
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}/devenition")]
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetConfigDevenition([FromRoute]string appCode,
+        public async Task<IActionResult> GetConfig([FromRoute]string appCode,
             [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
             var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode, versionFrom));
@@ -64,9 +64,9 @@ namespace ObjectConfig.Features.Configs
         [ProducesResponseType(typeof(ConfigDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode,
             [FromRoute]string envCode, [FromRoute]string confCode,
-            [FromQuery]string versionFrom, [FromQuery]string versionTo)
+            [FromQuery]string? versionFrom)
         {
-            var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode, versionFrom, versionTo));
+            var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode, await RequestBody(), versionFrom));
             return Ok(new ConfigDto(result));
         }
 

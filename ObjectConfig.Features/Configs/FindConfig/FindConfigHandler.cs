@@ -16,7 +16,8 @@ namespace ObjectConfig.Features.Configs.FindConfig
 
         public async Task<Config> Handle(FindConfigCommand request, CancellationToken cancellationToken)
         {
-            return await _configService.GetConfig(request, cancellationToken);
+            var k= await _configService.GetConfig(request, cancellationToken);
+            return k;
         }
     }
 }

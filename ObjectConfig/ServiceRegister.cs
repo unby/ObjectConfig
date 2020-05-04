@@ -19,8 +19,6 @@ namespace ObjectConfig
         {
             services.AddScoped<UserRepository>();
             services.AddScoped<ApplicationRepository>();
-            services.AddScoped<ConfigRepository>();
-            services.AddScoped<ConfigElementRepository>();
 
             return services;
         }

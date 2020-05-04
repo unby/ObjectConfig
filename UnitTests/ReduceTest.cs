@@ -36,13 +36,18 @@ namespace UnitTests
             var reader = new ObjectConfigReader(TestConfig);
             var origin = JObject.FromObject(new TestEntity());
             ConfigElement configElemnt = await reader.Parse(origin);
-            Assert.Equal(TypeNode.Root, configElemnt.Type.Type);
+            Assert.Equal(TypeNode.Root, configElemnt.TypeElement.TypeNode);
 
             Log.WriteLine(origin);
-            var reducerJobject = new JsonReducer().Parse(configElemnt).Result;
+            var reducer = new JsonReducer();
+            var reducerJobject = reducer.Parse(configElemnt).Result;
+
+            Assert.Equal(reader.AllProperty.Count, reducer.AllProperty.Count);
 
             Log.WriteLine(reducerJobject);
-            Assert.Equal(origin.ToString(), reducerJobject.ToString());
+            var strorigin = origin.ToString();
+            var strreducerJobject = reducerJobject.ToString();
+            Assert.Equal(strorigin, strreducerJobject);
         }
 
         /*

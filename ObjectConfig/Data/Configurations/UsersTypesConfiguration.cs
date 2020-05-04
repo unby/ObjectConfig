@@ -7,7 +7,7 @@ namespace ObjectConfig.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<UsersTypes> builder)
         {
-            builder.HasKey(c => new { c.UserId, c.ValueTypeId });
+            builder.HasKey(c => new { c.UserId, c.TypeElementId });
         }
     }
 }

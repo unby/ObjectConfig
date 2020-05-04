@@ -3,12 +3,12 @@ using System.Diagnostics;
 
 namespace ObjectConfig.Data
 {
-    [DebuggerDisplay("Name = {Name} Type = {Type}")]
+    [DebuggerDisplay("Name = {Name} TypeNode = {TypeNode}")]
     public class TypeElement
     {
         public TypeElement()
         {
-            Type = TypeNode.Root;
+            TypeNode = TypeNode.Root;
             Name = "root";
         }
 
@@ -19,20 +19,7 @@ namespace ObjectConfig.Data
                 throw new ArgumentException($"Constructor requires data for {nameof(TypeElement)}'s", nameof(name));
             }
 
-            Type = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
-            Name = name;
-            Description = description;
-        }
-
-        public TypeElement(long typeElementId, string name, string? description, TypeNode typeNode)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException($"Constructor requires data for {nameof(TypeElement)}'s", nameof(name));
-            }
-
-            Type = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
-            TypeElementId = typeElementId;
+            TypeNode = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
             Name = name;
             Description = description;
         }
@@ -43,6 +30,6 @@ namespace ObjectConfig.Data
 
         public string? Description { get; protected set; }
 
-        public TypeNode Type { get; protected set; }
+        public TypeNode TypeNode { get; protected set; }
     }
 }

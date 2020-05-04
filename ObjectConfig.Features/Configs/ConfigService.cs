@@ -57,5 +57,18 @@ namespace ObjectConfig.Features.Configs
                 SingleOrDefaultAsync(f => f.ConfigId == id, cancellationToken)).ConfigValue;
             return k;
         }
+
+        public async Task<(Config config, ConfigElement root, ConfigElement[] all)> GetConfigElement(Func<Task<Config>> func, CancellationToken token)
+        {
+            var config = await func();
+            var id = config.ConfigId;
+
+            var all = await  _objectConfigContext.ConfigElements.
+                Where(config => config.ConfigId == id && config.DateTo == null).Include(i=>i.TypeElement)
+                .Include(i=>i.Value.Where(w=>w.DateTo==null)).ToArrayAsync(token);
+
+            var root = all.First(f => f.ParrentConfigElementId == null);
+            return (config, root, all);
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ObjectConfig.Data
 {
-    public class Config
+    public class Config:IPeriod
     {
         private Config() { }
 
@@ -51,7 +51,10 @@ namespace ObjectConfig.Data
         public DateTimeOffset DateFrom { get; protected set; } = DateTimeOffset.UtcNow;
 
         public DateTimeOffset? DateTo { get; protected set; }
-
+        public void Close(DateTimeOffset closeDate)
+        {
+            DateTo = closeDate;
+        }
         public long VersionFrom { get; protected set; } = _majorSection;
 
         public long? VersionTo { get; protected set; }
