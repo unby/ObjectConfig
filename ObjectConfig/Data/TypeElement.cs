@@ -28,19 +28,6 @@ namespace ObjectConfig.Data
             Description = description;
         }
 
-        public TypeElement(long typeElementId, string name, string? description, TypeNode typeNode)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException($"Constructor requires data for {nameof(TypeElement)}'s", nameof(name));
-            }
-
-            Type = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
-            TypeElementId = typeElementId;
-            Name = name;
-            Description = description;
-        }
-
         public long TypeElementId { get; protected set; }
 
         public string Name { get; protected set; }

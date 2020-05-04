@@ -33,7 +33,7 @@ namespace ObjectConfig
         {
             try
             {
-                switch (configElement.Type.Type)
+                switch (configElement.TypeElement.Type)
                 {
                     case TypeNode.Complex:
                         List<JContainer> props = new List<JContainer>(configElement.Childs.Count);
@@ -45,14 +45,14 @@ namespace ObjectConfig
                         }
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-                        if (configElement.Parrent.Type.Type == TypeNode.Array)
+                        if (configElement.Parrent.TypeElement.Type == TypeNode.Array)
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                         {
                             return new JObject(props.ToArray());
                         }
                         else
                         {
-                            return new JProperty(configElement.Type.Name, new JObject(props.ToArray()));
+                            return new JProperty(configElement.TypeElement.Name, new JObject(props.ToArray()));
                         }
 
                     case TypeNode.Array:
@@ -67,18 +67,18 @@ namespace ObjectConfig
                                 AllProperty.Enqueue(jContainer);
                             }
 
-                            return new JProperty(configElement.Type.Name, array.ToArray());
+                            return new JProperty(configElement.TypeElement.Name, array.ToArray());
                         }
                         else
                         {
 #nullable disable
                             var array = configElement.Value.Select(s => s.Value).ToArray();
-                            return new JProperty(configElement.Type.Name, array);
+                            return new JProperty(configElement.TypeElement.Name, array);
 #nullable enable
                         }
                     default:
-                        return new JProperty(configElement.Type.Name,
-                            ParseByType(configElement.Value[0].Value, configElement.Type.Type));
+                        return new JProperty(configElement.TypeElement.Name,
+                            ParseByType(configElement.Value[0].Value, configElement.TypeElement.Type));
                 }
             }
             catch (Exception ex)

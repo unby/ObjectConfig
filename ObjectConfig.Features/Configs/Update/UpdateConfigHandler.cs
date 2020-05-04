@@ -92,27 +92,27 @@ namespace ObjectConfig.Features.Configs.Update
                     {
                         var newElementChild = newElementParrent.Childs[newElementIndex];
 
-                        if (sourceElementChild.Type.Equals(newElementChild.Type) &&
-                            newElementChild.Type.Type == TypeNode.Complex)
+                        if (sourceElementChild.TypeElement.Equals(newElementChild.TypeElement) &&
+                            newElementChild.TypeElement.Type == TypeNode.Complex)
                         {
                             Compare(sourceElementChild, newElementChild);
                             continue;
                         }
-                        else if (sourceElementChild.Type.Type.Equals(newElementChild.Type.Type) &&
-                                 newElementChild.Type.Type == TypeNode.Array)
+                        else if (sourceElementChild.TypeElement.Type.Equals(newElementChild.TypeElement.Type) &&
+                                 newElementChild.TypeElement.Type == TypeNode.Array)
                         {
                             deletedArrays.Add((sourceElementChild, newElementChild));
 
                             continue;
                         }
-                        else   if(sourceElementChild.Type.Type.Equals(TypeNode.Root))
+                        else   if(sourceElementChild.TypeElement.Type.Equals(TypeNode.Root))
                             continue;
                         else
                         {
                             try
                             {
 
-                                if (!sourceElementChild.Type.Type.Equals(newElementChild.Type.Type))
+                                if (!sourceElementChild.TypeElement.Type.Equals(newElementChild.TypeElement.Type))
                                 {
                                     foreach (var sourceValue in sourceElementChild.Value)
                                     {
@@ -122,7 +122,7 @@ namespace ObjectConfig.Features.Configs.Update
                                     foreach (var valueElement in newElementChild.Value)
                                     {
                                         sourceElementChild.Value.Add(new ValueElement(valueElement.Value,
-                                            sourceElementChild, newElementChild.Type, CloseDate));
+                                            sourceElementChild, CloseDate));
                                     }
                                 }
                                 else if (!sourceElementChild.Value[0].Value.Equals(newElementChild.Value[0].Value))
@@ -135,7 +135,7 @@ namespace ObjectConfig.Features.Configs.Update
                                     foreach (var valueElement in newElementChild.Value)
                                     {
                                         sourceElementChild.Value.Add(new ValueElement(valueElement.Value,
-                                            sourceElementChild, sourceElementChild.Type, CloseDate));
+                                            sourceElementChild, CloseDate));
                                     }
                                 }
 

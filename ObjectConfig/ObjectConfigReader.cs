@@ -72,134 +72,134 @@ namespace ObjectConfig
 
         private async Task<ConfigElement?> ReadChild(JToken node, string key, ConfigElement parrent, int deep)
         {
-            ConfigElement? res = null;
-            var childType = GetType(node);
-            if (parrent.Type.Type == TypeNode.Array && childType != TypeNode.Complex)
+            try
             {
-                parrent.Value.Add(new ValueElement(node.ToString(), parrent, parrent.Type, CrateTime));
-                return null;
-            }
+                ConfigElement? res = null;
+                var childType = GetType(node);
+                if (parrent.TypeElement.Type == TypeNode.Array && childType != TypeNode.Complex)
+                {
+                    parrent.Value.Add(new ValueElement(node.ToString(), parrent, CrateTime));
+                    return null;
+                }
 
-            (ConfigElement element, TypeElement Type) temp;
-            switch (childType)
-            {
-                case TypeNode.None:
-                    break;
-                case TypeNode.Complex:
-                    if (deep == 0)
-                    {
-                       temp = CreateConfigElement(TypeNode.Complex, key, parrent);
-                       res = temp.element;
-                        res.Value.Add(new ValueElement(node.ToString(), temp.element, temp.Type, CrateTime));
-                    }
-                    else
-                    {
-                        if (node.Type == JTokenType.Property)
+                switch (childType)
+                {
+                    case TypeNode.None:
+                        break;
+                    case TypeNode.Complex:
+                        if (deep == 0)
                         {
-                            throw new Exception("JTokenType.Property " + node.ToString());
+                            res = CreateConfigElement(TypeNode.Complex, key, parrent);
+                            res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
                         }
-
-                        if (node is JObject jobject)
+                        else
                         {
-                            temp= CreateConfigElement(TypeNode.Complex, key, parrent);
-                            res = temp.element;
-                            foreach (var item in jobject)
+                            if (node.Type == JTokenType.Property)
                             {
-#pragma warning disable CS8604 // Possible null reference argument.
-                                var child = await ReadChild(item.Value, item.Key, res, --deep);
-#pragma warning restore CS8604 // Possible null reference argument.
-                                if (child != null)
+                                throw new Exception("JTokenType.Property " + node.ToString());
+                            }
+
+                            if (node is JObject jobject)
+                            {
+                                res = CreateConfigElement(TypeNode.Complex, key, parrent);
+                                foreach (var item in jobject)
                                 {
-                                    res.Childs.Add(child);
-                                    AllProperty.Add(child);
+#pragma warning disable CS8604 // Possible null reference argument.
+                                    var child = await ReadChild(item.Value, item.Key, res, --deep);
+#pragma warning restore CS8604 // Possible null reference argument.
+                                    if (child != null)
+                                    {
+                                        res.Childs.Add(child);
+                                        AllProperty.Add(child);
+                                    }
                                 }
                             }
                         }
-                    }
-                    break;
-                case TypeNode.Array:
-                    temp = CreateConfigElement(TypeNode.Array, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(null, res, temp.Type, CrateTime));
-                    foreach (var item in node)
-                    {
-                        var result = await ReadChild(item, key, res, deep);
-                        if (result != null)
+
+                        break;
+                    case TypeNode.Array:
+                        res = CreateConfigElement(TypeNode.Array, key, parrent);
+                        foreach (var item in node)
                         {
-                            res.Childs.Add(result);
-                            AllProperty.Add(result);
+                            var result = await ReadChild(item, key, res, deep);
+                            if (result != null)
+                            {
+                                res.Childs.Add(result);
+                                AllProperty.Add(result);
+                            }
                         }
-                    }
-                    break;
-                case TypeNode.Integer:
-                    temp = CreateConfigElement(TypeNode.Integer, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
-                    break;
-                case TypeNode.Float:
-                    temp = CreateConfigElement(TypeNode.Float, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
-                    break;
-                case TypeNode.String:
-                    temp = CreateConfigElement(TypeNode.String, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
-                    break;
-                case TypeNode.Boolean:
-                    temp = CreateConfigElement(TypeNode.Boolean, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
-                    break;
-                case TypeNode.Null:
-                    temp = CreateConfigElement(TypeNode.Null, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(null, res, temp.Type, CrateTime));
-                    break;
-                case TypeNode.Date:
-                    if (node.ToString().Contains("+"))
-                    {
-                        temp = CreateConfigElement(TypeNode.DateTimeOffset, key, parrent);
-                        res = temp.element;
-                        var dateTime = node.ToObject<DateTimeOffset>();
 
-                        res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"), res, temp.Type, CrateTime));
-                    }
-                    else
-                    {
-                        temp = CreateConfigElement(TypeNode.Date, key, parrent);
-                        res = temp.element;
-                        var dateTime = node.ToObject<DateTime>();
-                        res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"), res, temp.Type, CrateTime));
-                    }
-                    break;
-                case TypeNode.Guid:
-                    temp = CreateConfigElement(TypeNode.Guid, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
-                    break;
-                case TypeNode.Uri:
-                    temp = CreateConfigElement(TypeNode.Uri, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
-                    break;
-                case TypeNode.TimeSpan:
-                    temp = CreateConfigElement(TypeNode.TimeSpan, key, parrent);
-                    res = temp.element;
-                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
-                    break;
-                default:
-                    break;
+                        break;
+                    case TypeNode.Integer:
+                        res = CreateConfigElement(TypeNode.Integer, key, parrent);
+                        res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
+                        break;
+                    case TypeNode.Float:
+                        res = CreateConfigElement(TypeNode.Float, key, parrent);
+                        res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
+                        break;
+                    case TypeNode.String:
+                        res = CreateConfigElement(TypeNode.String, key, parrent);
+                        res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
+                        break;
+                    case TypeNode.Boolean:
+                        res = CreateConfigElement(TypeNode.Boolean, key, parrent);
+                        res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
+                        break;
+                    case TypeNode.Null:
+                        res = CreateConfigElement(TypeNode.Null, key, parrent);
+                        res.Value.Add(new ValueElement(null, res, CrateTime));
+                        break;
+                    case TypeNode.Date:
+                        if (node.ToString().Contains("+"))
+                        {
+                            res = CreateConfigElement(TypeNode.DateTimeOffset, key, parrent);
+                            var dateTime = node.ToObject<DateTimeOffset>();
+
+                            res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"), res,
+                                CrateTime));
+                        }
+                        else
+                        {
+                            res = CreateConfigElement(TypeNode.Date, key, parrent);
+
+                            var dateTime = node.ToObject<DateTime>();
+                            res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"), res,
+                                CrateTime));
+                        }
+
+                        break;
+                    case TypeNode.Guid:
+                        res = CreateConfigElement(TypeNode.Guid, key, parrent);
+
+                        res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
+                        break;
+                    case TypeNode.Uri:
+                        res = CreateConfigElement(TypeNode.Uri, key, parrent);
+                       res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
+                        break;
+                    case TypeNode.TimeSpan:
+                        res = CreateConfigElement(TypeNode.TimeSpan, key, parrent);
+                        res.Value.Add(new ValueElement(node.ToString(), res, CrateTime));
+                        break;
+                    default:
+                        break;
+                }
+
+                return res;
             }
-
-            return res;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
         }
 
         private readonly Dictionary<string, TypeElement> _types = new Dictionary<string, TypeElement>();
-        private (ConfigElement element, TypeElement Type) CreateConfigElement(TypeNode nodeType, string nodeKey, ConfigElement parrent)
+        private ConfigElement CreateConfigElement(TypeNode nodeType, string nodeKey, ConfigElement parrent)
         {
             var path = parrent.Path + "." + nodeKey;
-            return (new ConfigElement(null, parrent, _config, path), CreateType(nodeType, nodeKey, path));
+            return new ConfigElement(CreateType(nodeType, nodeKey, path), parrent, _config, path);
         }
 
         private TypeElement CreateType(TypeNode nodeType, string nodeKey, string nodePath)

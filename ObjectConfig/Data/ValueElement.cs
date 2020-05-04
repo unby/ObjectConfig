@@ -11,12 +11,11 @@ namespace ObjectConfig.Data
             DateFrom = DateTimeOffset.UtcNow;
         }
 
-        public ValueElement(string? value, ConfigElement element,  TypeElement type, DateTimeOffset dateFrom)
+        public ValueElement(string? value, ConfigElement element,  DateTimeOffset dateFrom)
         {
-            ConfigElement = element;
+            ConfigElement = element ?? throw new ArgumentNullException(nameof(element));
             DateFrom = dateFrom;
             Value = value;
-            Type = type ?? throw new ArgumentNullException(nameof(type));
         }
 
         public long ValueElementId { get; protected set; }
@@ -31,16 +30,13 @@ namespace ObjectConfig.Data
 
         public DateTimeOffset? DateTo { get; protected set; }
 
-        public TypeElement Type { get; protected set; }
-
         public int? ChangeOwnerUserId { get; protected set; }
 
         public virtual User ChangeOwner { get; protected set; }
-        public long TypeElementId { get; protected set; }
 
         public object? GetObjectValue()
         {
-            switch (Type.Type)
+            switch (ConfigElement.TypeElement.Type)
             {
                 case TypeNode.Root:
                 case TypeNode.Complex:

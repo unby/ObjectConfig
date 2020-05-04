@@ -4,15 +4,16 @@ using System.Linq;
 
 namespace ObjectConfig.Data
 {
-    [DebuggerDisplay("{Type}; Parrent = {Parrent}")]
+    [DebuggerDisplay("{TypeElement}; Parrent = {Parrent}")]
     public class ConfigElement
     {
         private ConfigElement()
         {
         }
 
-        public ConfigElement(TypeElement typeElement, ConfigElement? parrent, Config config, string? path)
+        public ConfigElement(TypeElement typeElementElement, ConfigElement? parrent, Config config, string? path)
         {
+            TypeElement = typeElementElement;
             Parrent = parrent;
             Config = config;
             Path = path ?? ".";
@@ -26,20 +27,8 @@ namespace ObjectConfig.Data
 
         public Config Config { get; set; }
 
-        public TypeElement Type
-        {
-            get
-            {
-                if (Value.Any())
-                    return Value[0].Type;
-                else if (Path == ".")
-                    return TypeElement.Root;
-                else if(Childs.Any()&&!Value.Any())
-                    return TypeElement.Complex;
-                else
-                    return TypeElement.None;
-            }
-        }
+        public long TypeElementId { get; protected set; }
+        public TypeElement TypeElement { get; set; }
 
         public long? ParrentConfigElementId { get; set; }
 
