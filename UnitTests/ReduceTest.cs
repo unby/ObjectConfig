@@ -36,7 +36,7 @@ namespace UnitTests
             var reader = new ObjectConfigReader(TestConfig);
             var origin = JObject.FromObject(new TestEntity());
             ConfigElement configElemnt = await reader.Parse(origin);
-            Assert.Equal(TypeNode.Root, configElemnt.TypeElement.Type);
+            Assert.Equal(TypeNode.Root, configElemnt.TypeElement.TypeNode);
 
             Log.WriteLine(origin);
             var reducer = new JsonReducer();

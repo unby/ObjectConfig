@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
 namespace ObjectConfig.Data
 {
     [DebuggerDisplay("{TypeElement}; Parrent = {Parrent}")]
-    public class ConfigElement
+    public class ConfigElement:IPeriod
     {
         private ConfigElement()
         {
         }
 
-        public ConfigElement(TypeElement typeElementElement, ConfigElement? parrent, Config config, string? path)
+        public ConfigElement(TypeElement typeElement, ConfigElement? parrent, Config config, string path, DateTimeOffset dateFrom)
         {
-            TypeElement = typeElementElement;
+            TypeElement = typeElement;
             Parrent = parrent;
             Config = config;
+            DateFrom = dateFrom;
             Path = path ?? ".";
         }
 
@@ -42,6 +44,13 @@ namespace ObjectConfig.Data
         {
             ConfigId = config.ConfigId;
             Config = config;
+        }
+
+        public DateTimeOffset DateFrom { get; protected set; }
+        public DateTimeOffset? DateTo { get; protected set; }
+        public void Close(DateTimeOffset closeDate)
+        {
+            DateTo = closeDate;
         }
     }
 }

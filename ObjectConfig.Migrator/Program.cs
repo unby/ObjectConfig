@@ -19,7 +19,14 @@ namespace ObjectConfig.Migrator
     {
         private static void Main(string[] args)
         {
-            new ObjectConfigContextFactory().CreateDbContext(args);
+            try
+            {
+                new ObjectConfigContextFactory().CreateDbContext(args).Database.EnsureCreated();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }

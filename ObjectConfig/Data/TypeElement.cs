@@ -3,16 +3,12 @@ using System.Diagnostics;
 
 namespace ObjectConfig.Data
 {
-    [DebuggerDisplay("Name = {Name} Type = {Type}")]
+    [DebuggerDisplay("Name = {Name} TypeNode = {TypeNode}")]
     public class TypeElement
     {
-        public readonly static TypeElement None = new TypeElement(TypeNode.None, "none");
-        public readonly static TypeElement Complex = new TypeElement(TypeNode.Complex, "complex");
-        public readonly static TypeElement Root = new TypeElement();
-
         public TypeElement()
         {
-            Type = TypeNode.Root;
+            TypeNode = TypeNode.Root;
             Name = "root";
         }
 
@@ -23,7 +19,7 @@ namespace ObjectConfig.Data
                 throw new ArgumentException($"Constructor requires data for {nameof(TypeElement)}'s", nameof(name));
             }
 
-            Type = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
+            TypeNode = typeNode != TypeNode.Root ? typeNode : throw new ArgumentException("typeNode dont has 'TypeNode.Root' value's");
             Name = name;
             Description = description;
         }
@@ -34,6 +30,6 @@ namespace ObjectConfig.Data
 
         public string? Description { get; protected set; }
 
-        public TypeNode Type { get; protected set; }
+        public TypeNode TypeNode { get; protected set; }
     }
 }

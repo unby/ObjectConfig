@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using MediatR;
 using ObjectConfig.Data;
-using ObjectConfig.Features.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ObjectConfig.Features.Configs.Update
 {
@@ -16,7 +15,7 @@ namespace ObjectConfig.Features.Configs.Update
         private readonly ObjectConfigContext _configContext;
         private readonly ConfigService _configService;
         private readonly ILogger<UpdateConfigHandler> _logger;
-
+        private readonly DateTimeOffset CloseDate = DateTimeOffset.Now;
         public UpdateConfigHandler(ObjectConfigContext configContext, ConfigService configService, ILogger<UpdateConfigHandler> logger)
         {
             _configContext = configContext;
@@ -26,39 +25,32 @@ namespace ObjectConfig.Features.Configs.Update
 
         public async Task<Config> Handle(UpdateConfigCommand request, CancellationToken cancellationToken)
         {
-            var configSource = await _configService.GetConfigElement(
-                () => _configService.GetConfig(request, EnvironmentRole.Editor, cancellationToken), cancellationToken);
+            using (IDbContextTransaction transaction = _configContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var configSource = await _configService.GetConfigElement(
+                        () => _configService.GetConfig(request, EnvironmentRole.Editor, cancellationToken),
+                        cancellationToken);
 
-            Config config = new Config(request.ConfigCode, configSource.config.Environment, request.VersionFrom);
-            var reader = new ObjectConfigReader(config);
-            ConfigElement configElement = await reader.Parse(request.Data);
+                    Config config = new Config(request.ConfigCode, configSource.config.Environment,
+                        request.VersionFrom);
+                    var reader = new ObjectConfigReader(config);
+                    ConfigElement configElement = await reader.Parse(request.Data);
 
-            var comparer = new ElementComparer(configSource.root, configElement, _logger);
-            comparer.Compare();
-            _logger.LogDebug("count change: {0}",await _configContext.SaveChangesAsync(cancellationToken));
-            _configContext.ConfigCache.Update(new ConfigCache(config, request.Data));
-            return configSource.config;
-        }
-    }
+                    Compare(configSource.root, configElement);
 
-    public class ElementComparer
-    {
-        private readonly ConfigElement _sourceElement;
-        private readonly ConfigElement _newElement;
-        private readonly ILogger<UpdateConfigHandler> _logger;
-        public readonly DateTimeOffset CloseDate = DateTimeOffset.Now;
-
-        public ElementComparer(ConfigElement sourceElement, ConfigElement newElement,
-            ILogger<UpdateConfigHandler> logger)
-        {
-            _sourceElement = sourceElement;
-            _newElement = newElement;
-            _logger = logger;
-        }
-
-        public void Compare()
-        {
-            Compare(_sourceElement, _newElement);
+                    _configContext.ConfigCache.Update(new ConfigCache(configSource.config, request.Data));
+                    await _configContext.SaveChangesAsync(cancellationToken);
+                    transaction.Commit();
+                    return configSource.config;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
         }
 
         public void Compare(ConfigElement sourceElementParrent, ConfigElement newElementParrent)
@@ -92,33 +84,34 @@ namespace ObjectConfig.Features.Configs.Update
                     {
                         var newElementChild = newElementParrent.Childs[newElementIndex];
 
-                        if (sourceElementChild.TypeElement.Equals(newElementChild.TypeElement) &&
-                            newElementChild.TypeElement.Type == TypeNode.Complex)
+                        if (sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode) &&
+                            newElementChild.TypeElement.TypeNode == TypeNode.Complex)
                         {
                             Compare(sourceElementChild, newElementChild);
                             continue;
                         }
-                        else if (sourceElementChild.TypeElement.Type.Equals(newElementChild.TypeElement.Type) &&
-                                 newElementChild.TypeElement.Type == TypeNode.Array)
+                        else if (sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode) &&
+                                 newElementChild.TypeElement.TypeNode == TypeNode.Array)
                         {
                             deletedArrays.Add((sourceElementChild, newElementChild));
 
                             continue;
                         }
-                        else   if(sourceElementChild.TypeElement.Type.Equals(TypeNode.Root))
+                        else   if(sourceElementChild.TypeElement.TypeNode.Equals(TypeNode.Root))
                             continue;
                         else
                         {
                             try
                             {
 
-                                if (!sourceElementChild.TypeElement.Type.Equals(newElementChild.TypeElement.Type))
+                                if (!sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode))
                                 {
+                                    sourceElementChild.Close(CloseDate);
                                     foreach (var sourceValue in sourceElementChild.Value)
                                     {
                                         sourceValue.Close(CloseDate);
                                     }
-
+                                    // todo unit tests
                                     foreach (var valueElement in newElementChild.Value)
                                     {
                                         sourceElementChild.Value.Add(new ValueElement(valueElement.Value,
@@ -184,6 +177,7 @@ namespace ObjectConfig.Features.Configs.Update
 
         private void Delete(ConfigElement sourceElementChild)
         {
+            sourceElementChild.Close(CloseDate);
             foreach (var val in sourceElementChild.Value)
             {
                 val.Close(CloseDate);

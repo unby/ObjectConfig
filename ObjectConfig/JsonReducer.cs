@@ -33,7 +33,7 @@ namespace ObjectConfig
         {
             try
             {
-                switch (configElement.TypeElement.Type)
+                switch (configElement.TypeElement.TypeNode)
                 {
                     case TypeNode.Complex:
                         List<JContainer> props = new List<JContainer>(configElement.Childs.Count);
@@ -45,7 +45,7 @@ namespace ObjectConfig
                         }
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-                        if (configElement.Parrent.TypeElement.Type == TypeNode.Array)
+                        if (configElement.Parrent.TypeElement.TypeNode == TypeNode.Array)
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
                         {
                             return new JObject(props.ToArray());
@@ -78,7 +78,7 @@ namespace ObjectConfig
                         }
                     default:
                         return new JProperty(configElement.TypeElement.Name,
-                            ParseByType(configElement.Value[0].Value, configElement.TypeElement.Type));
+                            ParseByType(configElement.Value[0].Value, configElement.TypeElement.TypeNode));
                 }
             }
             catch (Exception ex)

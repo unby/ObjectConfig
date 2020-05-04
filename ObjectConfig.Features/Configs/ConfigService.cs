@@ -63,16 +63,10 @@ namespace ObjectConfig.Features.Configs
             var config = await func();
             var id = config.ConfigId;
 
-            var all =  await _objectConfigContext.ConfigElements.
-                Include(i => i.Childs).Include(i => i.TypeElement).Include(i => i.Value)//.ThenInclude(ti=>ti.DateTo==null)
-                .Where(s => s.ConfigId == id).ToArrayAsync(token);
+            var all = await  _objectConfigContext.ConfigElements.
+                Where(config => config.ConfigId == id && config.DateTo == null).Include(i=>i.TypeElement)
+                .Include(i=>i.Value.Where(w=>w.DateTo==null)).ToArrayAsync(token);
 
-           /*   await (from conf in _objectConfigContext.ConfigElements.Where(w => w.ConfigId == id)
-                    join val in _objectConfigContext.ValueElements.Where(w => w.DateTo == null) on conf.ConfigElementId
-                        equals val.ConfigElementId into value from values in value.DefaultIfEmpty()
-
-                    select conf).Include(i => i.TypeElement).Include(i=>i.Value).ToArrayAsync(token);
-*/
             var root = all.First(f => f.ParrentConfigElementId == null);
             return (config, root, all);
         }

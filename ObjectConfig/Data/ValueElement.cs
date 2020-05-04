@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace ObjectConfig.Data
 {
-    [DebuggerDisplay("Value = {Value} Type = {Type}")]
+    [DebuggerDisplay("Value = {Value} {DateFrom}-{DateTo}")]
     public class ValueElement
     {
         private ValueElement()
@@ -11,11 +11,12 @@ namespace ObjectConfig.Data
             DateFrom = DateTimeOffset.UtcNow;
         }
 
-        public ValueElement(string? value, ConfigElement element,  DateTimeOffset dateFrom)
+        public ValueElement(string? value, ConfigElement element, DateTimeOffset dateFrom)
         {
-            ConfigElement = element ?? throw new ArgumentNullException(nameof(element));
+            ConfigElement = element;
             DateFrom = dateFrom;
             Value = value;
+
         }
 
         public long ValueElementId { get; protected set; }
@@ -33,10 +34,11 @@ namespace ObjectConfig.Data
         public int? ChangeOwnerUserId { get; protected set; }
 
         public virtual User ChangeOwner { get; protected set; }
+        public long TypeElementId { get; protected set; }
 
         public object? GetObjectValue()
         {
-            switch (ConfigElement.TypeElement.Type)
+            switch (ConfigElement.TypeElement.TypeNode)
             {
                 case TypeNode.Root:
                 case TypeNode.Complex:
