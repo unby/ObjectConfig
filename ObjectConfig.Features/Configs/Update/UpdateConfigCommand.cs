@@ -8,22 +8,17 @@ namespace ObjectConfig.Features.Configs.Update
 {
     public class UpdateConfigCommand : ConfigArgumentCommand, IRequest<Config>
     {
-        public UpdateConfigCommand(string applicationCode, string environmentCode, string configCode, string versionFrom, string? versionTo)
+        public UpdateConfigCommand(string applicationCode, string environmentCode, string configCode, string data, string? versionFrom)
             : base(applicationCode, environmentCode, configCode, versionFrom)
         {
-            if (string.IsNullOrWhiteSpace(versionFrom))
+            if (string.IsNullOrWhiteSpace(data))
             {
-                throw new RequestException($"Parameter '{nameof(versionFrom)}' isn't should empty");
+                throw new RequestException($"Parameter '{nameof(data)}' isn't should empty");
             }
 
-            if (!string.IsNullOrWhiteSpace(versionTo))
-            {
-                To = new Version(versionFrom);
-                VesionTo = Config.ConvertVersionToLong(To);
-            }
+            Data = data;
         }
 
-        public readonly Version? To;
-        public readonly long? VesionTo;
+        public string Data { get; }
     }
 }

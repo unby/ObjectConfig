@@ -6,6 +6,10 @@ namespace ObjectConfig.Data
     [DebuggerDisplay("Name = {Name} Type = {Type}")]
     public class TypeElement
     {
+        public readonly static TypeElement None = new TypeElement(TypeNode.None, "none");
+        public readonly static TypeElement Complex = new TypeElement(TypeNode.Complex, "complex");
+        public readonly static TypeElement Root = new TypeElement();
+
         public TypeElement()
         {
             Type = TypeNode.Root;

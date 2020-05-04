@@ -13,9 +13,12 @@ namespace ObjectConfig
         public ObjectConfigReader(Config config)
         {
             this._config = config;
+            CrateTime = DateTimeOffset.UtcNow;
         }
 
-        public List<ConfigElement> AllNodes = new List<ConfigElement>();
+        public readonly DateTimeOffset CrateTime;
+
+        public readonly List<ConfigElement> AllProperty = new List<ConfigElement>();
 
         public async Task<ConfigElement> Parse(string jsonString, int deep = 20)
         {
@@ -35,12 +38,13 @@ namespace ObjectConfig
         private async Task<ConfigElement> ParseJObject(JObject jObj, int deep)
         {
             var root = new ConfigElement(new TypeElement(), null, _config, null);
-            AllNodes.Add(root);
+            AllProperty.Add(root);
             foreach (var node in jObj)
             {
 #pragma warning disable CS8604 // Possible null reference argument.
                 var confElem = await ReadChild(node.Value, node.Key, root, deep);
                 root.Childs.Add(confElem);
+                AllProperty.Add(confElem);
 #pragma warning restore CS8604 // Possible null reference argument.
             }
             _config.ConfigElement.Add(root);
@@ -72,10 +76,11 @@ namespace ObjectConfig
             var childType = GetType(node);
             if (parrent.Type.Type == TypeNode.Array && childType != TypeNode.Complex)
             {
-                parrent.Value.Add(new ValueElement(node.ToString(), parrent.Type));
+                parrent.Value.Add(new ValueElement(node.ToString(), parrent, parrent.Type, CrateTime));
                 return null;
             }
 
+            (ConfigElement element, TypeElement Type) temp;
             switch (childType)
             {
                 case TypeNode.None:
@@ -83,8 +88,9 @@ namespace ObjectConfig
                 case TypeNode.Complex:
                     if (deep == 0)
                     {
-                        res = CreateConfigElement(TypeNode.Complex, key, parrent);
-                        res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                       temp = CreateConfigElement(TypeNode.Complex, key, parrent);
+                       res = temp.element;
+                        res.Value.Add(new ValueElement(node.ToString(), temp.element, temp.Type, CrateTime));
                     }
                     else
                     {
@@ -92,81 +98,95 @@ namespace ObjectConfig
                         {
                             throw new Exception("JTokenType.Property " + node.ToString());
                         }
-                        else
+
+                        if (node is JObject jobject)
                         {
-                            if (node is JObject jobject)
+                            temp= CreateConfigElement(TypeNode.Complex, key, parrent);
+                            res = temp.element;
+                            foreach (var item in jobject)
                             {
-                                res = CreateConfigElement(TypeNode.Complex, key, parrent);
-                                foreach (var item in jobject)
-                                {
 #pragma warning disable CS8604 // Possible null reference argument.
-                                    var child = await ReadChild(item.Value, item.Key, res, --deep);
+                                var child = await ReadChild(item.Value, item.Key, res, --deep);
 #pragma warning restore CS8604 // Possible null reference argument.
-                                    if (child != null)
-                                    {
-                                        res.Childs.Add(child);
-                                    }
+                                if (child != null)
+                                {
+                                    res.Childs.Add(child);
+                                    AllProperty.Add(child);
                                 }
                             }
                         }
                     }
                     break;
                 case TypeNode.Array:
-                    res = CreateConfigElement(TypeNode.Array, key, parrent);
+                    temp = CreateConfigElement(TypeNode.Array, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(null, res, temp.Type, CrateTime));
                     foreach (var item in node)
                     {
                         var result = await ReadChild(item, key, res, deep);
                         if (result != null)
                         {
                             res.Childs.Add(result);
+                            AllProperty.Add(result);
                         }
                     }
                     break;
                 case TypeNode.Integer:
-                    res = CreateConfigElement(TypeNode.Integer, key, parrent);
-                    res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                    temp = CreateConfigElement(TypeNode.Integer, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
                     break;
                 case TypeNode.Float:
-                    res = CreateConfigElement(TypeNode.Float, key, parrent);
-                    res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                    temp = CreateConfigElement(TypeNode.Float, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
                     break;
                 case TypeNode.String:
-                    res = CreateConfigElement(TypeNode.String, key, parrent);
-                    res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                    temp = CreateConfigElement(TypeNode.String, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
                     break;
                 case TypeNode.Boolean:
-                    res = CreateConfigElement(TypeNode.Boolean, key, parrent);
-                    res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                    temp = CreateConfigElement(TypeNode.Boolean, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
                     break;
                 case TypeNode.Null:
-                    res = CreateConfigElement(TypeNode.Null, key, parrent);
-                    res.Value.Add(new ValueElement(null, res.Type));
+                    temp = CreateConfigElement(TypeNode.Null, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(null, res, temp.Type, CrateTime));
                     break;
                 case TypeNode.Date:
                     if (node.ToString().Contains("+"))
                     {
+                        temp = CreateConfigElement(TypeNode.DateTimeOffset, key, parrent);
+                        res = temp.element;
                         var dateTime = node.ToObject<DateTimeOffset>();
-                        res = CreateConfigElement(TypeNode.DateTimeOffset, key, parrent);
-                        res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"), res.Type));
+
+                        res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz"), res, temp.Type, CrateTime));
                     }
                     else
                     {
+                        temp = CreateConfigElement(TypeNode.Date, key, parrent);
+                        res = temp.element;
                         var dateTime = node.ToObject<DateTime>();
-                        res = CreateConfigElement(TypeNode.Date, key, parrent);
-                        res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"), res.Type));
+                        res.Value.Add(new ValueElement(dateTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"), res, temp.Type, CrateTime));
                     }
                     break;
                 case TypeNode.Guid:
-                    res = CreateConfigElement(TypeNode.Guid, key, parrent);
-                    res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                    temp = CreateConfigElement(TypeNode.Guid, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
                     break;
                 case TypeNode.Uri:
-                    res = CreateConfigElement(TypeNode.Uri, key, parrent);
-                    res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                    temp = CreateConfigElement(TypeNode.Uri, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
                     break;
                 case TypeNode.TimeSpan:
-                    res = CreateConfigElement(TypeNode.TimeSpan, key, parrent);
-                    res.Value.Add(new ValueElement(node.ToString(), res.Type));
+                    temp = CreateConfigElement(TypeNode.TimeSpan, key, parrent);
+                    res = temp.element;
+                    res.Value.Add(new ValueElement(node.ToString(), res, temp.Type, CrateTime));
                     break;
                 default:
                     break;
@@ -176,10 +196,10 @@ namespace ObjectConfig
         }
 
         private readonly Dictionary<string, TypeElement> _types = new Dictionary<string, TypeElement>();
-        private ConfigElement CreateConfigElement(TypeNode nodeType, string nodeKey, ConfigElement parrent)
+        private (ConfigElement element, TypeElement Type) CreateConfigElement(TypeNode nodeType, string nodeKey, ConfigElement parrent)
         {
             var path = parrent.Path + "." + nodeKey;
-            return new ConfigElement(CreateType(nodeType, nodeKey, path), parrent, _config, path);
+            return (new ConfigElement(null, parrent, _config, path), CreateType(nodeType, nodeKey, path));
         }
 
         private TypeElement CreateType(TypeNode nodeType, string nodeKey, string nodePath)

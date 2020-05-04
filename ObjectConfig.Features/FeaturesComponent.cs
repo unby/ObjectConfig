@@ -29,7 +29,7 @@ namespace ObjectConfig.Features
             services.AddScoped<EnvironmentService>();
             services.AddScoped<ConfigService>();
 
-            services.AddScoped<ConfigElementRepository>();
+            // services.AddScoped<ConfigElementRepository>();
             return services;
         }
     }

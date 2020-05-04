@@ -10,9 +10,10 @@ namespace UnitTests
 {
     public static class TestExtensions
     {
-        public static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings()
+        private static JsonSerializerSettings settings = new JsonSerializerSettings
         {
-            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+            ContractResolver = new ContractResolverWithPrivates()
         };
 
         public static User Admin(this ObjectConfigContext context)
@@ -51,11 +52,6 @@ namespace UnitTests
 
         public static T Deserialize<T>(this HttpResponseMessage httpResponse)
         {
-            var settings = new JsonSerializerSettings
-            {
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                ContractResolver = new ContractResolverWithPrivates()
-            };
             var str = httpResponse.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<T>(str, settings);
         }

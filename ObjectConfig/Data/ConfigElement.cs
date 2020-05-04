@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ObjectConfig.Data
 {
     [DebuggerDisplay("{Type}; Parrent = {Parrent}")]
     public class ConfigElement
     {
-        private ConfigElement() { }
+        private ConfigElement()
+        {
+        }
 
         public ConfigElement(TypeElement typeElement, ConfigElement? parrent, Config config, string? path)
         {
-            Type = typeElement;
             Parrent = parrent;
             Config = config;
             Path = path ?? ".";
@@ -24,7 +26,20 @@ namespace ObjectConfig.Data
 
         public Config Config { get; set; }
 
-        public TypeElement Type { get; set; }
+        public TypeElement Type
+        {
+            get
+            {
+                if (Value.Any())
+                    return Value[0].Type;
+                else if (Path == ".")
+                    return TypeElement.Root;
+                else if(Childs.Any()&&!Value.Any())
+                    return TypeElement.Complex;
+                else
+                    return TypeElement.None;
+            }
+        }
 
         public long? ParrentConfigElementId { get; set; }
 
@@ -33,5 +48,11 @@ namespace ObjectConfig.Data
         public List<ValueElement> Value { get; set; } = new List<ValueElement>();
 
         public List<ConfigElement> Childs { get; set; } = new List<ConfigElement>();
+
+        public void CopyTo(Config config)
+        {
+            ConfigId = config.ConfigId;
+            Config = config;
+        }
     }
 }

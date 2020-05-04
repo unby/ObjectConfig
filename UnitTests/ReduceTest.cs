@@ -39,7 +39,10 @@ namespace UnitTests
             Assert.Equal(TypeNode.Root, configElemnt.Type.Type);
 
             Log.WriteLine(origin);
-            var reducerJobject = new JsonReducer().Parse(configElemnt).Result;
+            var reducer = new JsonReducer();
+            var reducerJobject = reducer.Parse(configElemnt).Result;
+
+            Assert.Equal(reader.AllProperty.Count, reducer.AllProperty.Count);
 
             Log.WriteLine(reducerJobject);
             Assert.Equal(origin.ToString(), reducerJobject.ToString());
