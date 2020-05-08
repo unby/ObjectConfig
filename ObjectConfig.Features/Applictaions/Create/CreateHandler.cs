@@ -10,12 +10,12 @@ namespace ObjectConfig.Features.Applictaions.Create
     public class CreateHandler : IRequestHandler<CreateCommand, UsersApplications>
     {
         private readonly SecurityService _securityService;
-        private readonly ApplicationRepository _applicationRepository;
+        private readonly ObjectConfigContext _configContext;
 
-        public CreateHandler(SecurityService securityService, ApplicationRepository applicationRepository)
+        public CreateHandler(SecurityService securityService, ObjectConfigContext configContext)
         {
             _securityService = securityService;
-            _applicationRepository = applicationRepository;
+            _configContext = configContext;
         }
 
         public async Task<UsersApplications> Handle(CreateCommand request, CancellationToken cancellationToken)
@@ -26,7 +26,8 @@ namespace ObjectConfig.Features.Applictaions.Create
             var userApp = new UsersApplications(await _securityService.GetCurrentUser(), application, ApplicationRole.Administrator);
             application.Users.Add(userApp);
 
-            await _applicationRepository.Create(application);
+            _configContext.Applications.Add(application);
+            await _configContext.SaveChangesAsync(cancellationToken);
 
             return userApp;
         }

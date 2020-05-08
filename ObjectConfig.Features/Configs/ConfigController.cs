@@ -11,6 +11,7 @@ using ObjectConfig.Features.Configs.Update;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using ObjectConfig.Features.Configs.Refresh;
 
 namespace ObjectConfig.Features.Configs
 {
@@ -76,6 +77,15 @@ namespace ObjectConfig.Features.Configs
             [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
             var result = await _mediator.Send(new JsonConverterCommand(appCode, envCode, confCode, versionFrom));
+            return this.Content(result, "application/json");
+        }
+
+        [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}/jsonrefresh")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> JsonRefresh([FromRoute]string appCode, [FromRoute]string envCode,
+            [FromRoute]string confCode, [FromQuery]string? versionFrom)
+        {
+            var result = await _mediator.Send(new RefreshCommand(appCode, envCode, confCode, versionFrom));
             return this.Content(result, "application/json");
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.TestHost;
+﻿using System.Dynamic;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ObjectConfig;
@@ -56,7 +57,7 @@ namespace UnitTests
             return JsonConvert.DeserializeObject<T>(str, settings);
         }
 
-        public static HttpContent Serialize<T>(this T obj)
+        public static HttpContent Serialize(this object obj)
         {
             var stringPayload = JsonConvert.SerializeObject(obj);
 

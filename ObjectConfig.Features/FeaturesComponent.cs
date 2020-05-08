@@ -28,6 +28,7 @@ namespace ObjectConfig.Features
             services.AddMediatR(typeof(FeaturesComponent).Assembly);
             services.AddScoped<EnvironmentService>();
             services.AddScoped<ConfigService>();
+            services.AddScoped<CacheService>();
 
             // services.AddScoped<ConfigElementRepository>();
             return services;

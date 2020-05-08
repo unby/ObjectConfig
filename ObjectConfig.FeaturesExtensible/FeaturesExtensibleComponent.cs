@@ -6,7 +6,7 @@ namespace ObjectConfig.FeaturesExtensible
     {
         public static IServiceCollection FeaturesExtensibleRegister(this IServiceCollection services)
         {
-            // overide your components
+            // override your components
 
             return services;
         }

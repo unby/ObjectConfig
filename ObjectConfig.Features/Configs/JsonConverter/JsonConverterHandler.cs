@@ -9,23 +9,18 @@ namespace ObjectConfig.Features.Configs.JsonConverter
     public class JsonConverterHandler : IRequestHandler<JsonConverterCommand, string>
     {
         private readonly ConfigService _configService;
+        private readonly CacheService _cacheService;
 
-        public JsonConverterHandler(ConfigService configService)
+        public JsonConverterHandler(ConfigService configService, CacheService cacheService)
         {
             _configService = configService;
+            _cacheService = cacheService;
         }
 
         public async Task<string> Handle(JsonConverterCommand request, CancellationToken cancellationToken)
         {
-#if debug
-            return await _configService.GetConfigValue(
-                () => _configService.GetConfig(request, cancellationToken),
-                cancellationToken);
-#endif
-            var k= await _configService.GetConfigElement(
-                () => _configService.GetConfig(request, EnvironmentRole.Editor,cancellationToken),
-                cancellationToken);
-           return (await new JsonReducer().Parse(k.root)).ToString();
+            var k = await _configService.GetConfig(request, cancellationToken);
+            return await _cacheService.GetGonfig(k.ConfigId, cancellationToken);
         }
     }
 }

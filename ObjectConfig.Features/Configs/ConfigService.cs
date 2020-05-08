@@ -6,6 +6,7 @@ using ObjectConfig.Features.Common;
 using ObjectConfig.Features.Environments;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Schema;
 
 namespace ObjectConfig.Features.Configs
 {
@@ -48,14 +49,6 @@ namespace ObjectConfig.Features.Configs
                 w => w.EnvironmentId.Equals(environmentId) && w.Code == request.ConfigCode && w.DateTo == null &&
                      ((w.VersionFrom <= request.VersionFrom && request.VersionFrom < w.VersionTo) ||
                       (w.VersionFrom <= request.VersionFrom && w.VersionTo == null)), cancellationToken);
-        }
-
-        public async Task<string> GetConfigValue(Func<Task<Config>> func, CancellationToken cancellationToken)
-        {
-            var id = (await func()).ConfigId;
-            var k = (await _objectConfigContext.ConfigCache.
-                SingleOrDefaultAsync(f => f.ConfigId == id, cancellationToken)).ConfigValue;
-            return k;
         }
 
         public async Task<(Config config, ConfigElement root, ConfigElement[] all)> GetConfigElement(Func<Task<Config>> func, CancellationToken token)

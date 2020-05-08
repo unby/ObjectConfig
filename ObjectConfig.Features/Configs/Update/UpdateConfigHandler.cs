@@ -14,150 +14,138 @@ namespace ObjectConfig.Features.Configs.Update
     {
         private readonly ObjectConfigContext _configContext;
         private readonly ConfigService _configService;
+        private readonly CacheService _cacheService;
         private readonly ILogger<UpdateConfigHandler> _logger;
-        private readonly DateTimeOffset CloseDate = DateTimeOffset.Now;
-        public UpdateConfigHandler(ObjectConfigContext configContext, ConfigService configService, ILogger<UpdateConfigHandler> logger)
+        private readonly DateTimeOffset _closeDate = DateTimeOffset.Now;
+
+        public UpdateConfigHandler(ObjectConfigContext configContext,
+            ConfigService configService,
+            CacheService cacheService,
+            ILogger<UpdateConfigHandler> logger)
         {
             _configContext = configContext;
             _configService = configService;
+            _cacheService = cacheService;
             _logger = logger;
         }
 
         public async Task<Config> Handle(UpdateConfigCommand request, CancellationToken cancellationToken)
         {
-            using (IDbContextTransaction transaction = _configContext.Database.BeginTransaction())
+            await using IDbContextTransaction transaction = _configContext.Database.BeginTransaction();
+            try
             {
-                try
-                {
-                    var configSource = await _configService.GetConfigElement(
-                        () => _configService.GetConfig(request, EnvironmentRole.Editor, cancellationToken),
-                        cancellationToken);
+                var configSource = await _configService.GetConfigElement(
+                    () => _configService.GetConfig(request, EnvironmentRole.Editor, cancellationToken),
+                    cancellationToken);
 
-                    Config config = new Config(request.ConfigCode, configSource.config.Environment,
-                        request.VersionFrom);
-                    var reader = new ObjectConfigReader(config);
-                    ConfigElement configElement = await reader.Parse(request.Data);
+                Config config = new Config(request.ConfigCode, configSource.config.Environment,
+                    request.VersionFrom);
+                var reader = new ObjectConfigReader(config);
+                ConfigElement configElement = await reader.Parse(request.Data);
+                Compare(configSource.root, configElement);
 
-                    Compare(configSource.root, configElement);
+                await _configContext.SaveChangesAsync(cancellationToken);
 
-                    _configContext.ConfigCache.Update(new ConfigCache(configSource.config, request.Data));
-                    await _configContext.SaveChangesAsync(cancellationToken);
-                    transaction.Commit();
-                    return configSource.config;
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+                await _cacheService.UpdateJsonConfig(configSource.config.ConfigId, request.Data, cancellationToken);
+
+                await transaction.CommitAsync(cancellationToken);
+                return configSource.config;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                _logger.LogError(ex, "{request} data:{Data}", request, request.Data);
+                throw;
             }
         }
 
         public void Compare(ConfigElement sourceElementParrent, ConfigElement newElementParrent)
         {
-            try
+            var oldElements = new List<int>(newElementParrent.Childs.Count);
+            var deletedArrays = new List<(ConfigElement oldArray, ConfigElement newArray)>();
+
+            foreach (var sourceElementChild in sourceElementParrent.Childs)
             {
-                if(sourceElementParrent.Path.Contains("SimpleArray"))
-                    _logger.LogDebug(sourceElementParrent.Path);
-                List<int> oldElements = new List<int>(newElementParrent.Childs.Count);
-                List<(ConfigElement oldArray, ConfigElement newArray)> deletedArrays =
-                    new List<(ConfigElement oldArray, ConfigElement newArray)>();
-                foreach (var sourceElementChild in sourceElementParrent.Childs)
-                {
-                    int newElementIndex = -1;
-                    for (int i = 0; i < newElementParrent.Childs.Count(); i++)
-                    {
-                        if (sourceElementChild.Path.Equals(newElementParrent.Childs[i].Path))
-                        {
-                            newElementIndex = i;
-                            break;
-                        }
-                    }
-
-                    oldElements.Add(newElementIndex);
-
-                    if (newElementIndex < 0)
-                    {
-                        Delete(sourceElementChild);
-                    }
-                    else
-                    {
-                        var newElementChild = newElementParrent.Childs[newElementIndex];
-
-                        if (sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode) &&
-                            newElementChild.TypeElement.TypeNode == TypeNode.Complex)
-                        {
-                            Compare(sourceElementChild, newElementChild);
-                            continue;
-                        }
-                        else if (sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode) &&
-                                 newElementChild.TypeElement.TypeNode == TypeNode.Array)
-                        {
-                            deletedArrays.Add((sourceElementChild, newElementChild));
-
-                            continue;
-                        }
-                        else   if(sourceElementChild.TypeElement.TypeNode.Equals(TypeNode.Root))
-                            continue;
-                        else
-                        {
-                            try
-                            {
-
-                                if (!sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode))
-                                {
-                                    sourceElementChild.Close(CloseDate);
-                                    foreach (var sourceValue in sourceElementChild.Value)
-                                    {
-                                        sourceValue.Close(CloseDate);
-                                    }
-                                    // todo unit tests
-                                    foreach (var valueElement in newElementChild.Value)
-                                    {
-                                        sourceElementChild.Value.Add(new ValueElement(valueElement.Value,
-                                            sourceElementChild, CloseDate));
-                                    }
-                                }
-                                else if (!sourceElementChild.Value[0].Value.Equals(newElementChild.Value[0].Value))
-                                {
-                                    foreach (var sourceValue in sourceElementChild.Value)
-                                    {
-                                        sourceValue.Close(CloseDate);
-                                    }
-
-                                    foreach (var valueElement in newElementChild.Value)
-                                    {
-                                        sourceElementChild.Value.Add(new ValueElement(valueElement.Value,
-                                            sourceElementChild, CloseDate));
-                                    }
-                                }
-
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogDebug("{0} {1}", sourceElementParrent.Path, ex);
-                                throw;
-                            }
-                        }
-                    }
-                }
-
-                foreach (var item in deletedArrays)
-                {
-                    Delete(item.oldArray);
-                    New(sourceElementParrent, item.newArray);
-                }
-
+                int newElementIndex = -1;
                 for (int i = 0; i < newElementParrent.Childs.Count(); i++)
                 {
-                    if(!oldElements.Contains(i))
-                        New(sourceElementParrent, newElementParrent.Childs[i]);
+                    if (sourceElementChild.Path.Equals(newElementParrent.Childs[i].Path))
+                    {
+                        newElementIndex = i;
+                        break;
+                    }
+                }
+
+                oldElements.Add(newElementIndex);
+
+                if (newElementIndex < 0)
+                {
+                    Delete(sourceElementChild);
+                }
+                else
+                {
+                    var newElementChild = newElementParrent.Childs[newElementIndex];
+
+                    if (sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode) &&
+                        newElementChild.TypeElement.TypeNode == TypeNode.Complex)
+                    {
+                        Compare(sourceElementChild, newElementChild);
+                        continue;
+                    }
+                    else if (sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode) &&
+                             newElementChild.TypeElement.TypeNode == TypeNode.Array)
+                    {
+                        deletedArrays.Add((sourceElementChild, newElementChild));
+
+                        continue;
+                    }
+                    else if (sourceElementChild.TypeElement.TypeNode.Equals(TypeNode.Root))
+                        continue;
+                    else
+                    {
+                        if (!sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode))
+                        {
+                            sourceElementChild.Close(_closeDate);
+                            foreach (var sourceValue in sourceElementChild.Value)
+                            {
+                                sourceValue.Close(_closeDate);
+                            }
+
+                            foreach (var valueElement in newElementChild.Value)
+                            {
+                                sourceElementChild.Value.Add(
+                                    new ValueElement(valueElement.Value, sourceElementChild, _closeDate));
+                            }
+
+                            oldElements.RemoveAt(oldElements.Count - 1);
+                        }
+                        else if ((sourceElementChild.Value[0].Value!=null && !sourceElementChild.Value[0].Value.Equals(newElementChild.Value[0].Value)))
+                        {
+                            foreach (var sourceValue in sourceElementChild.Value)
+                            {
+                                sourceValue.Close(_closeDate);
+                            }
+
+                            foreach (var valueElement in newElementChild.Value)
+                            {
+                                sourceElementChild.Value.Add(
+                                    new ValueElement(valueElement.Value, sourceElementChild, _closeDate));
+                            }
+                        }
+                    }
                 }
             }
-            catch (Exception ex)
+
+            foreach (var item in deletedArrays)
             {
-                _logger.LogDebug("{0} {1}", sourceElementParrent.Path, ex);
-                throw new Exception( sourceElementParrent.Path, ex);
+                Delete(item.oldArray);
+                New(sourceElementParrent, item.newArray);
+            }
+
+            for (int i = 0; i < newElementParrent.Childs.Count(); i++)
+            {
+                if (!oldElements.Contains(i))
+                    New(sourceElementParrent, newElementParrent.Childs[i]);
             }
         }
 
@@ -177,10 +165,10 @@ namespace ObjectConfig.Features.Configs.Update
 
         private void Delete(ConfigElement sourceElementChild)
         {
-            sourceElementChild.Close(CloseDate);
+            sourceElementChild.Close(_closeDate);
             foreach (var val in sourceElementChild.Value)
             {
-                val.Close(CloseDate);
+                val.Close(_closeDate);
             }
 
             foreach (var childElement in sourceElementChild.Childs)

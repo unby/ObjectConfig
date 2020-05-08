@@ -33,7 +33,6 @@ namespace UnitTests.Data
         }
         public string EntityName { get; set; } = nameof(SecondEntity);
         public bool BoolField { get; set; } = true;
-
         public ArrayEntity[] List { get; set; }
     }
 
