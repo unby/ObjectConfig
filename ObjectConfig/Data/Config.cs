@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 namespace ObjectConfig.Data
 {
-    public class Config:IPeriod
+    public class Config : IPeriod
     {
-        private Config() { }
+        private Config()
+        {
+        }
 
         public Config(string code, Environment environment, long versionFrom = _majorSection, long? versionTo = null)
         {
@@ -19,8 +21,11 @@ namespace ObjectConfig.Data
                 throw new ArgumentNullException($"Constructor requires data for {nameof(Config)}'s", nameof(environment));
             }
 
-            if(versionTo.HasValue && versionTo > 0)
+            if (versionTo.HasValue && versionTo > 0)
+            {
                 VersionTo = versionTo;
+            }
+
             VersionFrom = versionFrom;
             Code = code;
             Environment = environment;
@@ -51,10 +56,12 @@ namespace ObjectConfig.Data
         public DateTimeOffset DateFrom { get; protected set; } = DateTimeOffset.UtcNow;
 
         public DateTimeOffset? DateTo { get; protected set; }
+
         public void Close(DateTimeOffset closeDate)
         {
             DateTo = closeDate;
         }
+
         public long VersionFrom { get; protected set; } = _majorSection;
 
         public long? VersionTo { get; protected set; }
@@ -104,8 +111,8 @@ namespace ObjectConfig.Data
             int major, minor, build;
 
             major = (int)(version / _majorSection);
-            minor = (int)((version - major * _majorSection) / _minorSection);
-            build = (int)((version - major * _majorSection - minor * _minorSection));
+            minor = (int)((version - (major * _majorSection)) / _minorSection);
+            build = (int)(version - (major * _majorSection) - (minor * _minorSection));
 
             return new Version(major, minor, build);
         }
@@ -139,7 +146,7 @@ namespace ObjectConfig.Data
 
             if (version.Build <= sectionSize)
             {
-                res += (version.Build > -1 ? version.Build : 0);
+                res += version.Build > -1 ? version.Build : 0;
             }
             else
             {

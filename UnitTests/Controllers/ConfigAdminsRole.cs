@@ -17,17 +17,17 @@ namespace UnitTests.Controllers
         private Environment _env2;
         private Environment _env1;
 
-
-        public ConfigAdminsRole(ITestOutputHelper output) : base(output)
+        public ConfigAdminsRole(ITestOutputHelper output)
+            : base(output)
         {
         }
 
         protected override void SeedData(ObjectConfigContext context, MockUserProvider userProvider)
         {
-            var app1 = DataSeed.Application1;
-            var app2 = DataSeed.Application2;
-            var viewer = DataSeed.UserViewer1;
-            var admin = DataSeed.UserAdmin1;
+            Application app1 = DataSeed.Application1;
+            Application app2 = DataSeed.Application2;
+            User viewer = DataSeed.UserViewer1;
+            User admin = DataSeed.UserAdmin1;
 
             context.UsersApplications.Add(new UsersApplications(viewer, app1, ApplicationRole.Viewer));
             context.UsersApplications.Add(new UsersApplications(userProvider.User, app1,
@@ -40,7 +40,6 @@ namespace UnitTests.Controllers
             context.UsersEnvironments.Add(new UsersEnvironments(admin, _env1, EnvironmentRole.Editor));
             context.UsersEnvironments.Add(new UsersEnvironments(admin, _env2, EnvironmentRole.Editor));
 
-
             context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, _env1, EnvironmentRole.TargetEditor));
             context.UsersEnvironments.Add(new UsersEnvironments(userProvider.User, _env2, EnvironmentRole.Editor));
 
@@ -52,23 +51,23 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_get_all()
         {
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
-            var result =
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result =
                 await client.GetAsync($"features/application/{_env1.Application.Code}/environment/{_env1.Code}/configs");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var envs = result.Deserialize<List<Config>>();
+            List<Config> envs = result.Deserialize<List<Config>>();
             envs.Should().HaveCount(3);
         }
 
         [Fact]
         public async Task It_should_notfound_any()
         {
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
-            var result =
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result =
                 await client.GetAsync($"features/application/{_env1.Application.Code}/environment/notfound/configs");
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
@@ -77,9 +76,9 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_notfound()
         {
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
-            var result =
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result =
                 await client.GetAsync(
                     $"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/notfound");
 
@@ -89,113 +88,111 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_found()
         {
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
-            var result =
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result =
                 await client.GetAsync(
                     $"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/conf1");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            var env = result.Deserialize<ConfigDto>();
+            ConfigDto env = result.Deserialize<ConfigDto>();
             Assert.Equal("conf1", env.Code);
         }
-
 
         [Fact]
         public async Task It_should_create()
         {
-            var testEntity = new TestEntity();
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
-            var result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createtest", testEntity.Serialize());
+            TestEntity testEntity = new TestEntity();
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createtest", testEntity.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var configFound =
+            System.Net.Http.HttpResponseMessage configFound =
                  await client.GetAsync(
                      $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createtest");
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
 
-            var env = result.Deserialize<ConfigDto>();
+            ConfigDto env = result.Deserialize<ConfigDto>();
             Assert.Equal("createtest", env.Code);
         }
 
         [Fact]
         public async Task It_should_create_with_version_and_without()
         {
-            var testEntityV1 = new TestEntity();
+            TestEntity testEntityV1 = new TestEntity();
             testEntityV1.ThirdEntity.EntityName = nameof(testEntityV1);
 
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
 
-            var result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver", testEntityV1.Serialize());
+            System.Net.Http.HttpResponseMessage result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver", testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var testEntityV2 = new TestEntity();
+            TestEntity testEntityV2 = new TestEntity();
             testEntityV2.ThirdEntity.EntityName = nameof(testEntityV2);
             result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0", testEntityV2.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var testEntityV3 = new TestEntity();
+            TestEntity testEntityV3 = new TestEntity();
             testEntityV3.ThirdEntity.EntityName = nameof(testEntityV3);
             result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=0.5.0", testEntityV3.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var configVerFound =
+            System.Net.Http.HttpResponseMessage configVerFound =
                  await client.GetAsync(
                      $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0");
             Assert.Equal(HttpStatusCode.OK, configVerFound.StatusCode);
 
-            var confV2Devenition = configVerFound.Deserialize<ConfigDto>();
+            ConfigDto confV2Devenition = configVerFound.Deserialize<ConfigDto>();
             Assert.Equal("createver", confV2Devenition.Code);
             Assert.Equal("2.0.0", confV2Devenition.VersionFrom);
 
-            var configOriginalFound =
+            System.Net.Http.HttpResponseMessage configOriginalFound =
                 await client.GetAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver");
             Assert.Equal(HttpStatusCode.OK, configOriginalFound.StatusCode);
 
-            var confV1Devenition = configOriginalFound.Deserialize<ConfigDto>();
+            ConfigDto confV1Devenition = configOriginalFound.Deserialize<ConfigDto>();
             Assert.Equal(confV1Devenition.Code, confV2Devenition.Code);
             Assert.NotEqual(confV1Devenition.VersionFrom, confV2Devenition.VersionFrom);
             Assert.Null(confV2Devenition.VersionTo);
             Assert.NotNull(confV1Devenition.VersionTo);
 
-            var ver1Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json");
+            System.Net.Http.HttpResponseMessage ver1Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json");
             Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
 
-            var ver1Data = ver1Json.Deserialize<TestEntity>();
+            TestEntity ver1Data = ver1Json.Deserialize<TestEntity>();
             Assert.Equal(ver1Data.ThirdEntity.EntityName, testEntityV1.ThirdEntity.EntityName);
 
-            var ver2Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json?versionFrom=2.0.0");
+            System.Net.Http.HttpResponseMessage ver2Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json?versionFrom=2.0.0");
             Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
 
-            var ver2Data = ver2Json.Deserialize<TestEntity>();
+            TestEntity ver2Data = ver2Json.Deserialize<TestEntity>();
             Assert.Equal(ver2Data.ThirdEntity.EntityName, testEntityV2.ThirdEntity.EntityName);
 
-            var ver3Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json?versionFrom=0.5.0");
+            System.Net.Http.HttpResponseMessage ver3Json = await client.GetAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver/json?versionFrom=0.5.0");
             Assert.Equal(HttpStatusCode.OK, ver3Json.StatusCode);
 
-            var ver3Data = ver3Json.Deserialize<TestEntity>();
+            TestEntity ver3Data = ver3Json.Deserialize<TestEntity>();
             Assert.Equal(ver3Data.ThirdEntity.EntityName, testEntityV3.ThirdEntity.EntityName);
         }
-
 
         [Fact]
         public async Task It_should_create_with_version()
         {
-            var testEntity = new TestEntity();
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
-            var result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0", testEntity.Serialize());
+            TestEntity testEntity = new TestEntity();
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result = await client.PostAsync($"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0", testEntity.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            var configFound =
+            System.Net.Http.HttpResponseMessage configFound =
                  await client.GetAsync(
                      $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/createver?versionFrom=2.0.0");
 
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
-            var confDevenition = result.Deserialize<ConfigDto>();
+            ConfigDto confDevenition = result.Deserialize<ConfigDto>();
             Assert.Equal("createver", confDevenition.Code);
             Assert.Equal("2.0.0", confDevenition.VersionFrom);
         }
@@ -203,14 +200,14 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_forbiden_create()
         {
-            var testEntity = new TestEntity();
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
-            var result = await client.PostAsync($"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/createtest", testEntity.Serialize());
+            TestEntity testEntity = new TestEntity();
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result = await client.PostAsync($"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/createtest", testEntity.Serialize());
 
             Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
 
-            var configFound =
+            System.Net.Http.HttpResponseMessage configFound =
                  await client.GetAsync(
                      $"features/application/{_env1.Application.Code}/environment/{_env1.Code}/config/createtest");
             Assert.Equal(HttpStatusCode.NotFound, configFound.StatusCode);
@@ -219,19 +216,19 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_not_create()
         {
-            var testEntity = new TestEntity();
+            TestEntity testEntity = new TestEntity();
             testEntity.ThirdEntity.EntityName = nameof(testEntity);
-            using var server = TestServer(UserRole.Administrator);
-            using var client = server.CreateHttpClient();
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
 
-            var result =
+            System.Net.Http.HttpResponseMessage result =
                 await client.PostAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/updatetest", testEntity.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var updateEntity = new TestEntity();
+            TestEntity updateEntity = new TestEntity();
             updateEntity.ThirdEntity.EntityName = nameof(updateEntity);
-            var patchResult =
+            System.Net.Http.HttpResponseMessage patchResult =
                 await client.PostAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/updatetest", updateEntity.Serialize());
             Assert.Equal(HttpStatusCode.Conflict, patchResult.StatusCode);

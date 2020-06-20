@@ -4,7 +4,8 @@ namespace ObjectConfig.Features.Common
 {
     public abstract class EnvironmentArgumentCommand : ApplicationArgumentCommand
     {
-        protected EnvironmentArgumentCommand(string applicationCode, string environmentCode) : base(applicationCode)
+        protected EnvironmentArgumentCommand(string applicationCode, string environmentCode)
+            : base(applicationCode)
         {
             if (string.IsNullOrWhiteSpace(environmentCode))
             {

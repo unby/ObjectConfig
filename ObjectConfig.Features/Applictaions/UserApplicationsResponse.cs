@@ -1,5 +1,4 @@
-﻿#nullable disable
-using ObjectConfig.Data;
+﻿using ObjectConfig.Data;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,5 +13,4 @@ namespace ObjectConfig.Features.Applictaions
 
         public List<ApplicationDTO> Applications { get; }
     }
-
 }

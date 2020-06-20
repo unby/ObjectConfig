@@ -25,7 +25,7 @@ namespace ObjectConfig.Model
 
         public async Task<User> CreateUser(User user)
         {
-            var trackUser = _configContext.Users.Add(user);
+            Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<User> trackUser = _configContext.Users.Add(user);
             await _configContext.SaveChangesAsync();
             return trackUser.Entity;
         }

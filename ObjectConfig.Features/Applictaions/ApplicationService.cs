@@ -16,6 +16,7 @@ namespace ObjectConfig.Features.Applictaions
             _securityService = securityService;
             _applicationRepository = applicationRepository;
         }
+
         public async Task<List<UsersApplications>> GetApplications()
         {
             return await _applicationRepository.FindByUser((await _securityService.GetCurrentUser()).UserId);

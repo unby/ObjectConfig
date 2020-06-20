@@ -1,17 +1,19 @@
 ﻿using ObjectConfig.Data;
+using ObjectConfig.Exceptions;
 using ObjectConfig.Features.Users;
 
 namespace ObjectConfig.Features.Applictaions.Update
 {
-    public class ApplicationUserRolesDto
-        : IUserAcessLevel<ApplicationRole>
+    public class User
+           : IUserAcessLevel<ApplicationRole>
     {
-        private ApplicationUserRolesDto()
+        public User(int userId, ApplicationRole role, EntityOperation operation)
         {
-        }
+            if (userId < 1)
+            {
+                throw new RequestException($"Parameter '{nameof(userId)}' isn't correct  value");
+            }
 
-        public ApplicationUserRolesDto(int userId, ApplicationRole role, EntityOperation operation)
-        {
             UserId = userId;
             Role = role;
             Operation = operation;

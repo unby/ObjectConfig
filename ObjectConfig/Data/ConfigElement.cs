@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace ObjectConfig.Data
 {
     [DebuggerDisplay("{TypeElement}; Parrent = {Parrent}")]
-    public class ConfigElement:IPeriod
+    public class ConfigElement : IPeriod
     {
         private ConfigElement()
         {
@@ -30,6 +29,7 @@ namespace ObjectConfig.Data
         public Config Config { get; set; }
 
         public long TypeElementId { get; protected set; }
+
         public TypeElement TypeElement { get; set; }
 
         public long? ParrentConfigElementId { get; set; }

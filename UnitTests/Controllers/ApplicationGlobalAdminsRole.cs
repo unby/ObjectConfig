@@ -12,26 +12,28 @@ using Xunit.Abstractions;
 
 namespace UnitTests.Controllers
 {
-    public class ApplicationGlobalAdminsRole : ServerTestBase
+    public class ApplicationGlobalAdminsRole
+        : ServerTestBase
     {
-        public ApplicationGlobalAdminsRole(ITestOutputHelper output) : base(output)
+        public ApplicationGlobalAdminsRole(ITestOutputHelper output)
+            : base(output)
         {
         }
 
         protected override void SeedData(ObjectConfigContext context, MockUserProvider userProvider)
         {
-            var app1 = DataSeed.Application1;
-            var viewer = DataSeed.UserViewer1;
+            Application app1 = DataSeed.Application1;
+            ObjectConfig.Data.User viewer = DataSeed.UserViewer1;
             context.UsersApplications.Add(new UsersApplications(viewer, app1, ApplicationRole.Viewer));
         }
 
         [Fact]
         public async Task It_should_create()
         {
-            var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(UserRole.GlobalAdministrator);
-            using var client = server.CreateHttpClient();
-            var result = await client.PostAsync("feature/application", testApp.Serialize());
+            CreateApplicationDto testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.GlobalAdministrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result = await client.PostAsync("feature/application", testApp.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
@@ -39,10 +41,10 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_FotFound()
         {
-            var testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using var server = TestServer(UserRole.GlobalAdministrator);
-            using var client = server.CreateHttpClient();
-            var result = await client.GetAsync("feature/application/notcode");
+            CreateApplicationDto testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.GlobalAdministrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result = await client.GetAsync("feature/application/notcode");
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
@@ -50,11 +52,11 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_update()
         {
-            var testApp = DataSeed.Application1;
-            using var server = TestServer(UserRole.GlobalAdministrator);
-            using var client = server.CreateHttpClient();
+            Application testApp = DataSeed.Application1;
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.GlobalAdministrator);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
 
-            var updtestApp = new UpdateApplicationDto()
+            UpdateApplicationDto updtestApp = new UpdateApplicationDto()
             {
                 ApplicationDefinition = new DefinitionDto()
                 {
@@ -63,11 +65,11 @@ namespace UnitTests.Controllers
                 }
             };
 
-            var result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
+            System.Net.Http.HttpResponseMessage result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
             Log.WriteLine(result.Content.ReadAsStringAsync().Result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var updateDto = result.Deserialize<ApplicationDTO>();
+            ApplicationDTO updateDto = result.Deserialize<ApplicationDTO>();
 
             Assert.Equal(updtestApp.ApplicationDefinition.Description, updateDto.Description);
             Assert.Equal(updtestApp.ApplicationDefinition.Name, updateDto.Name);

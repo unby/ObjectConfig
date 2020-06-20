@@ -2,7 +2,6 @@
 using ObjectConfig.Data;
 using ObjectConfig.Exceptions;
 using ObjectConfig.Features.Common;
-using ObjectConfig.Features.Users;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,7 +10,8 @@ namespace ObjectConfig.Features.Applictaions.Update
 {
     public class UpdateCommand : ApplicationArgumentCommand, IRequest<UsersApplications>
     {
-        public UpdateCommand(string code, UpdateApplicationDto updateApplication) : base(code)
+        public UpdateCommand(string code, UpdateApplicationDto updateApplication)
+            : base(code)
         {
             if (updateApplication.ApplicationDefinition != null)
             {
@@ -36,27 +36,5 @@ namespace ObjectConfig.Features.Applictaions.Update
         public Definition? ApplicationDefinition { get; }
 
         public Lazy<ReadOnlyCollection<User>>? Users { get; }
-
-
-    }
-
-    public class User
-           : IUserAcessLevel<ApplicationRole>
-    {
-        public User(int userId, ApplicationRole role, EntityOperation operation)
-        {
-            if (userId < 1)
-            {
-                throw new RequestException($"Parameter '{nameof(userId)}' isn't correct  value");
-            }
-
-            UserId = userId;
-            Role = role;
-            Operation = operation;
-        }
-
-        public int UserId { get; }
-        public ApplicationRole Role { get; }
-        public EntityOperation Operation { get; }
     }
 }

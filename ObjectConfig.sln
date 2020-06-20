@@ -17,11 +17,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{34869EB8-1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{D58D516E-68A1-4B64-8E09-4B84CB870A03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectConfig.FeaturesExtensible", "ObjectConfig.FeaturesExtensible\ObjectConfig.FeaturesExtensible.csproj", "{2B1A4888-89DC-4D4A-A42D-5E2C512CB32E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D44D3D47-DB7B-41CE-8B6A-441C28B8D523}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		stylecop.json = stylecop.json
+		StyleCop.ruleset = StyleCop.ruleset
 	EndProjectSection
 EndProject
 Global
@@ -50,10 +53,6 @@ Global
 		{44AA66EE-6E79-49E6-8AB0-7FC6E8B7AAC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44AA66EE-6E79-49E6-8AB0-7FC6E8B7AAC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44AA66EE-6E79-49E6-8AB0-7FC6E8B7AAC4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B1A4888-89DC-4D4A-A42D-5E2C512CB32E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B1A4888-89DC-4D4A-A42D-5E2C512CB32E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B1A4888-89DC-4D4A-A42D-5E2C512CB32E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B1A4888-89DC-4D4A-A42D-5E2C512CB32E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

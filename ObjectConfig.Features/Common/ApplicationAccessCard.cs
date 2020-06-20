@@ -13,6 +13,7 @@ namespace ObjectConfig.Features.Common
             {
                 throw new OperationException($"{nameof(applicationCode)} must be has value");
             }
+
             if (applicationId < 1)
             {
                 throw new OperationException($"{nameof(applicationId)} must be greater than zero");
@@ -26,7 +27,6 @@ namespace ObjectConfig.Features.Common
         public ApplicationAccessCard(int applicationId, string applicationCode, ApplicationRole applicationRole, IAccessCardOfUser accessCardOfUser)
             : this(accessCardOfUser.UserId, accessCardOfUser.UserRole, applicationId, applicationCode, applicationRole)
         {
-
         }
 
         public string ApplicationCode { get; }

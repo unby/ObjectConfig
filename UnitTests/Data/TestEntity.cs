@@ -2,6 +2,17 @@
 
 namespace UnitTests.Data
 {
+    public class TestEntity
+    {
+        public string StringField { get; set; } = "stringValue";
+
+        public SubEntity SubEntity { get; set; } = new SubEntity();
+
+        public SecondEntity SecondEntity { get; set; } = new SecondEntity();
+
+        public ThirdEntity ThirdEntity { get; set; } = new ThirdEntity();
+    }
+
     public class SubArrayEntity
     {
         public string EntityName { get; set; } = nameof(SubArrayEntity);
@@ -31,6 +42,7 @@ namespace UnitTests.Data
                 new ArrayEntity() { TimeSpanField = TimeSpan.FromSeconds(150), UriField = new Uri("https://test2.com/tre") }
             };
         }
+
         public string EntityName { get; set; } = nameof(SecondEntity);
         public bool BoolField { get; set; } = true;
         public ArrayEntity[] List { get; set; }
@@ -39,6 +51,7 @@ namespace UnitTests.Data
     public class SubEntity
     {
         public string EntityName { get; set; } = nameof(SubEntity);
+
         public DateTime Date { get; set; } = new DateTime(2020, 1, 3);
 
         public DateTime DateAndTime { get; set; } = new DateTime(2020, 1, 4, 11, 55, 37, 687);
@@ -46,17 +59,6 @@ namespace UnitTests.Data
         public DateTimeOffset DateAndTimeOffSet { get; set; } = new DateTimeOffset(2020, 1, 2, 11, 55, 27, 45, TimeSpan.FromHours(5));
 
         public SubSubEntity SubSubEntity { get; set; } = new SubSubEntity();
-    }
-    public class TestEntity
-    {
-        public string StringField { get; set; } = "stringValue";
-
-        public SubEntity SubEntity { get; set; } = new SubEntity();
-
-        public SecondEntity SecondEntity { get; set; } = new SecondEntity();
-
-        public ThirdEntity ThirdEntity { get; set; } = new ThirdEntity();
-
     }
 
     public class SubSubEntity
@@ -72,5 +74,4 @@ namespace UnitTests.Data
 
         public double DoubleField { get; set; } = 20000.1325454;
     }
-
 }

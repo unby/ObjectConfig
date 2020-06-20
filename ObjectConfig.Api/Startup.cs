@@ -1,4 +1,4 @@
-using Hellang.Middleware.ProblemDetails;
+﻿using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -52,30 +52,29 @@ namespace ObjectConfig
 
                 services.AddDbContext<ObjectConfigContext>(a => a.UseSqlServer(@"Data Source=localhost;Initial Catalog=ObjectConfig;Integrated Security=True;", opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds)));
             }
-
-
         }
 
         private void ConfigureProblemDetails(ProblemDetailsOptions options)
         {
-            options.IncludeExceptionDetails = ctx => true;
+            options.IncludeExceptionDetails = (ex, ctx) => true;
+
             // logging all bad response
             options.ShouldLogUnhandledException = (x, y, z) => true;
 
             // domain exceptions
-            options.Map<RequestException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status400BadRequest));
-            options.Map<NotFoundException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status404NotFound));
-            options.Map<ForbidenException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status403Forbidden));
-            options.Map<OperationException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
+            options.MapToStatusCode<RequestException>(StatusCodes.Status400BadRequest);
+            options.MapToStatusCode<NotFoundException>(StatusCodes.Status404NotFound);
+            options.MapToStatusCode<ForbidenException>(StatusCodes.Status403Forbidden);
+            options.MapToStatusCode<OperationException>(StatusCodes.Status500InternalServerError);
 
-            options.Map<DbUpdateException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status409Conflict));
-            options.Map<EntityException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status409Conflict));
+            options.MapToStatusCode<DbUpdateException>(StatusCodes.Status409Conflict);
+            options.MapToStatusCode<EntityException>(StatusCodes.Status409Conflict);
 
             // infrasracture exceptions
-            options.Map<NotImplementedException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status501NotImplemented));
-            options.Map<HttpRequestException>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status503ServiceUnavailable));
+            options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+            options.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
 
-            options.Map<Exception>(ex => new ExceptionProblemDetails(ex, StatusCodes.Status500InternalServerError));
+            options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,6 +92,7 @@ namespace ObjectConfig
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             if (!Configuration.GetValue<bool>("IsUnitTest"))
             {
                 app.UseHttpsRedirection();
@@ -119,8 +119,8 @@ namespace ObjectConfig
 
             app.UseHealthChecks("/hc", new HealthCheckOptions()
             {
-                Predicate = _ => true,
                 // ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                Predicate = _ => true,
             });
 
             app.UseHealthChecksUI(config => config.UIPath = "/hc-ui");

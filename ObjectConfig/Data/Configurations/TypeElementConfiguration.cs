@@ -6,7 +6,8 @@ namespace ObjectConfig.Data.Configurations
 {
     public class TypeElementConfiguration : ConfigurationBase<TypeElement>
     {
-        public TypeElementConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100) : base(modelBuilder, dbType, increment, startsAt)
+        public TypeElementConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100)
+            : base(modelBuilder, dbType, increment, startsAt)
         {
         }
 

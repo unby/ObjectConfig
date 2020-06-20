@@ -2,7 +2,6 @@
 using ObjectConfig.Data;
 using ObjectConfig.Exceptions;
 using ObjectConfig.Features.Common;
-using System;
 
 namespace ObjectConfig.Features.Configs.Update
 {

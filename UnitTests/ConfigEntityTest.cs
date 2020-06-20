@@ -7,9 +7,9 @@ namespace UnitTests
 {
     public class ConfigEntityTest : BaseTest
     {
-        public ConfigEntityTest(ITestOutputHelper output) : base(output)
+        public ConfigEntityTest(ITestOutputHelper output)
+            : base(output)
         {
-
         }
 
         [Theory]

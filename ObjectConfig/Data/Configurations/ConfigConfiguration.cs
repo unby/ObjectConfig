@@ -6,7 +6,8 @@ namespace ObjectConfig.Data.Configurations
 {
     public class ConfigConfiguration : ConfigurationBase<Config>
     {
-        public ConfigConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100) : base(modelBuilder, dbType, increment, startsAt)
+        public ConfigConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100)
+            : base(modelBuilder, dbType, increment, startsAt)
         {
         }
 

@@ -1,5 +1,4 @@
-﻿using System.Dynamic;
-using Microsoft.AspNetCore.TestHost;
+﻿using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ObjectConfig;
@@ -11,7 +10,7 @@ namespace UnitTests
 {
     public static class TestExtensions
     {
-        private static JsonSerializerSettings settings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             ContractResolver = new ContractResolverWithPrivates()
@@ -34,7 +33,7 @@ namespace UnitTests
 
         public static (T instance, IServiceScope scope) GetInstanceFromScope<T>(this TestServer server)
         {
-            var scope = server.Services.CreateScope();
+            IServiceScope scope = server.Services.CreateScope();
             T instance = scope.ServiceProvider.GetService<T>();
             return (instance, scope);
         }
@@ -46,22 +45,22 @@ namespace UnitTests
 
         public static HttpClient CreateHttpClient(this TestServer server)
         {
-            var client = server.CreateClient();
+            HttpClient client = server.CreateClient();
 
             return client;
         }
 
         public static T Deserialize<T>(this HttpResponseMessage httpResponse)
         {
-            var str = httpResponse.Content.ReadAsStringAsync().Result;
-            return JsonConvert.DeserializeObject<T>(str, settings);
+            string str = httpResponse.Content.ReadAsStringAsync().Result;
+            return JsonConvert.DeserializeObject<T>(str, Settings);
         }
 
         public static HttpContent Serialize(this object obj)
         {
-            var stringPayload = JsonConvert.SerializeObject(obj);
+            string stringPayload = JsonConvert.SerializeObject(obj);
 
-            var httpContent = new StringContent(stringPayload, System.Text.Encoding.UTF8, "application/json");
+            StringContent httpContent = new StringContent(stringPayload, System.Text.Encoding.UTF8, "application/json");
             return httpContent;
         }
     }

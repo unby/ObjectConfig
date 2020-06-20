@@ -29,7 +29,7 @@ namespace ObjectConfig.Features.Environments
         [ProducesResponseType(typeof(List<EnvironmentDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetEnvironments(string appCode)
         {
-            var result = await _mediator.Send(new GetAllEnvironmentsCommand(appCode));
+            List<UsersEnvironments> result = await _mediator.Send(new GetAllEnvironmentsCommand(appCode));
             return Ok(_mapper.Map<List<UsersEnvironments>, List<EnvironmentDto>>(result));
         }
 
@@ -40,7 +40,7 @@ namespace ObjectConfig.Features.Environments
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetEnvironment(string appCode, string envCode)
         {
-            var result = await _mediator.Send(new FindByCodeEnvironmentCommand(appCode, envCode));
+            UsersEnvironments result = await _mediator.Send(new FindByCodeEnvironmentCommand(appCode, envCode));
             return Ok(new EnvironmentDto(result));
         }
 
@@ -49,7 +49,7 @@ namespace ObjectConfig.Features.Environments
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateEnvironment(string appCode, [FromBody]CreateEnvironmentDto environment)
         {
-            var result = await _mediator.Send(new CreateEnvironmentsCommand(appCode, environment.Name, environment.Code, environment.Description));
+            UsersEnvironments result = await _mediator.Send(new CreateEnvironmentsCommand(appCode, environment.Name, environment.Code, environment.Description));
             return Ok(new EnvironmentDto(result));
         }
 
@@ -60,7 +60,7 @@ namespace ObjectConfig.Features.Environments
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode, [FromRoute]string envCode, [FromBody] UpdateEnvironmentDto application)
         {
-            var app = await _mediator.Send(new UpdateEnvironmentCommand(appCode, envCode, application));
+            UsersEnvironments app = await _mediator.Send(new UpdateEnvironmentCommand(appCode, envCode, application));
             return Ok(new EnvironmentDto(app));
         }
     }

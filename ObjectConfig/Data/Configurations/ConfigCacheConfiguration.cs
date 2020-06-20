@@ -1,7 +1,6 @@
-﻿using System;
-using System.Reflection;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
 {
@@ -17,7 +16,7 @@ namespace ObjectConfig.Data.Configurations
         protected override void ConfigureProperty(EntityTypeBuilder<ConfigCache> builder)
         {
             builder.HasKey(c => new { c.ConfigId });
-            builder.Property(s => s.ConfigValue).IsRequired().HasMaxLength(Int32.MaxValue);
+            builder.Property(s => s.ConfigValue).IsRequired().HasMaxLength(int.MaxValue);
         }
     }
 }

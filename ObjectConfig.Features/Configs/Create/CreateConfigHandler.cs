@@ -1,11 +1,11 @@
-﻿using System.Linq;
-using MediatR;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
 using ObjectConfig.Exceptions;
 using ObjectConfig.Features.Environments;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace ObjectConfig.Features.Configs.Create
 {
@@ -24,9 +24,9 @@ namespace ObjectConfig.Features.Configs.Create
 
         public async Task<Config> Handle(CreateConfigCommand request, CancellationToken cancellationToken)
         {
-            var env = await _environmentService.GetEnvironment(request, EnvironmentRole.Editor, cancellationToken);
+            Environment env = await _environmentService.GetEnvironment(request, EnvironmentRole.Editor, cancellationToken);
 
-            var existConfig = await _configService.GetConfig(env.EnvironmentId, request, cancellationToken);
+            Config existConfig = await _configService.GetConfig(env.EnvironmentId, request, cancellationToken);
 
             if (existConfig != null && existConfig.VersionFrom == request.VersionFrom)
             {
@@ -46,19 +46,21 @@ namespace ObjectConfig.Features.Configs.Create
             }
             else
             {
-                var minVer = (await _configContext.Configs
+                long minVer = (await _configContext.Configs
                     .Where(w => w.EnvironmentId.Equals(env.EnvironmentId) && w.Code == request.ConfigCode)
                     .GroupBy(e => 1)
                     .Select(s => s.Min(m => m.VersionFrom)).ToListAsync(cancellationToken))[0];
 
                 if (minVer != 0 && minVer < request.VersionFrom)
+                {
                     throw new OperationException(
-                        "Incorrect config latest version in storage, 'VersionTo' must be null. Contact your system administrator");
+                      "Incorrect config latest version in storage, 'VersionTo' must be null. Contact your system administrator");
+                }
 
                 config = new Config(request.ConfigCode, env, request.VersionFrom, minVer);
             }
 
-            var reader = new ObjectConfigReader(config);
+            ObjectConfigReader reader = new ObjectConfigReader(config);
             ConfigElement configElemnt = await reader.Parse(request.Data);
             _configContext.ConfigCache.Add(new ConfigCache(config, request.Data));
 

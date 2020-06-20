@@ -7,7 +7,8 @@ namespace ObjectConfig.Features.Environments.Update
        : IUserAcessLevel<EnvironmentRole>
     {
         private EnvironmentUserRolesDto()
-        { }
+        {
+        }
 
         public EnvironmentUserRolesDto(int userId, EnvironmentRole role, EntityOperation operation)
         {

@@ -6,7 +6,8 @@ namespace UnitTests
 {
     public class ResearchTest : BaseTest
     {
-        public ResearchTest(ITestOutputHelper output) : base(output)
+        public ResearchTest(ITestOutputHelper output)
+            : base(output)
         {
         }
 
@@ -15,7 +16,7 @@ namespace UnitTests
         {
             JObject stuff = JObject.Parse(Data);
             Assert.Equal(true, stuff["Logging"]["GlobalLevel"]);
-            var ll = stuff["Logging"]["LogLevel"];
+            JToken ll = stuff["Logging"]["LogLevel"];
             Log.WriteLine(ll);
             Log.WriteLine(LogLevel);
             Assert.Equal(LogLevel, ll);
@@ -49,13 +50,5 @@ namespace UnitTests
   ""AllowedHosts"": ""*""
 }
 ";
-
-
     }
 }
-/*,
-""Array"": [
-""123"",
-""sto""
-]
-*/

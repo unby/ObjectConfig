@@ -17,7 +17,6 @@ namespace UnitTests.Data
 
         public static User UserViewer3 => new User(7, "viewer3", "viewer3", "viewer3@test.test", UserRole.Viewer);
 
-
         public static Application Application1 => new Application(1, "Application1", "Application1", "Application1");
 
         public static Application Application2 => new Application(2, "Application2", "Application2", "Application2");
@@ -41,7 +40,7 @@ namespace UnitTests.Data
 
         public static Config CreateConfig(this Environment env, string code)
         {
-            var conf = new Config(code, env);
+            Config conf = new Config(code, env);
             env.Configs.Add(conf);
             return conf;
         }

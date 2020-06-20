@@ -9,7 +9,8 @@ namespace UnitTests.Mock
         public readonly UserDto _user;
 
         public MockUserProvider(UserRole role)
-            : this(Guid.NewGuid().ToString(),
+            : this(
+                  Guid.NewGuid().ToString(),
                   Guid.NewGuid().ToString(),
                   Guid.NewGuid().ToString() + "@test.test",
                   role)

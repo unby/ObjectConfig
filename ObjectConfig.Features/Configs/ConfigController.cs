@@ -7,11 +7,11 @@ using ObjectConfig.Features.Configs.Create;
 using ObjectConfig.Features.Configs.FindAll;
 using ObjectConfig.Features.Configs.FindConfig;
 using ObjectConfig.Features.Configs.JsonConverter;
+using ObjectConfig.Features.Configs.Refresh;
 using ObjectConfig.Features.Configs.Update;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using ObjectConfig.Features.Configs.Refresh;
 
 namespace ObjectConfig.Features.Configs
 {
@@ -35,10 +35,13 @@ namespace ObjectConfig.Features.Configs
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [HttpGet("/features/application/{appCode}/environment/{envCode}/config/{confCode}/devenition")]
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetConfig([FromRoute]string appCode,
-            [FromRoute]string envCode, [FromRoute]string confCode, [FromQuery]string? versionFrom)
+        public async Task<IActionResult> GetConfig(
+            [FromRoute]string appCode,
+            [FromRoute]string envCode,
+            [FromRoute]string confCode,
+            [FromQuery]string? versionFrom)
         {
-            var result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode, versionFrom));
+            Config result = await _mediator.Send(new FindConfigCommand(appCode, envCode, confCode, versionFrom));
             return Ok(new ConfigDto(result));
         }
 
@@ -46,7 +49,7 @@ namespace ObjectConfig.Features.Configs
         [ProducesResponseType(typeof(List<ConfigDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetConfigs(string appCode, string envCode)
         {
-            var result = await _mediator.Send(
+            List<Config> result = await _mediator.Send(
                 new GetAllConfigsCommand(appCode, envCode));
             return Ok(_mapper.Map<List<Config>, List<ConfigDto>>(result));
         }
@@ -56,18 +59,19 @@ namespace ObjectConfig.Features.Configs
         public async Task<IActionResult> CreateConfigs([FromRoute]string appCode, [FromRoute]string envCode,
             [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
-            var result = await _mediator.Send(
+            Config result = await _mediator.Send(
                 new CreateConfigCommand(appCode, envCode, confCode, await RequestBody(), versionFrom));
             return Ok(new ConfigDto(result));
         }
 
         [HttpPatch("/features/application/{appCode}/environment/{envCode}/config/{confCode}")]
         [ProducesResponseType(typeof(ConfigDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateEnvironment([FromRoute]string appCode,
+        public async Task<IActionResult> UpdateEnvironment(
+            [FromRoute]string appCode,
             [FromRoute]string envCode, [FromRoute]string confCode,
             [FromQuery]string? versionFrom)
         {
-            var result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode, await RequestBody(), versionFrom));
+            Config result = await _mediator.Send(new UpdateConfigCommand(appCode, envCode, confCode, await RequestBody(), versionFrom));
             return Ok(new ConfigDto(result));
         }
 
@@ -76,7 +80,7 @@ namespace ObjectConfig.Features.Configs
         public async Task<IActionResult> GetConfigJson([FromRoute]string appCode, [FromRoute]string envCode,
             [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
-            var result = await _mediator.Send(new JsonConverterCommand(appCode, envCode, confCode, versionFrom));
+            string result = await _mediator.Send(new JsonConverterCommand(appCode, envCode, confCode, versionFrom));
             return this.Content(result, "application/json");
         }
 
@@ -85,13 +89,13 @@ namespace ObjectConfig.Features.Configs
         public async Task<IActionResult> JsonRefresh([FromRoute]string appCode, [FromRoute]string envCode,
             [FromRoute]string confCode, [FromQuery]string? versionFrom)
         {
-            var result = await _mediator.Send(new RefreshCommand(appCode, envCode, confCode, versionFrom));
+            string result = await _mediator.Send(new RefreshCommand(appCode, envCode, confCode, versionFrom));
             return this.Content(result, "application/json");
         }
 
         private Task<string> RequestBody()
         {
-            var bodyStream = new StreamReader(Request.Body);
+            StreamReader bodyStream = new StreamReader(Request.Body);
             return bodyStream.ReadToEndAsync();
         }
     }

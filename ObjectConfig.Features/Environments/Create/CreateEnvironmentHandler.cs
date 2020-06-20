@@ -22,7 +22,7 @@ namespace ObjectConfig.Features.Environments.Create
 
         public async Task<UsersEnvironments> Handle(CreateEnvironmentsCommand request, CancellationToken cancellationToken)
         {
-            var user = await _securityService.GetCurrentUser();
+            User user = await _securityService.GetCurrentUser();
 
             var result = await (from app in _configContext.Applications.Where(w => w.Code.Equals(request.ApplicationCode))
                                 join users in _configContext.UsersApplications.Where(w => w.UserId.Equals(user.UserId) && w.AccessRole == ApplicationRole.Administrator)
@@ -38,13 +38,13 @@ namespace ObjectConfig.Features.Environments.Create
 
             request.ThrowForbidenExceptionWhenValueIsNull(result.appAccess);
 
-            var environment = new Environment(request.Name, request.EnvironmentCode, request.Description, result.app);
-            var uEnv = new UsersEnvironments(user, environment, EnvironmentRole.Editor);
+            Environment environment = new Environment(request.Name, request.EnvironmentCode, request.Description, result.app);
+            UsersEnvironments env = new UsersEnvironments(user, environment, EnvironmentRole.Editor);
 
-            _configContext.UsersEnvironments.Add(uEnv);
+            _configContext.UsersEnvironments.Add(env);
             await _configContext.SaveChangesAsync(cancellationToken);
 
-            return uEnv;
+            return env;
         }
     }
 }

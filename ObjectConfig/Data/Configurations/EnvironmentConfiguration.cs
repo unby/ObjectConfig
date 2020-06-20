@@ -6,7 +6,8 @@ namespace ObjectConfig.Data.Configurations
 {
     public class EnvironmentConfiguration : ConfigurationBase<Environment>
     {
-        public EnvironmentConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100) : base(modelBuilder, dbType, increment, startsAt)
+        public EnvironmentConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100)
+            : base(modelBuilder, dbType, increment, startsAt)
         {
         }
 

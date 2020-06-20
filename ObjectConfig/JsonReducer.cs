@@ -14,9 +14,9 @@ namespace ObjectConfig
         {
             List<JContainer> props = new List<JContainer>(configElement.Childs.Count);
 
-            foreach (var item in configElement.Childs)
+            foreach (ConfigElement item in configElement.Childs)
             {
-                var child = await ParseConfigElement(item);
+                JContainer child = await ParseConfigElement(item);
                 if (child != null)
                 {
                     props.Add(child);
@@ -24,7 +24,7 @@ namespace ObjectConfig
                 }
             }
 
-            var root = new JObject(props.ToArray());
+            JObject root = new JObject(props.ToArray());
             AllProperty.Enqueue(root);
             return root;
         }
@@ -37,9 +37,9 @@ namespace ObjectConfig
                 {
                     case TypeNode.Complex:
                         List<JContainer> props = new List<JContainer>(configElement.Childs.Count);
-                        foreach (var item in configElement.Childs)
+                        foreach (ConfigElement item in configElement.Childs)
                         {
-                            var jContainer = await ParseConfigElement(item);
+                            JContainer jContainer = await ParseConfigElement(item);
                             props.Add(jContainer);
                             AllProperty.Enqueue(jContainer);
                         }
@@ -60,9 +60,9 @@ namespace ObjectConfig
                         {
                             List<JContainer> array = new List<JContainer>(configElement.Childs.Count);
 
-                            foreach (var item in configElement.Childs)
+                            foreach (ConfigElement item in configElement.Childs)
                             {
-                                var jContainer = await ParseConfigElement(item);
+                                JContainer jContainer = await ParseConfigElement(item);
                                 array.Add(jContainer);
                                 AllProperty.Enqueue(jContainer);
                             }
@@ -72,12 +72,14 @@ namespace ObjectConfig
                         else
                         {
 #nullable disable
-                            var array = configElement.Value.Select(s => s.Value).ToArray();
+                            string[] array = configElement.Value.Select(s => s.Value).ToArray();
                             return new JProperty(configElement.TypeElement.Name, array);
 #nullable enable
                         }
+
                     default:
-                        return new JProperty(configElement.TypeElement.Name,
+                        return new JProperty(
+                            configElement.TypeElement.Name,
                             ParseByType(configElement.Value[0].Value, configElement.TypeElement.TypeNode));
                 }
             }

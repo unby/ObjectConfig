@@ -10,17 +10,19 @@ namespace ObjectConfig.Exceptions
         {
         }
 
-        public RequestException(string message) : base(message)
+        public RequestException(string message)
+            : base(message)
         {
         }
 
-        public RequestException(string message, Exception innerException) : base(message, innerException)
+        public RequestException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
-        protected RequestException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+        protected RequestException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
-            throw new NotImplementedException();
         }
     }
 }

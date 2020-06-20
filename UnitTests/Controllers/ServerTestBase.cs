@@ -20,12 +20,12 @@ namespace UnitTests.Controllers
             System.Environment.SetEnvironmentVariable("ASPNETCORE_Environment", "Development");
         }
 
-        public ServerTestBase(ITestOutputHelper output) : base(output)
+        public ServerTestBase(ITestOutputHelper output)
+            : base(output)
         {
         }
 
-        protected virtual string[] Args => new string[] { };
-
+        protected virtual string[] Args => Array.Empty<string>();
 
         protected virtual Action<IServiceCollection> DefaultServices(Action<IServiceCollection> services)
         {
@@ -40,7 +40,6 @@ namespace UnitTests.Controllers
 
         protected virtual void SeedData(ObjectConfigContext context, MockUserProvider userProvider)
         {
-
         }
 
         /// <summary>
@@ -48,25 +47,25 @@ namespace UnitTests.Controllers
         /// </summary>
         /// <param name="userRole">use provider role</param>
         /// <param name="services">func for mock configure</param>
-        /// <returns></returns>
+        /// <returns>Configured testserver</returns>
         protected virtual TestServer TestServer(UserRole userRole, Action<IServiceCollection> services = null)
         {
-            var userProvider = new MockUserProvider(userRole);
+            MockUserProvider userProvider = new MockUserProvider(userRole);
             return TestServer(userProvider, services);
         }
 
         protected TestServer TestServer(MockUserProvider userProvider, Action<IServiceCollection> services = null)
         {
-            Action<IServiceCollection> internalAction = (s) =>
+            void InternalAction(IServiceCollection s)
             {
                 services?.Invoke(s);
                 s.AddSingleton<IUserProvider>(userProvider);
-            };
+            }
 
-            var testServer = TestServer(internalAction);
+            TestServer testServer = TestServer(InternalAction);
             testServer.CreateClient();
 
-            var (instance, scope) = testServer.GetInstanceFromScope<ObjectConfigContext>();
+            (ObjectConfigContext instance, IServiceScope scope) = testServer.GetInstanceFromScope<ObjectConfigContext>();
             instance.Database.EnsureCreated();
             SeedData(instance, userProvider);
             instance.SaveChanges();
@@ -77,8 +76,8 @@ namespace UnitTests.Controllers
 
         protected virtual TestServer TestServer(Action<IServiceCollection> services = null)
         {
-            var overideServices = services ?? _emptyMethod;
-            var server = new TestServer(
+            Action<IServiceCollection> overideServices = services ?? _emptyMethod;
+            TestServer server = new TestServer(
                 WebHost.CreateDefaultBuilder<Startup>(Args)
                 .ConfigureTestServices(DefaultServices(overideServices)));
 

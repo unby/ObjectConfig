@@ -40,8 +40,8 @@ namespace ObjectConfig.Features.Applictaions
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetApplication(string code)
         {
-            var response = await _mediator.Send(new FindByCodeCommand(code));
-            var rr = _mapper.Map<UsersApplications, ApplicationDTO>(response);
+            UsersApplications response = await _mediator.Send(new FindByCodeCommand(code));
+            ApplicationDTO rr = _mapper.Map<UsersApplications, ApplicationDTO>(response);
             return Ok(rr);
         }
 
@@ -50,8 +50,8 @@ namespace ObjectConfig.Features.Applictaions
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateApplication(CreateApplicationDto application)
         {
-            var app = await _mediator.Send(new CreateCommand(application.Name, application.Code, application.Description));
-            var response = new ApplicationDTO(app);
+            UsersApplications app = await _mediator.Send(new CreateCommand(application.Name, application.Code, application.Description));
+            ApplicationDTO response = new ApplicationDTO(app);
             return Ok(response);
         }
 
@@ -62,8 +62,8 @@ namespace ObjectConfig.Features.Applictaions
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateApplication([FromRoute]string code, [FromBody] UpdateApplicationDto application)
         {
-            var app = await _mediator.Send(new UpdateCommand(code, application));
-            var response = new ApplicationDTO(app);
+            UsersApplications app = await _mediator.Send(new UpdateCommand(code, application));
+            ApplicationDTO response = new ApplicationDTO(app);
             return Ok(response);
         }
     }

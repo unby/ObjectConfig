@@ -17,5 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\ObjectConfig\ObjectConfig.csproj" />
   </ItemGroup>
-
+  
 </Project>

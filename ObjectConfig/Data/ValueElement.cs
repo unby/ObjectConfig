@@ -16,13 +16,14 @@ namespace ObjectConfig.Data
             ConfigElement = element;
             DateFrom = dateFrom;
             Value = value;
-
         }
 
         public long ValueElementId { get; protected set; }
+
         public long ConfigElementId { get; protected set; }
 
         public ConfigElement ConfigElement { get; protected set; }
+
         public string? Value { get; protected set; }
 
         public string? Comment { get; protected set; }
@@ -34,6 +35,7 @@ namespace ObjectConfig.Data
         public int? ChangeOwnerUserId { get; protected set; }
 
         public virtual User ChangeOwner { get; protected set; }
+
         public long TypeElementId { get; protected set; }
 
         public object? GetObjectValue()

@@ -24,7 +24,7 @@ namespace ObjectConfig.Features.Users
 
         public async Task<User> GetCurrentUser()
         {
-            var tempUser = _userProvider.GetCurrentUser();
+            UserDto tempUser = _userProvider.GetCurrentUser();
             if (_domainUser != null)
             {
                 return _domainUser;
@@ -43,9 +43,10 @@ namespace ObjectConfig.Features.Users
         {
             if (_userCard == null)
             {
-                var user = await GetCurrentUser();
+                User user = await GetCurrentUser();
                 _userCard = new AccessCardOfUser(user.UserId, user.AccessRole);
             }
+
             return _userCard;
         }
 
@@ -61,29 +62,32 @@ namespace ObjectConfig.Features.Users
 
         public async Task<bool> TryCheckAccess(UserRole minimalAccessLevel)
         {
-            var user = await GetCurrentUser();
+            User user = await GetCurrentUser();
             return user.AccessRole >= minimalAccessLevel;
         }
 
-        public async Task<bool> CheckAccess(UserRole minimalAccessLevel,
+        public async Task<bool> CheckAccess(
+            UserRole minimalAccessLevel,
             [CallerMemberName] string callMemeber = "")
         {
             if (!(await TryCheckAccess(minimalAccessLevel)))
             {
                 throw new ForbidenException($"Does not have sufficient privileges to perform the operation{DefineNameOperation(callMemeber)}. Operation required '{minimalAccessLevel}' role");
             }
+
             return true;
         }
 
-        public async Task<TUser> CheckEntityAcces<TRoleEnum, TUser>(IUsers<TUser, TRoleEnum> entity,
+        public async Task<TUser> CheckEntityAcces<TRoleEnum, TUser>(
+            IUsers<TUser, TRoleEnum> entity,
             TRoleEnum minimalEntityRole,
             UserRole globalRole = UserRole.GlobalAdministrator,
             [CallerMemberName] string callMemeber = "")
             where TRoleEnum : Enum
             where TUser : IRole<TRoleEnum>
         {
-            var user = await GetCurrentUser();
-            var userEntity = entity.Users.SingleOrDefault(f => f.UserId == user.UserId);
+            User user = await GetCurrentUser();
+            TUser userEntity = entity.Users.SingleOrDefault(f => f.UserId == user.UserId);
 
             if ((userEntity != null && Convert.ToInt32(userEntity.AccessRole) >= Convert.ToInt32(minimalEntityRole))
                 || await TryCheckAccess(globalRole))
@@ -98,9 +102,10 @@ namespace ObjectConfig.Features.Users
         {
             if (!string.IsNullOrEmpty(memberName))
             {
-                var operationDefinition = System.Text.RegularExpressions.Regex.Replace(memberName, "([A-Z])", " $1").Replace("  ", " ").Trim().ToLower();
+                string operationDefinition = System.Text.RegularExpressions.Regex.Replace(memberName, "([A-Z])", " $1").Replace("  ", " ").Trim().ToLower();
                 return $": '{operationDefinition}'";
             }
+
             return string.Empty;
         }
     }

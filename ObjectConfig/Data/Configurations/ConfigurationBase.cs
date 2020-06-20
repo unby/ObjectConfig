@@ -6,7 +6,8 @@ using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
 {
-    public abstract class ConfigurationBase<Entity> : IEntityTypeConfiguration<Entity> where Entity : class
+    public abstract class ConfigurationBase<TEntity> : IEntityTypeConfiguration<TEntity>
+        where TEntity : class
     {
         private readonly ModelBuilder _modelBuilder;
         private readonly string _dbType;
@@ -28,13 +29,13 @@ namespace ObjectConfig.Data.Configurations
             modelBuilder.HasSequence(KeyProperty.Name, SequenceName).StartsAt(startsAt).IncrementsBy(increment);
         }
 
-        protected string SequenceName => $"{typeof(Entity).Name}_HiloSeq";
+        protected string SequenceName => $"{typeof(TEntity).Name}_HiloSeq";
 
-        public void Configure(EntityTypeBuilder<Entity> builder)
+        public void Configure(EntityTypeBuilder<TEntity> builder)
         {
             ConfigureProperty(builder);
             builder.HasKey(KeyProperty.Name);
-            var keyProperty = builder.Property(KeyProperty.PropertyType, KeyProperty.Name);
+            PropertyBuilder keyProperty = builder.Property(KeyProperty.PropertyType, KeyProperty.Name);
 
             if (_dbType.Contains("lite"))
             {
@@ -46,10 +47,12 @@ namespace ObjectConfig.Data.Configurations
                 keyProperty.UseHiLo(SequenceName);
             }
         }
-        protected abstract PropertyInfo KeyProperty { get; }
-        protected abstract void ConfigureProperty(EntityTypeBuilder<Entity> builder);
 
-        protected PropertyInfo GetPKType<TProp>(Expression<Func<Entity, TProp>> expression)
+        protected abstract PropertyInfo KeyProperty { get; }
+
+        protected abstract void ConfigureProperty(EntityTypeBuilder<TEntity> builder);
+
+        protected PropertyInfo GetPKType<TProp>(Expression<Func<TEntity, TProp>> expression)
         {
             if (_propertyInfo == null)
             {
@@ -60,6 +63,7 @@ namespace ObjectConfig.Data.Configurations
 
                 _propertyInfo = (PropertyInfo)body.Member;
             }
+
             return _propertyInfo;
         }
     }

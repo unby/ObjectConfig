@@ -1,30 +1,28 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using ObjectConfig.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Configs.Refresh
 {
-    public class RefreshHandler: IRequestHandler<RefreshCommand, string>
+    public class RefreshHandler : IRequestHandler<RefreshCommand, string>
     {
         private readonly ConfigService _configService;
         private readonly CacheService _cacheService;
-        private readonly ObjectConfigContext _configContext;
 
-        public RefreshHandler(ConfigService configService, CacheService cacheService, ObjectConfigContext configContext)
+        public RefreshHandler(ConfigService configService, CacheService cacheService)
         {
             _configService = configService;
             _cacheService = cacheService;
-            _configContext = configContext;
         }
 
         public async Task<string> Handle(RefreshCommand request, CancellationToken cancellationToken)
         {
-            var configSource = await _configService.GetConfigElement(
-                () => _configService.GetConfig(request, EnvironmentRole.Editor,cancellationToken),
+            (Config config, ConfigElement root, ConfigElement[] all) = await _configService.GetConfigElement(
+                () => _configService.GetConfig(request, EnvironmentRole.Editor, cancellationToken),
                 cancellationToken);
-            var result= (await new JsonReducer().Parse(configSource.root)).ToString();
-            await _cacheService.UpdateJsonConfig(configSource.config.ConfigId, result, cancellationToken);
+            string result = (await new JsonReducer().Parse(root)).ToString();
+            await _cacheService.UpdateJsonConfig(config.ConfigId, result, cancellationToken);
             return result;
         }
     }

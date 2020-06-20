@@ -25,7 +25,8 @@ namespace ObjectConfig.Data
             Description = description;
         }
 
-        public Environment(string name, string code, string? description, Application application) : this(name, code, description)
+        public Environment(string name, string code, string? description, Application application)
+            : this(name, code, description)
         {
             Application = application ?? throw new System.ArgumentNullException(nameof(application));
         }
@@ -46,6 +47,7 @@ namespace ObjectConfig.Data
         {
             Name = name;
         }
+
         public void NewDefinition(string? description)
         {
             Description = description;

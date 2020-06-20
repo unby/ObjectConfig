@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace ObjectConfig.Features.Environments.FindByCode
 {
-
     public class FindByCodeEnvironmentsHandler : IRequestHandler<FindByCodeEnvironmentCommand, UsersEnvironments>
     {
         private readonly EnvironmentService _environmentMaster;

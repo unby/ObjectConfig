@@ -10,20 +10,23 @@ namespace UnitTests
 {
     public class ReduceTest : BaseTest
     {
+        protected Config testConfig = new Config("test", new Version(1, 1), 1, "test");
 
-        protected Config TestConfig = new Config("test", new Version(1, 1), 1, "test");
         protected ConfigElement GetConfigElement(object data)
         {
-            return new ObjectConfigReader(TestConfig).Parse(data).Result;
+            return new ObjectConfigReader(testConfig).Parse(data).Result;
         }
-        public ReduceTest(ITestOutputHelper output) : base(output)
+
+        public ReduceTest(ITestOutputHelper output)
+            : base(output)
         {
         }
+
         [Fact]
         public void Reduce()
         {
-            var fjo = JObject.FromObject(new TestEntity());
-            var sjo = JObject.FromObject(new TestEntity());
+            JObject fjo = JObject.FromObject(new TestEntity());
+            JObject sjo = JObject.FromObject(new TestEntity());
             Log.WriteLine(fjo);
 
             Log.WriteLine(sjo);
@@ -33,20 +36,20 @@ namespace UnitTests
         [Fact]
         public async void ParseObject()
         {
-            var reader = new ObjectConfigReader(TestConfig);
-            var origin = JObject.FromObject(new TestEntity());
+            ObjectConfigReader reader = new ObjectConfigReader(testConfig);
+            JObject origin = JObject.FromObject(new TestEntity());
             ConfigElement configElemnt = await reader.Parse(origin);
             Assert.Equal(TypeNode.Root, configElemnt.TypeElement.TypeNode);
 
             Log.WriteLine(origin);
-            var reducer = new JsonReducer();
-            var reducerJobject = reducer.Parse(configElemnt).Result;
+            JsonReducer reducer = new JsonReducer();
+            JObject reducerJobject = reducer.Parse(configElemnt).Result;
 
             Assert.Equal(reader.AllProperty.Count, reducer.AllProperty.Count);
 
             Log.WriteLine(reducerJobject);
-            var strorigin = origin.ToString();
-            var strreducerJobject = reducerJobject.ToString();
+            string strorigin = origin.ToString();
+            string strreducerJobject = reducerJobject.ToString();
             Assert.Equal(strorigin, strreducerJobject);
         }
 
@@ -79,22 +82,19 @@ namespace UnitTests
         }
         */
 
-
         [Fact]
         public void CompareWithStaticString()
         {
-            var fjo = JObject.FromObject(new TestEntity());
+            JObject fjo = JObject.FromObject(new TestEntity());
 
             Assert.NotEqual(fjo.ToString(), SpecificPropertySequence);
 
-            var staticObj = JObject.Parse(SpecificPropertySequence);
+            JObject staticObj = JObject.Parse(SpecificPropertySequence);
 
             Log.WriteLine("staticObj: " + staticObj);
             Log.WriteLine("fjo: " + fjo);
 
-
             Assert.NotEqual(fjo, staticObj);
-
         }
 
         public const string SpecificPropertySequence = @"{
@@ -136,4 +136,3 @@ namespace UnitTests
 }";
     }
 }
-

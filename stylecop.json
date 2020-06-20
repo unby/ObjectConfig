@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "namingRules": {
+      "allowedHungarianPrefixes": [
+        "id",
+        "db",
+        "j"
+      ]
+    }
+  }
+}

@@ -9,7 +9,8 @@ namespace ObjectConfig.Data
     {
         public ObjectConfigContext(DbContextOptions<ObjectConfigContext> options)
             : base(options)
-        { }
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

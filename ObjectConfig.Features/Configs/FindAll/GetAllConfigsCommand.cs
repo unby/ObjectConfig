@@ -7,7 +7,8 @@ namespace ObjectConfig.Features.Configs.FindAll
 {
     public class GetAllConfigsCommand : EnvironmentArgumentCommand, IRequest<List<Config>>
     {
-        public GetAllConfigsCommand(string applicationCode, string environmentCode) : base(applicationCode, environmentCode)
+        public GetAllConfigsCommand(string applicationCode, string environmentCode)
+            : base(applicationCode, environmentCode)
         {
         }
     }

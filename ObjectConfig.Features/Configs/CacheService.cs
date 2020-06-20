@@ -1,15 +1,17 @@
-﻿using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using ObjectConfig.Data;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ObjectConfig.Data;
 
 namespace ObjectConfig.Features.Configs
 {
     public class CacheService
     {
-        private readonly ObjectConfigContext _objectConfigContext;
         private const string JsonType = "json";
+
+        private readonly ObjectConfigContext _objectConfigContext;
+
         public CacheService(ObjectConfigContext objectConfigContext)
         {
             _objectConfigContext = objectConfigContext;
@@ -20,23 +22,30 @@ namespace ObjectConfig.Features.Configs
             return _objectConfigContext.ConfigCache.Where(w => w.ConfigId == configId && w.OutType == type);
         }
 
-        public async Task<string> GetGonfig(int configId,
-            CancellationToken token = default(CancellationToken),
+        public async Task<string> GetGonfig(
+            int configId,
+            CancellationToken token = default,
             string type = JsonType)
         {
             return (await CacheQuery(configId, type).SingleAsync(token)).ConfigValue;
         }
 
-        public async Task UpdateJsonConfig(int configId, string data,
-            CancellationToken token = default(CancellationToken), string type = JsonType)
+        public async Task UpdateJsonConfig(
+            int configId,
+            string data,
+            CancellationToken token = default,
+            string type = JsonType)
         {
-            var cache = await CacheQuery(configId, type).SingleAsync(token);
+            ConfigCache cache = await CacheQuery(configId, type).SingleAsync(token);
             cache.UpdateValue(data);
             await _objectConfigContext.SaveChangesAsync(token);
         }
 
-        public async Task AddJsonConfig(int configId, string data,
-            CancellationToken token = default(CancellationToken), string type = JsonType)
+        public async Task AddJsonConfig(
+            int configId,
+            string data,
+            CancellationToken token = default,
+            string type = JsonType)
         {
             _objectConfigContext.ConfigCache.Add(new ConfigCache(configId, data, type));
             await _objectConfigContext.SaveChangesAsync(token);

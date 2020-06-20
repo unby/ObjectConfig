@@ -4,9 +4,11 @@ using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
 {
-    public class ValueElementConfiguration : ConfigurationBase<ValueElement>
+    public class ValueElementConfiguration
+        : ConfigurationBase<ValueElement>
     {
-        public ValueElementConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100) : base(modelBuilder, dbType, increment, startsAt)
+        public ValueElementConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100)
+            : base(modelBuilder, dbType, increment, startsAt)
         {
         }
 

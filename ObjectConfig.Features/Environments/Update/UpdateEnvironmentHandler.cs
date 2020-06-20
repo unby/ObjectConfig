@@ -22,15 +22,15 @@ namespace ObjectConfig.Features.Environments.Update
 
         public async Task<UsersEnvironments> Handle(UpdateEnvironmentCommand request, CancellationToken cancellationToken)
         {
-            var user = await _securityService.GetCurrentUser();
+            Data.User user = await _securityService.GetCurrentUser();
 
-            var result = await (from app in _configContext.Applications.Where(w => w.Code.Equals(request.ApplicationCode))
-                                join env in _configContext.Environments.Include(i => i.Users).Where(w => w.Code.Equals(request.EnvironmentCode))
-                                        on app.ApplicationId equals env.ApplicationId
-                                join appUser in _configContext.UsersApplications.Where(w => w.UserId.Equals(user.UserId) && w.AccessRole == ApplicationRole.Administrator)
-                                        on app.ApplicationId equals appUser.ApplicationId
-                                select env
-                                ).FirstOrDefaultAsync(cancellationToken);
+            Environment result = await (from app in _configContext.Applications.Where(w => w.Code.Equals(request.ApplicationCode))
+                                        join env in _configContext.Environments.Include(i => i.Users).Where(w => w.Code.Equals(request.EnvironmentCode))
+                                                on app.ApplicationId equals env.ApplicationId
+                                        join appUser in _configContext.UsersApplications.Where(w => w.UserId.Equals(user.UserId) && w.AccessRole == ApplicationRole.Administrator)
+                                                on app.ApplicationId equals appUser.ApplicationId
+                                        select env)
+                                .FirstOrDefaultAsync(cancellationToken);
 
             request.ThrowNotFoundExceptionWhenValueIsNull(result);
 

@@ -1,4 +1,4 @@
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,20 +10,18 @@ using Xunit.Abstractions;
 
 namespace UnitTests
 {
-
     public class BaseTest
     {
         protected IServiceProvider GetDi(Func<IServiceCollection, IServiceCollection> func = null)
         {
-
-            var sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).AddObjectConfigContext(ConfigureDb(CreateConnection())).AddRepositories();
+            IServiceCollection sc = new ServiceCollection().AddLogging((builder) => builder.AddXUnit(Log)).AddObjectConfigContext(ConfigureDb(CreateConnection())).AddRepositories();
             if (func != null)
             {
                 sc = func(sc);
             }
 
-            var sp = sc.BuildServiceProvider();
-            var instance = sp.CreateScope().ServiceProvider.GetService<ObjectConfigContext>();
+            ServiceProvider sp = sc.BuildServiceProvider();
+            ObjectConfigContext instance = sp.CreateScope().ServiceProvider.GetService<ObjectConfigContext>();
 
             instance.Database.EnsureCreated();
             instance.SaveChanges();
@@ -31,9 +29,9 @@ namespace UnitTests
             return sp;
         }
 
-        protected DbConnection CreateConnection()
+        protected static DbConnection CreateConnection()
         {
-            var sqliteConnection = new SqliteConnection($"Data Source={Guid.NewGuid()};Mode=Memory;Cache=Shared");
+            SqliteConnection sqliteConnection = new SqliteConnection($"Data Source={Guid.NewGuid()};Mode=Memory;Cache=Shared");
             sqliteConnection.Open();
             return sqliteConnection;
         }
@@ -67,7 +65,6 @@ namespace UnitTests
         public BaseTest(ITestOutputHelper output)
         {
             this.Log = output;
-
         }
     }
 }

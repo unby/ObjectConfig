@@ -17,7 +17,8 @@ namespace ObjectConfig.Features.Applictaions.Update
         private readonly IMediator _mediator;
         private readonly ObjectConfigContext _configContext;
 
-        public UpdateHandler(SecurityService securityService,
+        public UpdateHandler(
+            SecurityService securityService,
             ApplicationRepository applicationRepository,
             IMediator mediator,
             ObjectConfigContext configContext)
@@ -30,11 +31,11 @@ namespace ObjectConfig.Features.Applictaions.Update
 
         public async Task<UsersApplications> Handle(UpdateCommand request, CancellationToken cancellationToken)
         {
-            var application = await _applicationRepository.Find(request.ApplicationCode);
+            Application application = await _applicationRepository.Find(request.ApplicationCode);
 
             request.ThrowNotFoundExceptionWhenValueIsNull(application);
 
-            var userApplication = await _securityService.CheckEntityAcces(application, ApplicationRole.Administrator);
+            UsersApplications userApplication = await _securityService.CheckEntityAcces(application, ApplicationRole.Administrator);
             if (request.ApplicationDefinition != null)
             {
                 application.Rename(request.ApplicationDefinition.Name);
@@ -42,9 +43,9 @@ namespace ObjectConfig.Features.Applictaions.Update
             }
             else if (request.Users != null)
             {
-                foreach (var changeUser in request.Users.Value.Where(w => w.UserId != userApplication?.UserId))
+                foreach (User changeUser in request.Users.Value.Where(w => w.UserId != userApplication?.UserId))
                 {
-                    var foundUser = application.Users.FirstOrDefault(f => f.UserId == changeUser.UserId);
+                    UsersApplications foundUser = application.Users.FirstOrDefault(f => f.UserId == changeUser.UserId);
                     if (foundUser != null)
                     {
                         switch (changeUser.Operation)
@@ -62,7 +63,6 @@ namespace ObjectConfig.Features.Applictaions.Update
                                 break;
                         }
                     }
-
                 }
             }
 

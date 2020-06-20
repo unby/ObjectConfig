@@ -22,7 +22,7 @@ namespace ObjectConfig.Features.Configs.FindAll
 
         public async Task<List<Config>> Handle(GetAllConfigsCommand request, CancellationToken cancellationToken)
         {
-            var env = await _environmentService.GetEnvironment(request, cancellationToken);
+            UsersEnvironments env = await _environmentService.GetEnvironment(request, cancellationToken);
 
             return await _configContext
                 .Configs.Where(w =>

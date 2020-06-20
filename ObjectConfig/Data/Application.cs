@@ -10,7 +10,8 @@ namespace ObjectConfig.Data
         {
         }
 
-        public Application(int applicationId, string name, string code, string? description) : this(applicationId)
+        public Application(int applicationId, string name, string code, string? description)
+            : this(applicationId)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -61,6 +62,7 @@ namespace ObjectConfig.Data
         {
             Name = name;
         }
+
         public void NewDefinition(string? description)
         {
             Description = description;

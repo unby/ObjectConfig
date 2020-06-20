@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
+using ObjectConfig.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using MediatR;
-using ObjectConfig.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ObjectConfig.Features.Configs.Update
 {
@@ -18,7 +18,8 @@ namespace ObjectConfig.Features.Configs.Update
         private readonly ILogger<UpdateConfigHandler> _logger;
         private readonly DateTimeOffset _closeDate = DateTimeOffset.Now;
 
-        public UpdateConfigHandler(ObjectConfigContext configContext,
+        public UpdateConfigHandler(
+            ObjectConfigContext configContext,
             ConfigService configService,
             CacheService cacheService,
             ILogger<UpdateConfigHandler> logger)
@@ -34,13 +35,13 @@ namespace ObjectConfig.Features.Configs.Update
             await using IDbContextTransaction transaction = _configContext.Database.BeginTransaction();
             try
             {
-                var configSource = await _configService.GetConfigElement(
+                (Config config, ConfigElement root, ConfigElement[] all) configSource = await _configService.GetConfigElement(
                     () => _configService.GetConfig(request, EnvironmentRole.Editor, cancellationToken),
                     cancellationToken);
 
                 Config config = new Config(request.ConfigCode, configSource.config.Environment,
                     request.VersionFrom);
-                var reader = new ObjectConfigReader(config);
+                ObjectConfigReader reader = new ObjectConfigReader(config);
                 ConfigElement configElement = await reader.Parse(request.Data);
                 Compare(configSource.root, configElement);
 
@@ -61,10 +62,10 @@ namespace ObjectConfig.Features.Configs.Update
 
         public void Compare(ConfigElement sourceElementParrent, ConfigElement newElementParrent)
         {
-            var oldElements = new List<int>(newElementParrent.Childs.Count);
-            var deletedArrays = new List<(ConfigElement oldArray, ConfigElement newArray)>();
+            List<int> oldElements = new List<int>(newElementParrent.Childs.Count);
+            List<(ConfigElement oldArray, ConfigElement newArray)> deletedArrays = new List<(ConfigElement oldArray, ConfigElement newArray)>();
 
-            foreach (var sourceElementChild in sourceElementParrent.Childs)
+            foreach (ConfigElement sourceElementChild in sourceElementParrent.Childs)
             {
                 int newElementIndex = -1;
                 for (int i = 0; i < newElementParrent.Childs.Count(); i++)
@@ -84,7 +85,7 @@ namespace ObjectConfig.Features.Configs.Update
                 }
                 else
                 {
-                    var newElementChild = newElementParrent.Childs[newElementIndex];
+                    ConfigElement newElementChild = newElementParrent.Childs[newElementIndex];
 
                     if (sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode) &&
                         newElementChild.TypeElement.TypeNode == TypeNode.Complex)
@@ -100,18 +101,20 @@ namespace ObjectConfig.Features.Configs.Update
                         continue;
                     }
                     else if (sourceElementChild.TypeElement.TypeNode.Equals(TypeNode.Root))
+                    {
                         continue;
+                    }
                     else
                     {
                         if (!sourceElementChild.TypeElement.TypeNode.Equals(newElementChild.TypeElement.TypeNode))
                         {
                             sourceElementChild.Close(_closeDate);
-                            foreach (var sourceValue in sourceElementChild.Value)
+                            foreach (ValueElement sourceValue in sourceElementChild.Value)
                             {
                                 sourceValue.Close(_closeDate);
                             }
 
-                            foreach (var valueElement in newElementChild.Value)
+                            foreach (ValueElement valueElement in newElementChild.Value)
                             {
                                 sourceElementChild.Value.Add(
                                     new ValueElement(valueElement.Value, sourceElementChild, _closeDate));
@@ -119,14 +122,16 @@ namespace ObjectConfig.Features.Configs.Update
 
                             oldElements.RemoveAt(oldElements.Count - 1);
                         }
-                        else if ((sourceElementChild.Value[0].Value!=null && !sourceElementChild.Value[0].Value.Equals(newElementChild.Value[0].Value)))
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                        else if (sourceElementChild.Value[0].Value != null && !sourceElementChild.Value[0].Value.Equals(newElementChild.Value[0].Value))
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                         {
-                            foreach (var sourceValue in sourceElementChild.Value)
+                            foreach (ValueElement sourceValue in sourceElementChild.Value)
                             {
                                 sourceValue.Close(_closeDate);
                             }
 
-                            foreach (var valueElement in newElementChild.Value)
+                            foreach (ValueElement valueElement in newElementChild.Value)
                             {
                                 sourceElementChild.Value.Add(
                                     new ValueElement(valueElement.Value, sourceElementChild, _closeDate));
@@ -136,16 +141,18 @@ namespace ObjectConfig.Features.Configs.Update
                 }
             }
 
-            foreach (var item in deletedArrays)
+            foreach ((ConfigElement oldArray, ConfigElement newArray) in deletedArrays)
             {
-                Delete(item.oldArray);
-                New(sourceElementParrent, item.newArray);
+                Delete(oldArray);
+                New(sourceElementParrent, newArray);
             }
 
             for (int i = 0; i < newElementParrent.Childs.Count(); i++)
             {
                 if (!oldElements.Contains(i))
+                {
                     New(sourceElementParrent, newElementParrent.Childs[i]);
+                }
             }
         }
 
@@ -157,7 +164,7 @@ namespace ObjectConfig.Features.Configs.Update
                 sourceElement.Childs.Add(newElement);
             }
 
-            foreach (var child in newElement.Childs)
+            foreach (ConfigElement child in newElement.Childs)
             {
                 New(newElement, child);
             }
@@ -166,12 +173,12 @@ namespace ObjectConfig.Features.Configs.Update
         private void Delete(ConfigElement sourceElementChild)
         {
             sourceElementChild.Close(_closeDate);
-            foreach (var val in sourceElementChild.Value)
+            foreach (ValueElement val in sourceElementChild.Value)
             {
                 val.Close(_closeDate);
             }
 
-            foreach (var childElement in sourceElementChild.Childs)
+            foreach (ConfigElement childElement in sourceElementChild.Childs)
             {
                 Delete(childElement);
             }

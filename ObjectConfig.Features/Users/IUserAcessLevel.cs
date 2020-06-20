@@ -2,7 +2,8 @@
 
 namespace ObjectConfig.Features.Users
 {
-    public interface IUserAcessLevel<TEnumLevel> where TEnumLevel : Enum
+    public interface IUserAcessLevel<TEnumLevel>
+        where TEnumLevel : Enum
     {
         public int UserId { get; }
 
@@ -10,5 +11,4 @@ namespace ObjectConfig.Features.Users
 
         public EntityOperation Operation { get; }
     }
-    public enum EntityOperation { Create, Update, Delete }
 }

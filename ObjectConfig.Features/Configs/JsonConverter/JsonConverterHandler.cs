@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using ObjectConfig.Model;
+using ObjectConfig.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using ObjectConfig.Data;
 
 namespace ObjectConfig.Features.Configs.JsonConverter
 {
@@ -19,7 +18,7 @@ namespace ObjectConfig.Features.Configs.JsonConverter
 
         public async Task<string> Handle(JsonConverterCommand request, CancellationToken cancellationToken)
         {
-            var k = await _configService.GetConfig(request, cancellationToken);
+            Config k = await _configService.GetConfig(request, cancellationToken);
             return await _cacheService.GetGonfig(k.ConfigId, cancellationToken);
         }
     }

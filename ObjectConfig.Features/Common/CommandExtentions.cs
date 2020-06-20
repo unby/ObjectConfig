@@ -4,9 +4,9 @@ namespace ObjectConfig.Features.Common
 {
     public static class CommandExtentions
     {
-        public static void ThrowNotFoundExceptionWhenValueIsNull<T, Command>(this Command command, T obj)
+        public static void ThrowNotFoundExceptionWhenValueIsNull<T, TCommand>(this TCommand command, T obj)
             where T : class
-            where Command : ApplicationArgumentCommand
+            where TCommand : ApplicationArgumentCommand
         {
             if (obj == null)
             {
@@ -24,10 +24,9 @@ namespace ObjectConfig.Features.Common
             }
         }
 
-
-        public static void ThrowForbidenExceptionWhenValueIsNull<T, Command>(this Command command, T obj)
+        public static void ThrowForbidenExceptionWhenValueIsNull<T, TCommand>(this TCommand command, T obj)
             where T : class
-            where Command : ApplicationArgumentCommand
+            where TCommand : ApplicationArgumentCommand
         {
             if (obj == null)
             {

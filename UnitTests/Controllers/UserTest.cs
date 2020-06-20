@@ -10,20 +10,21 @@ namespace UnitTests.Controllers
 {
     public class UserTest : ServerTestBase
     {
-        public UserTest(ITestOutputHelper output) : base(output)
+        public UserTest(ITestOutputHelper output)
+            : base(output)
         {
         }
 
         [Fact]
         public async Task It_should_get_user()
         {
-            var testUser = new MockUserProvider(UserRole.Viewer);
-            using var server = TestServer(testUser);
-            using var client = server.CreateHttpClient();
-            var result = await client.GetAsync("feature/user");
+            MockUserProvider testUser = new MockUserProvider(UserRole.Viewer);
+            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(testUser);
+            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            System.Net.Http.HttpResponseMessage result = await client.GetAsync("feature/user");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            var responseDto = result.Deserialize<UserDto>();
+            UserDto responseDto = result.Deserialize<UserDto>();
             Assert.Equal(testUser._user.DisplayName, responseDto.DisplayName);
             Assert.Equal(testUser._user.AccessRole, responseDto.AccessRole);
             Assert.Equal(testUser._user.Email, responseDto.Email);

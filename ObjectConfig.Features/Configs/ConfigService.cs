@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Common;
 using ObjectConfig.Features.Environments;
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Schema;
 
 namespace ObjectConfig.Features.Configs
 {
@@ -23,9 +22,9 @@ namespace ObjectConfig.Features.Configs
 
         public async Task<Config> GetConfig(ConfigArgumentCommand request, CancellationToken cancellationToken)
         {
-            var env = await _environmentService.GetEnvironment(request, cancellationToken);
+            UsersEnvironments env = await _environmentService.GetEnvironment(request, cancellationToken);
 
-            var result = await GetConfig(env.EnvironmentId, request, cancellationToken);
+            Config result = await GetConfig(env.EnvironmentId, request, cancellationToken);
 
             request.ThrowNotFoundExceptionWhenValueIsNull(result);
 
@@ -34,9 +33,9 @@ namespace ObjectConfig.Features.Configs
 
         public async Task<Config> GetConfig(ConfigArgumentCommand request, EnvironmentRole environmentRole, CancellationToken cancellationToken)
         {
-            var env = await _environmentService.GetEnvironment(request, environmentRole, cancellationToken);
+            Data.Environment env = await _environmentService.GetEnvironment(request, environmentRole, cancellationToken);
 
-            var result = await GetConfig(env.EnvironmentId, request, cancellationToken);
+            Config result = await GetConfig(env.EnvironmentId, request, cancellationToken);
 
             request.ThrowNotFoundExceptionWhenValueIsNull(result);
 
@@ -53,14 +52,14 @@ namespace ObjectConfig.Features.Configs
 
         public async Task<(Config config, ConfigElement root, ConfigElement[] all)> GetConfigElement(Func<Task<Config>> func, CancellationToken token)
         {
-            var config = await func();
-            var id = config.ConfigId;
+            Config config = await func();
+            int id = config.ConfigId;
 
-            var all = await  _objectConfigContext.ConfigElements.
-                Where(config => config.ConfigId == id && config.DateTo == null).Include(i=>i.TypeElement)
-                .Include(i=>i.Value.Where(w=>w.DateTo==null)).ToArrayAsync(token);
+            ConfigElement[] all = await _objectConfigContext.ConfigElements.
+                Where(config => config.ConfigId == id && config.DateTo == null).Include(i => i.TypeElement)
+                .Include(i => i.Value.Where(w => w.DateTo == null)).ToArrayAsync(token);
 
-            var root = all.First(f => f.ParrentConfigElementId == null);
+            ConfigElement root = all.First(f => f.ParrentConfigElementId == null);
             return (config, root, all);
         }
     }

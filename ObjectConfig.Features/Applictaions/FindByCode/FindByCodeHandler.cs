@@ -23,14 +23,13 @@ namespace ObjectConfig.Features.Applictaions.FindByCode
 
         public async Task<UsersApplications> Handle(FindByCodeCommand request, CancellationToken cancellationToken)
         {
-            var application = await _applicationRepository.Find(request.ApplicationCode);
-            var isGlobalAdmin = _securityService.IsGlobalAdminitrator();
+            Application application = await _applicationRepository.Find(request.ApplicationCode);
+            bool isGlobalAdmin = _securityService.IsGlobalAdminitrator();
             UsersApplications? result = null;
 
             request.ThrowNotFoundExceptionWhenValueIsNull(application);
 
-
-            var user = await _securityService.GetCurrentUser();
+            User user = await _securityService.GetCurrentUser();
             result = application.Users.FirstOrDefault(a => a.UserId == user.UserId);
             if (!isGlobalAdmin && result == null)
             {

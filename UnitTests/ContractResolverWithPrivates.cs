@@ -6,14 +6,14 @@ namespace UnitTests
     {
         protected override Newtonsoft.Json.Serialization.JsonProperty CreateProperty(System.Reflection.MemberInfo member, MemberSerialization memberSerialization)
         {
-            var prop = base.CreateProperty(member, memberSerialization);
+            Newtonsoft.Json.Serialization.JsonProperty prop = base.CreateProperty(member, memberSerialization);
 
             if (!prop.Writable)
             {
-                var property = member as System.Reflection.PropertyInfo;
+                System.Reflection.PropertyInfo property = member as System.Reflection.PropertyInfo;
                 if (property != null)
                 {
-                    var hasPrivateSetter = property.GetSetMethod(true) != null;
+                    bool hasPrivateSetter = property.GetSetMethod(true) != null;
                     prop.Writable = hasPrivateSetter;
                 }
             }

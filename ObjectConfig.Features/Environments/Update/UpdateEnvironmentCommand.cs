@@ -9,7 +9,8 @@ using System.Linq;
 
 namespace ObjectConfig.Features.Environments.Update
 {
-    public class UpdateEnvironmentCommand : EnvironmentArgumentCommand, IRequest<UsersEnvironments>
+    public class UpdateEnvironmentCommand
+        : EnvironmentArgumentCommand, IRequest<UsersEnvironments>
     {
         public UpdateEnvironmentCommand(string applicationCode, string environmentCode, UpdateEnvironmentDto updateApplication)
             : base(applicationCode, environmentCode)

@@ -4,10 +4,10 @@ using System.Reflection;
 
 namespace ObjectConfig.Data.Configurations
 {
-
     public class ApplicationConfiguration : ConfigurationBase<Application>
     {
-        public ApplicationConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100) : base(modelBuilder, dbType, increment, startsAt)
+        public ApplicationConfiguration(ModelBuilder modelBuilder, string dbType, int increment = 5, int startsAt = 100)
+            : base(modelBuilder, dbType, increment, startsAt)
         {
         }
 

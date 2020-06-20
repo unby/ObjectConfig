@@ -6,7 +6,8 @@ namespace ObjectConfig.Features.Applictaions.FindByCode
 {
     public class FindByCodeCommand : ApplicationArgumentCommand, IRequest<UsersApplications>
     {
-        public FindByCodeCommand(string code) : base(code)
+        public FindByCodeCommand(string code)
+            : base(code)
         {
         }
     }
