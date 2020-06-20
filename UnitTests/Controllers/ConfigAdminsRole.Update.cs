@@ -1,7 +1,9 @@
-﻿using ObjectConfig.Data;
+﻿using Microsoft.AspNetCore.TestHost;
+using ObjectConfig.Data;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UnitTests.Data;
 using Xunit;
@@ -16,21 +18,21 @@ namespace UnitTests.Controllers
             TestEntity testEntityV1 = new TestEntity();
             testEntityV1.ThirdEntity.EntityName = nameof(testEntityV1);
 
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync(
+            HttpResponseMessage result = await client.PostAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/forUpdate",
                     testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             testEntityV1.ThirdEntity.EntityName = "updatedName";
 
-            System.Net.Http.HttpResponseMessage ver1Json = await client.PatchAsync(
+            HttpResponseMessage ver1Json = await client.PatchAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/forUpdate",
                 testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
 
-            System.Net.Http.HttpResponseMessage configFound =
+            HttpResponseMessage configFound =
                 await client.GetAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/forUpdate/json");
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
@@ -45,22 +47,22 @@ namespace UnitTests.Controllers
             Dictionary<string, object> testEntityV1 =
                 new Dictionary<string, object> { { "Array", new[] { "str1", "str2" } }, { "EntityName", "array" } };
 
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync(
+            HttpResponseMessage result = await client.PostAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/arrayUpdate",
                 testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Dictionary<string, object> testEntityV2 =
                 new Dictionary<string, object> { { "Array", new[] { "stru1", "stru2" } }, { "EntityName", "array2" } };
 
-            System.Net.Http.HttpResponseMessage ver1Json = await client.PatchAsync(
+            HttpResponseMessage ver1Json = await client.PatchAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/arrayUpdate",
                 testEntityV2.Serialize());
             Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
 
-            System.Net.Http.HttpResponseMessage configFound =
+            HttpResponseMessage configFound =
                 await client.GetAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/arrayUpdate/json");
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
@@ -75,21 +77,21 @@ namespace UnitTests.Controllers
         {
             Dictionary<string, object> testEntityV1 = new Dictionary<string, object> { { "var", 123 }, { "EntityName", "DateTimeOffset" } };
 
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync(
+            HttpResponseMessage result = await client.PostAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/typeUpdate",
                 testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Dictionary<string, object> testEntityV2 = new Dictionary<string, object> { { "var", DateTime.Now }, { "EntityName", "DateTime" } };
 
-            System.Net.Http.HttpResponseMessage ver1Json = await client.PatchAsync(
+            HttpResponseMessage ver1Json = await client.PatchAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/typeUpdate",
                 testEntityV2.Serialize());
             Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
 
-            System.Net.Http.HttpResponseMessage configFound =
+            HttpResponseMessage configFound =
                 await client.GetAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/typeUpdate/JsonRefresh");
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
@@ -104,21 +106,21 @@ namespace UnitTests.Controllers
         {
             Dictionary<string, object> testEntityV1 = new Dictionary<string, object> { { "nullProp", null }, { "EntityName", "checkNull" } };
 
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync(
+            HttpResponseMessage result = await client.PostAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/nullField",
                 testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Dictionary<string, object> testEntityV2 = new Dictionary<string, object> { { "nullProp", "notnull" }, { "EntityName", "checkNull" } };
 
-            System.Net.Http.HttpResponseMessage ver1Json = await client.PatchAsync(
+            HttpResponseMessage ver1Json = await client.PatchAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/nullField",
                 testEntityV2.Serialize());
             Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
 
-            System.Net.Http.HttpResponseMessage configFound =
+            HttpResponseMessage configFound =
                 await client.GetAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/nullField/json");
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);
@@ -133,21 +135,21 @@ namespace UnitTests.Controllers
         {
             TestClass testEntityV1 = new TestClass() { Prop = "notNull" };
 
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync(
+            HttpResponseMessage result = await client.PostAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/nullField",
                 testEntityV1.Serialize());
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             TestClass testEntityV2 = new TestClass() { Prop = null };
 
-            System.Net.Http.HttpResponseMessage ver1Json = await client.PatchAsync(
+            HttpResponseMessage ver1Json = await client.PatchAsync(
                 $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/nullField",
                 testEntityV2.Serialize());
             Assert.Equal(HttpStatusCode.OK, ver1Json.StatusCode);
 
-            System.Net.Http.HttpResponseMessage configFound =
+            HttpResponseMessage configFound =
                 await client.GetAsync(
                     $"features/application/{_env2.Application.Code}/environment/{_env2.Code}/config/nullField/json");
             Assert.Equal(HttpStatusCode.OK, configFound.StatusCode);

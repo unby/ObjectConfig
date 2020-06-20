@@ -1,4 +1,5 @@
-﻿using ObjectConfig.Data;
+﻿using Microsoft.AspNetCore.TestHost;
+using ObjectConfig.Data;
 using ObjectConfig.Features.Applictaions;
 using ObjectConfig.Features.Applictaions.Create;
 using ObjectConfig.Features.Applictaions.Update;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UnitTests.Data;
 using UnitTests.Mock;
@@ -37,9 +39,9 @@ namespace UnitTests.Controllers
         public async Task It_should_create()
         {
             CreateApplicationDto testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Viewer);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync("feature/application", testApp.Serialize());
+            using TestServer server = TestServer(UserRole.Viewer);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.PostAsync("feature/application", testApp.Serialize());
 
             Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
         }
@@ -48,8 +50,8 @@ namespace UnitTests.Controllers
         public async Task It_should_not_update_if_user_forbiden()
         {
             Application testApp = DataSeed.Application2;
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Viewer);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Viewer);
+            using HttpClient client = server.CreateHttpClient();
 
             UpdateApplicationDto updtestApp = new UpdateApplicationDto()
             {
@@ -60,27 +62,27 @@ namespace UnitTests.Controllers
                 }
             };
 
-            System.Net.Http.HttpResponseMessage result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
+            HttpResponseMessage result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
             Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
         }
 
         [Fact]
         public async Task It_should_NotFound()
         {
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Viewer);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Viewer);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync($"feature/application/notExists");
+            HttpResponseMessage result = await client.GetAsync($"feature/application/notExists");
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
 
         [Fact]
         public async Task It_should_found()
         {
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Viewer);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Viewer);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync($"feature/application");
+            HttpResponseMessage result = await client.GetAsync($"feature/application");
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
             List<ApplicationDTO> apps = result.Deserialize<List<ApplicationDTO>>();
@@ -90,10 +92,10 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_forbiden()
         {
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Viewer);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.Viewer);
+            using HttpClient client = server.CreateHttpClient();
 
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync($"feature/application/{DataSeed.Application2.Code}");
+            HttpResponseMessage result = await client.GetAsync($"feature/application/{DataSeed.Application2.Code}");
             Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
         }
     }

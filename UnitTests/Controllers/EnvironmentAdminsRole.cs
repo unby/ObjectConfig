@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
 using ObjectConfig.Data;
 using ObjectConfig.Features.Environments;
 using ObjectConfig.Features.Environments.Create;
@@ -6,6 +7,7 @@ using ObjectConfig.Features.Environments.Update;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UnitTests.Data;
 using UnitTests.Mock;
@@ -55,9 +57,9 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_get_all()
         {
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync($"features/application/{DataSeed.Application1.Code}/environments");
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.GetAsync($"features/application/{DataSeed.Application1.Code}/environments");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
@@ -68,9 +70,9 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_notfound()
         {
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync($"features/application/{_app2Env1.Application.Code}/environment/{_app2Env1.Code}");
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.GetAsync($"features/application/{_app2Env1.Application.Code}/environment/{_app2Env1.Code}");
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
@@ -78,9 +80,9 @@ namespace UnitTests.Controllers
         [Fact]
         public async Task It_should_found()
         {
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync($"features/application/{DataSeed.Application1.Code}/environment/Environment2");
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.GetAsync($"features/application/{DataSeed.Application1.Code}/environment/Environment2");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Log.WriteLine(result.Content.ReadAsStringAsync().Result);
@@ -92,9 +94,9 @@ namespace UnitTests.Controllers
         public async Task It_should_create()
         {
             CreateEnvironmentDto testEnv = new CreateEnvironmentDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString(), Description = Guid.NewGuid().ToString() };
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync($"features/application/{DataSeed.Application1.Code}/environment/", testEnv.Serialize());
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.PostAsync($"features/application/{DataSeed.Application1.Code}/environment/", testEnv.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Log.WriteLine(result.Content.ReadAsStringAsync().Result);
@@ -116,9 +118,9 @@ namespace UnitTests.Controllers
         public async Task It_should_forbiden_create()
         {
             CreateEnvironmentDto testEnv = new CreateEnvironmentDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString(), Description = Guid.NewGuid().ToString() };
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync($"features/application/{DataSeed.Application2.Code}/environment/", testEnv.Serialize());
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.PostAsync($"features/application/{DataSeed.Application2.Code}/environment/", testEnv.Serialize());
 
             Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
 
@@ -138,9 +140,9 @@ namespace UnitTests.Controllers
                 }
             };
 
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.PatchAsync($"features/application/{ForUpdateEnv.Application.Code}/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.PatchAsync($"features/application/{ForUpdateEnv.Application.Code}/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
@@ -168,9 +170,9 @@ namespace UnitTests.Controllers
                 }
             };
 
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.Administrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.PatchAsync($"features/application/notfound/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
+            using TestServer server = TestServer(UserRole.Administrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.PatchAsync($"features/application/notfound/environment/{ForUpdateEnv.Code}", updtestEnv.Serialize());
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }

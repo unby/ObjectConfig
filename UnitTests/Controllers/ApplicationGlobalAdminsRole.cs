@@ -1,9 +1,11 @@
-﻿using ObjectConfig.Data;
+﻿using Microsoft.AspNetCore.TestHost;
+using ObjectConfig.Data;
 using ObjectConfig.Features.Applictaions;
 using ObjectConfig.Features.Applictaions.Create;
 using ObjectConfig.Features.Applictaions.Update;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UnitTests.Data;
 using UnitTests.Mock;
@@ -31,9 +33,9 @@ namespace UnitTests.Controllers
         public async Task It_should_create()
         {
             CreateApplicationDto testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.GlobalAdministrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.PostAsync("feature/application", testApp.Serialize());
+            using TestServer server = TestServer(UserRole.GlobalAdministrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.PostAsync("feature/application", testApp.Serialize());
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
@@ -42,9 +44,9 @@ namespace UnitTests.Controllers
         public async Task It_should_FotFound()
         {
             CreateApplicationDto testApp = new CreateApplicationDto() { Code = Guid.NewGuid().ToString(), Name = Guid.NewGuid().ToString() };
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.GlobalAdministrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync("feature/application/notcode");
+            using TestServer server = TestServer(UserRole.GlobalAdministrator);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.GetAsync("feature/application/notcode");
 
             Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         }
@@ -53,8 +55,8 @@ namespace UnitTests.Controllers
         public async Task It_should_update()
         {
             Application testApp = DataSeed.Application1;
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(UserRole.GlobalAdministrator);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
+            using TestServer server = TestServer(UserRole.GlobalAdministrator);
+            using HttpClient client = server.CreateHttpClient();
 
             UpdateApplicationDto updtestApp = new UpdateApplicationDto()
             {
@@ -65,7 +67,7 @@ namespace UnitTests.Controllers
                 }
             };
 
-            System.Net.Http.HttpResponseMessage result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
+            HttpResponseMessage result = await client.PatchAsync($"feature/application/{testApp.Code}/update", updtestApp.Serialize());
             Log.WriteLine(result.Content.ReadAsStringAsync().Result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 

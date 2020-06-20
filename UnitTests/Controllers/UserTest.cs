@@ -1,6 +1,8 @@
-﻿using ObjectConfig.Data;
+﻿using Microsoft.AspNetCore.TestHost;
+using ObjectConfig.Data;
 using ObjectConfig.Features.Users;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using UnitTests.Mock;
 using Xunit;
@@ -19,9 +21,9 @@ namespace UnitTests.Controllers
         public async Task It_should_get_user()
         {
             MockUserProvider testUser = new MockUserProvider(UserRole.Viewer);
-            using Microsoft.AspNetCore.TestHost.TestServer server = TestServer(testUser);
-            using System.Net.Http.HttpClient client = server.CreateHttpClient();
-            System.Net.Http.HttpResponseMessage result = await client.GetAsync("feature/user");
+            using TestServer server = TestServer(testUser);
+            using HttpClient client = server.CreateHttpClient();
+            HttpResponseMessage result = await client.GetAsync("feature/user");
 
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             UserDto responseDto = result.Deserialize<UserDto>();
